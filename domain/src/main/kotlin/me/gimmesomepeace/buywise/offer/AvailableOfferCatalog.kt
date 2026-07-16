@@ -11,8 +11,8 @@ import me.gimmesomepeace.buywise.store.StoreId
  * Инварианты:
  *   - Для каждого продукта не может существовать более одного предложения от одного и того же магазина.
  */
-class OffersCatalog(
-    offers: Iterable<Offer>,
+class AvailableOfferCatalog(
+    offers: Iterable<AvailableOffer>,
 ) {
     private val offers =
         offers
@@ -35,7 +35,7 @@ class OffersCatalog(
      *
      * @param productId Идентификатор продукта, предложения на который будут возвращены.
      */
-    fun forProduct(productId: ProductId): List<Offer> = offers[productId]?.values?.toList() ?: emptyList()
+    fun forProduct(productId: ProductId): List<AvailableOffer> = offers[productId]?.values?.toList() ?: emptyList()
 
     /**
      * Возвращает предложение указанного магазина на указанный товар.
@@ -47,5 +47,5 @@ class OffersCatalog(
     fun of(
         productId: ProductId,
         storeId: StoreId,
-    ): Offer? = offers[productId]?.get(storeId)
+    ): AvailableOffer? = offers[productId]?.get(storeId)
 }

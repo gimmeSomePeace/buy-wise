@@ -1,7 +1,7 @@
 package me.gimmesomepeace.buywise.planning
 
 import me.gimmesomepeace.buywise.basket.Basket
-import me.gimmesomepeace.buywise.offer.OffersCatalog
+import me.gimmesomepeace.buywise.offer.AvailableOfferCatalog
 import me.gimmesomepeace.buywise.planning.plan.PurchaseItem
 import me.gimmesomepeace.buywise.planning.plan.PurchasePlan
 import me.gimmesomepeace.buywise.planning.plan.StorePurchasePlan
@@ -51,7 +51,7 @@ object BasketPurchasePlanner {
      */
     fun plan(
         basket: Basket,
-        offers: OffersCatalog,
+        offers: AvailableOfferCatalog,
         maxStores: StoreCountLimit,
     ): PurchasePlanningResult {
         require(!basket.isEmpty()) {
@@ -85,7 +85,7 @@ object BasketPurchasePlanner {
     private fun evaluate(
         basket: Basket,
         stores: List<StoreId>,
-        offersCatalog: OffersCatalog,
+        availableOfferCatalog: AvailableOfferCatalog,
     ): PurchasePlan? {
         val purchases = mutableMapOf<StoreId, MutableList<PurchaseItem>>()
         for (item in basket.items()) {
@@ -94,7 +94,7 @@ object BasketPurchasePlanner {
 
             for (store in stores) {
                 val price =
-                    offersCatalog
+                    availableOfferCatalog
                         .of(item.id, store)
                         ?.unitPrice
                         ?: continue

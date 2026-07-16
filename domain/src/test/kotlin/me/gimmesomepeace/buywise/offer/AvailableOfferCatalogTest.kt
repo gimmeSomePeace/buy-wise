@@ -9,7 +9,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class OffersCatalogTest {
+class AvailableOfferCatalogTest {
     @Nested
     inner class Initialization {
         @Test
@@ -18,7 +18,7 @@ class OffersCatalogTest {
             val storeId1 = storeId()
 
             assertThatThrownBy {
-                OffersCatalog(
+                AvailableOfferCatalog(
                     listOf(
                         offer(productId1, storeId1, 1),
                         offer(productId1, storeId1, 2),
@@ -47,7 +47,7 @@ class OffersCatalogTest {
     }
 
     @Nested
-    inner class OfferOf {
+    inner class AvailableOfferOf {
         @Test
         fun `should return existing offer`() {
             val productId = productId()

@@ -1,7 +1,7 @@
 package me.gimmesomepeace.buywise
 
-import me.gimmesomepeace.buywise.offer.Offer
-import me.gimmesomepeace.buywise.offer.OffersCatalog
+import me.gimmesomepeace.buywise.offer.AvailableOffer
+import me.gimmesomepeace.buywise.offer.AvailableOfferCatalog
 import me.gimmesomepeace.buywise.planning.plan.PurchaseItem
 import me.gimmesomepeace.buywise.planning.plan.PurchasePlan
 import me.gimmesomepeace.buywise.planning.plan.StorePurchasePlan
@@ -26,13 +26,13 @@ fun offer(
     productId: ProductId,
     storeId: StoreId,
     price: Long,
-) = Offer(
+) = AvailableOffer(
     storeId = storeId,
     productId = productId,
     unitPrice = money(price),
 )
 
-fun offersCatalog(vararg offers: Offer) = OffersCatalog(offers.toList())
+fun offersCatalog(vararg availableOffers: AvailableOffer) = AvailableOfferCatalog(availableOffers.toList())
 
 fun plan(vararg items: StorePurchasePlan) = PurchasePlan(items.toList())
 

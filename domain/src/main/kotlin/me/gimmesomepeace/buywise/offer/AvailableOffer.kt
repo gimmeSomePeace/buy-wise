@@ -11,7 +11,7 @@ import me.gimmesomepeace.buywise.store.StoreId
  * @property productId Идентификатор предлагаемого продукта.
  * @property unitPrice Цена за единицу товара.
  */
-data class Offer(
+data class AvailableOffer(
     val storeId: StoreId,
     val productId: ProductId,
     val unitPrice: Money,
