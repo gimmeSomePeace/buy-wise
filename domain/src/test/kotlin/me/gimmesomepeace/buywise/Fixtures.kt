@@ -1,7 +1,7 @@
 package me.gimmesomepeace.buywise
 
-import me.gimmesomepeace.buywise.offer.AvailableOffer
-import me.gimmesomepeace.buywise.offer.AvailableOfferCatalog
+import me.gimmesomepeace.buywise.planning.offer.AvailableOffer
+import me.gimmesomepeace.buywise.planning.offer.AvailableOfferCatalog
 import me.gimmesomepeace.buywise.planning.plan.PurchaseItem
 import me.gimmesomepeace.buywise.planning.plan.PurchasePlan
 import me.gimmesomepeace.buywise.planning.plan.StorePurchasePlan

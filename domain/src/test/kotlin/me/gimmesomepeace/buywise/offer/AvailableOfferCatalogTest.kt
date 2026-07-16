@@ -2,6 +2,7 @@ package me.gimmesomepeace.buywise.offer
 
 import me.gimmesomepeace.buywise.offer
 import me.gimmesomepeace.buywise.offersCatalog
+import me.gimmesomepeace.buywise.planning.offer.AvailableOfferCatalog
 import me.gimmesomepeace.buywise.productId
 import me.gimmesomepeace.buywise.storeId
 import org.assertj.core.api.Assertions.assertThat

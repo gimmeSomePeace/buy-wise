@@ -1,4 +1,4 @@
-package me.gimmesomepeace.buywise.offer
+package me.gimmesomepeace.buywise.planning.offer
 
 import me.gimmesomepeace.buywise.product.ProductId
 import me.gimmesomepeace.buywise.shared.Money
