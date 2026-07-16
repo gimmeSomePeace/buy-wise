@@ -1,0 +1,51 @@
+package me.gimmesomepeace.buywise.offer
+
+import me.gimmesomepeace.buywise.product.ProductId
+import me.gimmesomepeace.buywise.store.StoreId
+
+/**
+ * Каталог предложений.
+ *
+ * Представляет совокупность предложений, доступных для приобретения продуктов.
+ *
+ * Инварианты:
+ *   - Для каждого продукта не может существовать более одного предложения от одного и того же магазина.
+ */
+class OffersCatalog(
+    offers: Iterable<Offer>,
+) {
+    private val offers =
+        offers
+            .groupBy { it.productId }
+            .mapValues { (_, offers) ->
+                require(offers.size == offers.distinctBy { it.storeId }.size) {
+                    "Duplicate offers are not allowed."
+                }
+
+                offers.associateBy { it.storeId }
+            }
+
+    /**
+     * Возвращает идентификаторы магазинов, имеющих хотя бы одно предложение.
+     */
+    fun stores(): Set<StoreId> = offers.values.flatMap { it.keys }.toSet()
+
+    /**
+     * Возвращает все предложения от магазинов для определенного товара.
+     *
+     * @param productId Идентификатор продукта, предложения на который будут возвращены.
+     */
+    fun forProduct(productId: ProductId): List<Offer> = offers[productId]?.values?.toList() ?: emptyList()
+
+    /**
+     * Возвращает предложение указанного магазина на указанный товар.
+     *
+     * @param productId Идентификатор продукта, предложение на который будет возвращено.
+     * @param storeId Идентификатор магазина, от которого и будет возвращено предложение.
+     * @return предложение или `null`, если оно отсутствует.
+     */
+    fun of(
+        productId: ProductId,
+        storeId: StoreId,
+    ): Offer? = offers[productId]?.get(storeId)
+}
