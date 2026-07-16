@@ -21,7 +21,7 @@ style:
   CollapsibleIfStatements:
     active: true
   DataClassContainsFunctions:
-    active: true
+    active: false
   DataClassShouldBeImmutable:
     active: true
   DoubleNegativeExpression:
@@ -80,8 +80,11 @@ naming:
     active: true
   FunctionNameMaxLength:
     active: true
+    ignoreAnnotated:
+      - Test
   FunctionNameMinLength:
     active: true
+    minimumFunctionNameLength: 2
   NonBooleanPropertyPrefixedWithIs:
     active: true
   VariableMaxLength:
