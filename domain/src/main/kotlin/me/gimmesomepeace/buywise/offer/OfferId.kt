@@ -2,7 +2,6 @@ package me.gimmesomepeace.buywise.offer
 
 import me.gimmesomepeace.buywise.product.ProductId
 import me.gimmesomepeace.buywise.store.StoreId
-import java.util.UUID
 
 /**
  * Уникальный идентификатор предложения.

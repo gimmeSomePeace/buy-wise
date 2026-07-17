@@ -8,5 +8,12 @@ class Offer(
     val id: OfferId,
     val productId: ProductId,
     val storeId: StoreId,
-    val unitPrice: Money,
-)
+    unitPrice: Money,
+) {
+    var unitPrice: Money = unitPrice
+        private set
+
+    fun changePrice(newPrice: Money) {
+        unitPrice = newPrice
+    }
+}

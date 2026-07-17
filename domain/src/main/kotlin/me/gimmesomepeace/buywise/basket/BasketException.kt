@@ -1,13 +1,14 @@
 package me.gimmesomepeace.buywise.basket
 
 import me.gimmesomepeace.buywise.product.ProductId
+import me.gimmesomepeace.buywise.shared.DomainException
 
 /**
  * Базовый тип исключений, связанных с операциями над корзиной.
  */
 sealed class BasketException(
     message: String,
-) : RuntimeException(message) {
+) : DomainException(message) {
     /**
      * Запрошенный продукт отсутствует в корзине.
      *
