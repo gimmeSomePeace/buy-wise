@@ -1,0 +1,88 @@
+package me.gimmesomepeace.buywise.offer
+
+import me.gimmesomepeace.buywise.domain.planning.available
+import me.gimmesomepeace.buywise.domain.planning.offerCatalog
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.store.storeId
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+
+class AvailableOfferCatalogTest {
+    @Nested
+    inner class Initialization {
+        @Test
+        fun `should fail when duplicate offers exist`() {
+            val productId1 = productId()
+            val storeId1 = storeId()
+
+            assertThatThrownBy {
+                offerCatalog(
+                    available(productId1, storeId1),
+                    available(productId1, storeId1),
+                )
+            }.isInstanceOf(IllegalArgumentException::class.java)
+        }
+    }
+
+    @Nested
+    inner class Stores {
+        @Test
+        fun `should return all store ids`() {
+            val productId1 = productId()
+
+            val catalog =
+                offerCatalog(
+                    available(productId1, storeId()),
+                    available(productId1, storeId()),
+                )
+
+            assertThat(catalog.stores().size).isEqualTo(2)
+        }
+    }
+
+    @Nested
+    inner class AvailableOfferOf {
+        @Test
+        fun `should return existing offer`() {
+            val productId = productId()
+            val storeId = storeId()
+
+            val catalog =
+                offerCatalog(
+                    available(productId, storeId, 1.usd()),
+                )
+            assertThat(catalog.of(productId, storeId))
+                .isEqualTo(available(productId, storeId, 1.usd()))
+        }
+
+        @Test
+        fun `should return null when offer does not exist`() {
+            val catalog = offerCatalog()
+            assertThat(catalog.of(productId(), storeId())).isNull()
+        }
+    }
+
+    @Nested
+    inner class OffersFor {
+        @Test
+        fun `should return all existing offers for product`() {
+            val productId1 = productId()
+            val productId2 = productId()
+
+            val storeId1 = storeId()
+            val storeId2 = storeId()
+
+            val catalog =
+                offerCatalog(
+                    available(productId1, storeId1),
+                    available(productId1, storeId2),
+                    available(productId2, storeId2),
+                )
+
+            assertThat(catalog.forProduct(productId1)).hasSize(2)
+        }
+    }
+}

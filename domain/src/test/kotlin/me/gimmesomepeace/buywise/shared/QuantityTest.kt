@@ -1,5 +1,7 @@
 package me.gimmesomepeace.buywise.shared
 
+import me.gimmesomepeace.buywise.domain.shared.Quantity
+import me.gimmesomepeace.buywise.domain.shared.qty
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatCode
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -12,14 +14,14 @@ class QuantityTest {
         @Test
         fun `should throw exception when creating new quantity with negative value`() {
             assertThatThrownBy {
-                Quantity(-1)
+                (-1).qty()
             }.isInstanceOf(IllegalArgumentException::class.java)
         }
 
         @Test
         fun `should create new quantity with zero value`() {
             assertThatCode {
-                Quantity(0)
+                0.qty()
             }.doesNotThrowAnyException()
         }
     }
@@ -28,7 +30,8 @@ class QuantityTest {
     inner class Plus {
         @Test
         fun `should add quantities`() {
-            assertThat(Quantity.ONE + Quantity.ONE).isEqualTo(Quantity(2))
+            assertThat(Quantity.ONE + Quantity.ONE)
+                .isEqualTo(2.qty())
         }
     }
 
@@ -37,7 +40,7 @@ class QuantityTest {
         @Test
         fun `should throw exception when value is bigger`() {
             assertThatThrownBy {
-                Quantity.ONE - Quantity(999)
+                Quantity.ONE - 999.qty()
             }.isInstanceOf(IllegalArgumentException::class.java)
         }
     }
@@ -56,7 +59,7 @@ class QuantityTest {
     inner class Times {
         @Test
         fun `should multiply quantity by multiplier`() {
-            assertThat(Quantity.ONE * 2).isEqualTo(Quantity(2))
+            assertThat(Quantity.ONE * 2).isEqualTo(2.qty())
         }
 
         @Test

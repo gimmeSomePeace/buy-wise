@@ -1,53 +1,56 @@
 package me.gimmesomepeace.buywise.basket
 
-import me.gimmesomepeace.buywise.product.ProductId
-import me.gimmesomepeace.buywise.shared.Quantity
+import me.gimmesomepeace.buywise.domain.basket.Basket
+import me.gimmesomepeace.buywise.domain.basket.BasketException
+import me.gimmesomepeace.buywise.domain.basket.BasketItem
+import me.gimmesomepeace.buywise.domain.basket.basket
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.shared.Quantity
+import me.gimmesomepeace.buywise.domain.shared.qty
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatCode
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class BasketTest {
     @Nested
     inner class Add {
         @Test
         fun `should add product`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(
-                productId,
-                Quantity.ONE,
-            )
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, Quantity.ONE)
+                }
 
             assertThat(basket.quantityOf(productId)).isEqualTo(Quantity.ONE)
         }
 
         @Test
         fun `should sum product quantities when adding existing product`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId, Quantity(1))
-            basket.add(productId, Quantity(1))
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, Quantity.ONE)
+                    add(productId, Quantity.ONE)
+                }
 
             assertThat(basket.quantityOf(productId))
-                .isEqualTo(Quantity(2))
+                .isEqualTo(2.qty())
         }
 
         @Test
         fun `should not create duplicate items when adding existing product`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId, Quantity(1))
-            basket.add(productId, Quantity(2))
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, Quantity.ONE)
+                    add(productId, 2.qty())
+                }
 
             assertThat(basket.items())
                 .containsExactly(
-                    BasketItem(productId, Quantity(3)),
+                    BasketItem(productId, 3.qty()),
                 )
         }
     }
@@ -56,19 +59,20 @@ class BasketTest {
     inner class QuantityOf {
         @Test
         fun `should return quantity of existing product`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, 3.qty())
+                }
 
-            basket.add(productId, Quantity(3))
-
-            assertThat(basket.quantityOf(productId)).isEqualTo(Quantity(3))
+            assertThat(basket.quantityOf(productId)).isEqualTo(3.qty())
         }
 
         @Test
         fun `should return zero quantity when product does not exist`() {
             val basket = Basket()
 
-            assertThat(basket.quantityOf(ProductId(UUID.randomUUID())))
+            assertThat(basket.quantityOf(productId()))
                 .isEqualTo(Quantity.ZERO)
         }
     }
@@ -77,43 +81,53 @@ class BasketTest {
     inner class Decrease {
         @Test
         fun `should decrease quantity of existing product`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId, Quantity(5))
-            basket.decrease(productId, Quantity(2))
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, 5.qty())
+                    decrease(productId, 2.qty())
+                }
 
             assertThat(basket.quantityOf(productId))
-                .isEqualTo(Quantity(3))
+                .isEqualTo(3.qty())
         }
 
         @Test
         fun `should remove product when decrease below zero`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId, Quantity(5))
-            basket.decrease(productId, Quantity(99999))
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, 5.qty())
+                    decrease(productId, 999.qty())
+                }
 
             assertThat(basket.quantityOf(productId)).isEqualTo(Quantity.ZERO)
         }
 
         @Test
         fun `should throw exception when product does not exist`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
+            val productId = productId()
+            val basket = basket()
 
-            assertThatThrownBy { basket.decrease(productId, Quantity(99999)) }
-                .isInstanceOf(BasketException.ProductNotInBasket::class.java)
+            assertThatThrownBy {
+                basket.decrease(
+                    productId,
+                    9999.qty(),
+                )
+            }.isInstanceOf(BasketException.ProductNotInBasket::class.java)
         }
 
         @Test
         fun `should throw exception when decrease by zero`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
+            val productId = productId()
+            val basket = basket()
 
-            assertThatThrownBy { basket.decrease(productId, Quantity.ZERO) }
-                .isInstanceOf(IllegalArgumentException::class.java)
+            assertThatThrownBy {
+                basket.decrease(
+                    productId,
+                    Quantity.ZERO,
+                )
+            }.isInstanceOf(IllegalArgumentException::class.java)
         }
     }
 
@@ -121,24 +135,25 @@ class BasketTest {
     inner class Remove {
         @Test
         fun `should remove product`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId, Quantity.ONE)
-            basket.remove(productId)
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, Quantity.ONE)
+                    remove(productId)
+                }
 
             assertThat(basket.quantityOf(productId))
                 .isEqualTo(Quantity.ZERO)
         }
 
         @Test
-        fun `should not fall when product does not exist`() {
-            val productId = ProductId(UUID.randomUUID())
-            val basket = Basket()
+        fun `should fall when product does not exist`() {
+            val productId = productId()
+            val basket = basket()
 
-            assertThatCode {
+            assertThatThrownBy {
                 basket.remove(productId)
-            }.doesNotThrowAnyException()
+            }.isInstanceOf(BasketException.ProductNotInBasket::class.java)
         }
     }
 
@@ -146,13 +161,12 @@ class BasketTest {
     inner class Clear {
         @Test
         fun `should clear basket`() {
-            val productId1 = ProductId(UUID.randomUUID())
-            val productId2 = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId1, Quantity.ONE)
-            basket.add(productId2, Quantity.ONE)
-            basket.clear()
+            val basket =
+                basket {
+                    add(productId(), Quantity.ONE)
+                    add(productId(), Quantity.ONE)
+                    clear()
+                }
 
             assertThat(basket.items()).isEmpty()
         }
@@ -162,18 +176,18 @@ class BasketTest {
     inner class IsEmpty {
         @Test
         fun `should return false when basket contains products`() {
-            val productId1 = ProductId(UUID.randomUUID())
-            val basket = Basket()
-
-            basket.add(productId1, Quantity.ONE)
+            val productId1 = productId()
+            val basket =
+                basket {
+                    add(productId1, Quantity.ONE)
+                }
 
             assertThat(basket.isEmpty()).isFalse()
         }
 
         @Test
         fun `should return true when basket is empty`() {
-            val basket = Basket()
-
+            val basket = basket()
             assertThat(basket.isEmpty()).isTrue()
         }
     }

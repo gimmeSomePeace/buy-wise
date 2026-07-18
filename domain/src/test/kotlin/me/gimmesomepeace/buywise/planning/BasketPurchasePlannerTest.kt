@@ -1,13 +1,18 @@
 package me.gimmesomepeace.buywise.planning
 
-import me.gimmesomepeace.buywise.basket.Basket
-import me.gimmesomepeace.buywise.money
-import me.gimmesomepeace.buywise.offer
-import me.gimmesomepeace.buywise.offersCatalog
-import me.gimmesomepeace.buywise.planning.plan.PurchaseItem
-import me.gimmesomepeace.buywise.productId
-import me.gimmesomepeace.buywise.shared.Quantity
-import me.gimmesomepeace.buywise.storeId
+import me.gimmesomepeace.buywise.domain.basket.Basket
+import me.gimmesomepeace.buywise.domain.basket.basket
+import me.gimmesomepeace.buywise.domain.planning.BasketPurchasePlanner
+import me.gimmesomepeace.buywise.domain.planning.PurchasePlanningResult
+import me.gimmesomepeace.buywise.domain.planning.StoreCountLimit
+import me.gimmesomepeace.buywise.domain.planning.available
+import me.gimmesomepeace.buywise.domain.planning.offerCatalog
+import me.gimmesomepeace.buywise.domain.planning.purchase
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.shared.Quantity
+import me.gimmesomepeace.buywise.domain.shared.qty
+import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.store.storeId
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -19,7 +24,7 @@ class BasketPurchasePlannerTest {
         val storeId = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId, Quantity.ONE)
             }
 
@@ -27,22 +32,24 @@ class BasketPurchasePlannerTest {
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId, storeId, 100),
+                    offerCatalog(
+                        available(productId, storeId, 100.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
 
         assertThat(result)
-            .isInstanceOfSatisfying(PurchasePlanningResult.Success::class.java) { success ->
+            .isInstanceOfSatisfying(
+                PurchasePlanningResult.Success::class.java,
+            ) { success ->
                 val plan = success.plans.single()
                 val purchase = plan.storePlans.single()
 
-                assertThat(plan.totalPrice).isEqualTo(money(100))
+                assertThat(plan.totalPrice).isEqualTo(100.usd())
                 assertThat(purchase.storeId).isEqualTo(storeId)
                 assertThat(purchase.purchases)
                     .containsExactly(
-                        PurchaseItem(productId, Quantity.ONE, money(100)),
+                        purchase(productId, Quantity.ONE, 100.usd()),
                     )
             }
     }
@@ -54,7 +61,7 @@ class BasketPurchasePlannerTest {
         val storeId2 = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId, Quantity.ONE)
             }
 
@@ -62,19 +69,21 @@ class BasketPurchasePlannerTest {
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId, storeId1, 100),
-                        offer(productId, storeId2, 1),
+                    offerCatalog(
+                        available(productId, storeId1, 100.usd()),
+                        available(productId, storeId2, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
 
         assertThat(result)
-            .isInstanceOfSatisfying(PurchasePlanningResult.Success::class.java) { success ->
+            .isInstanceOfSatisfying(
+                PurchasePlanningResult.Success::class.java,
+            ) { success ->
                 assertThat(success.plans.map { it.totalPrice })
                     .containsExactly(
-                        money(1),
-                        money(100),
+                        1.usd(),
+                        100.usd(),
                     )
                 assertThat(
                     success.plans
@@ -95,7 +104,7 @@ class BasketPurchasePlannerTest {
         val storeId2 = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId1, Quantity.ONE)
                 add(productId2, Quantity.ONE)
             }
@@ -104,11 +113,11 @@ class BasketPurchasePlannerTest {
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId1, storeId1, 1),
-                        offer(productId1, storeId2, 999),
-                        offer(productId2, storeId1, 999),
-                        offer(productId2, storeId2, 1),
+                    offerCatalog(
+                        available(productId1, storeId1, 1.usd()),
+                        available(productId1, storeId2, 999.usd()),
+                        available(productId2, storeId1, 999.usd()),
+                        available(productId2, storeId2, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -118,7 +127,7 @@ class BasketPurchasePlannerTest {
                 PurchasePlanningResult.Success::class.java,
             ) { success ->
                 assertThat(success.plans.first().totalPrice)
-                    .isEqualTo(money(2))
+                    .isEqualTo(2.usd())
 
                 assertThat(
                     success.plans
@@ -138,7 +147,7 @@ class BasketPurchasePlannerTest {
         val storeId2 = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId1, Quantity.ONE)
                 add(productId2, Quantity.ONE)
             }
@@ -147,21 +156,23 @@ class BasketPurchasePlannerTest {
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId1, storeId1, 100),
-                        offer(productId2, storeId1, 100),
-                        offer(productId1, storeId2, 50),
-                        offer(productId2, storeId2, 900),
+                    offerCatalog(
+                        available(productId1, storeId1, 100.usd()),
+                        available(productId2, storeId1, 100.usd()),
+                        available(productId1, storeId2, 50.usd()),
+                        available(productId2, storeId2, 900.usd()),
                     ),
                 maxStores = StoreCountLimit.Limited(1),
             )
 
         assertThat(result)
-            .isInstanceOfSatisfying(PurchasePlanningResult.Success::class.java) { success ->
+            .isInstanceOfSatisfying(
+                PurchasePlanningResult.Success::class.java,
+            ) { success ->
                 val cheapestPlan = success.plans.first()
                 val purchase = cheapestPlan.storePlans.single()
 
-                assertThat(cheapestPlan.totalPrice).isEqualTo(money(200))
+                assertThat(cheapestPlan.totalPrice).isEqualTo(200.usd())
                 assertThat(purchase.storeId).isEqualTo(storeId1)
             }
     }
@@ -170,14 +181,14 @@ class BasketPurchasePlannerTest {
     fun `should fail when product not found in offers`() {
         val productId = productId()
         val basket =
-            Basket().apply {
+            basket {
                 add(productId, Quantity.ONE)
             }
 
         val result =
             BasketPurchasePlanner.plan(
                 basket = basket,
-                offers = offersCatalog(),
+                offers = offerCatalog(),
                 maxStores = StoreCountLimit.Unlimited,
             )
 
@@ -191,7 +202,7 @@ class BasketPurchasePlannerTest {
         assertThatThrownBy {
             BasketPurchasePlanner.plan(
                 basket = basket,
-                offers = offersCatalog(),
+                offers = offerCatalog(),
                 maxStores = StoreCountLimit.Unlimited,
             )
         }.isInstanceOf(IllegalArgumentException::class.java)
@@ -207,7 +218,7 @@ class BasketPurchasePlannerTest {
         val storeId3 = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId1, Quantity.ONE)
                 add(productId2, Quantity.ONE)
             }
@@ -216,13 +227,13 @@ class BasketPurchasePlannerTest {
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId1, storeId1, 1),
-                        offer(productId2, storeId1, 9),
-                        offer(productId1, storeId2, 4),
-                        offer(productId2, storeId2, 2),
-                        offer(productId1, storeId3, 3),
-                        offer(productId2, storeId3, 1),
+                    offerCatalog(
+                        available(productId1, storeId1, 1.usd()),
+                        available(productId2, storeId1, 9.usd()),
+                        available(productId1, storeId2, 4.usd()),
+                        available(productId2, storeId2, 2.usd()),
+                        available(productId1, storeId3, 3.usd()),
+                        available(productId2, storeId3, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -244,28 +255,30 @@ class BasketPurchasePlannerTest {
         val storeId2 = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId1, Quantity.ONE)
-                add(productId2, Quantity(10))
+                add(productId2, 10.qty())
             }
 
         val result =
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId1, storeId1, 2),
-                        offer(productId2, storeId1, 5),
-                        offer(productId1, storeId2, 5),
-                        offer(productId2, storeId2, 3),
+                    offerCatalog(
+                        available(productId1, storeId1, 2.usd()),
+                        available(productId2, storeId1, 5.usd()),
+                        available(productId1, storeId2, 5.usd()),
+                        available(productId2, storeId2, 3.usd()),
                     ),
                 maxStores = StoreCountLimit.Limited(1),
             )
 
         assertThat(result)
-            .isInstanceOfSatisfying(PurchasePlanningResult.Success::class.java) { success ->
+            .isInstanceOfSatisfying(
+                PurchasePlanningResult.Success::class.java,
+            ) { success ->
                 val cheapestPlan = success.plans.first()
-                assertThat(cheapestPlan.totalPrice).isEqualTo(money(35))
+                assertThat(cheapestPlan.totalPrice).isEqualTo(35.usd())
             }
     }
 
@@ -277,7 +290,7 @@ class BasketPurchasePlannerTest {
         val storeId2 = storeId()
 
         val basket =
-            Basket().apply {
+            basket {
                 add(productId1, Quantity.ONE)
             }
 
@@ -285,9 +298,9 @@ class BasketPurchasePlannerTest {
             BasketPurchasePlanner.plan(
                 basket = basket,
                 offers =
-                    offersCatalog(
-                        offer(productId1, storeId1, 1),
-                        offer(productId1, storeId2, 1),
+                    offerCatalog(
+                        available(productId1, storeId1, 1.usd()),
+                        available(productId1, storeId2, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -295,8 +308,8 @@ class BasketPurchasePlannerTest {
         assertThat(result)
             .isInstanceOfSatisfying(PurchasePlanningResult.Success::class.java) { success ->
                 assertThat(success.plans.map { it.totalPrice }).containsExactly(
-                    money(1),
-                    money(1),
+                    1.usd(),
+                    1.usd(),
                 )
             }
     }

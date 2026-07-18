@@ -3,12 +3,14 @@ kotlin = "2.3.20"
 spotless = "8.6.0"
 junit = "5.13.4"
 assertj = "3.27.7"
+coroutines-test = "1.11.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit"}
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test"}
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
