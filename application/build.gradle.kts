@@ -18,6 +18,8 @@ dependencies {
 
     // AssertJ
     testImplementation(libs.assertj)
+    testImplementation(testFixtures(project(":domain")))
+    testImplementation(libs.coroutines.test)
 }
 
 kotlin {

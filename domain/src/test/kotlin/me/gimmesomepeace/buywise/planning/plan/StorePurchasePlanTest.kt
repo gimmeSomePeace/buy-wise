@@ -1,12 +1,11 @@
 package me.gimmesomepeace.buywise.planning.plan
 
-import me.gimmesomepeace.buywise.money
-import me.gimmesomepeace.buywise.productId
-import me.gimmesomepeace.buywise.purchase
-import me.gimmesomepeace.buywise.shared.Currency
-import me.gimmesomepeace.buywise.shared.Quantity
-import me.gimmesomepeace.buywise.storeId
-import me.gimmesomepeace.buywise.storePlan
+import me.gimmesomepeace.buywise.domain.planning.purchase
+import me.gimmesomepeace.buywise.domain.planning.storePlan
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.shared.rub
+import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.store.storeId
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
@@ -18,28 +17,25 @@ class StorePurchasePlanTest {
         @Test
         fun `should fail when purchases are empty`() {
             assertThatThrownBy {
-                storePlan(storeId())
+                storePlan()
             }.isInstanceOf(IllegalArgumentException::class.java)
         }
 
         @Test
         fun `should fail when currencies are different`() {
-            val storeId = storeId()
             val productId1 = productId()
             val productId2 = productId()
 
             assertThatThrownBy {
                 storePlan(
-                    storeId,
-                    PurchaseItem(
-                        productId1,
-                        Quantity(1),
-                        money(1, Currency.USD),
+                    storeId = storeId(),
+                    purchase(
+                        productId = productId1,
+                        unitPrice = 1.usd(),
                     ),
-                    PurchaseItem(
-                        productId2,
-                        Quantity(1),
-                        money(1, Currency.RUB),
+                    purchase(
+                        productId = productId2,
+                        unitPrice = 1.rub(),
                     ),
                 )
             }.isInstanceOf(IllegalArgumentException::class.java)
@@ -52,8 +48,8 @@ class StorePurchasePlanTest {
             assertThatThrownBy {
                 storePlan(
                     storeId(),
-                    purchase(productId, 1, 1),
-                    purchase(productId, 2, 2),
+                    purchase(productId),
+                    purchase(productId),
                 )
             }.isInstanceOf(IllegalArgumentException::class.java)
         }
@@ -66,8 +62,8 @@ class StorePurchasePlanTest {
             val plan =
                 storePlan(
                     storeId(),
-                    purchase(productId1, 1, 1),
-                    purchase(productId2, 1, 1),
+                    purchase(productId1),
+                    purchase(productId2),
                 )
 
             assertThat(plan.purchases).hasSize(2)

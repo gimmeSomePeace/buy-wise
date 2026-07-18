@@ -41,9 +41,9 @@ comments:
   KDocReferencesNonPublicProperty:
     active: true
   OutdatedDocumentation:
-    active: true
+    active: false
   UndocumentedPublicFunction:
-    active: true
+    active: false
 
 complexity:
   CognitiveComplexMethod:

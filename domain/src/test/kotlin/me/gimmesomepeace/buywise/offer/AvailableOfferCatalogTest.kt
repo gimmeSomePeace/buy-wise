@@ -1,10 +1,10 @@
 package me.gimmesomepeace.buywise.offer
 
-import me.gimmesomepeace.buywise.offer
-import me.gimmesomepeace.buywise.offersCatalog
-import me.gimmesomepeace.buywise.planning.offer.AvailableOfferCatalog
-import me.gimmesomepeace.buywise.productId
-import me.gimmesomepeace.buywise.storeId
+import me.gimmesomepeace.buywise.domain.planning.available
+import me.gimmesomepeace.buywise.domain.planning.offerCatalog
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.store.storeId
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
@@ -19,11 +19,9 @@ class AvailableOfferCatalogTest {
             val storeId1 = storeId()
 
             assertThatThrownBy {
-                AvailableOfferCatalog(
-                    listOf(
-                        offer(productId1, storeId1, 1),
-                        offer(productId1, storeId1, 2),
-                    ),
+                offerCatalog(
+                    available(productId1, storeId1),
+                    available(productId1, storeId1),
                 )
             }.isInstanceOf(IllegalArgumentException::class.java)
         }
@@ -35,12 +33,10 @@ class AvailableOfferCatalogTest {
         fun `should return all store ids`() {
             val productId1 = productId()
 
-            val storeId1 = storeId()
-            val storeId2 = storeId()
             val catalog =
-                offersCatalog(
-                    offer(productId1, storeId1, 1),
-                    offer(productId1, storeId2, 1),
+                offerCatalog(
+                    available(productId1, storeId()),
+                    available(productId1, storeId()),
                 )
 
             assertThat(catalog.stores().size).isEqualTo(2)
@@ -55,21 +51,17 @@ class AvailableOfferCatalogTest {
             val storeId = storeId()
 
             val catalog =
-                offersCatalog(
-                    offer(productId, storeId, 1),
+                offerCatalog(
+                    available(productId, storeId, 1.usd()),
                 )
-
             assertThat(catalog.of(productId, storeId))
-                .isEqualTo(offer(productId, storeId, 1))
+                .isEqualTo(available(productId, storeId, 1.usd()))
         }
 
         @Test
         fun `should return null when offer does not exist`() {
-            val productId = productId()
-            val storeId = storeId()
-
-            val catalog = offersCatalog()
-            assertThat(catalog.of(productId, storeId)).isNull()
+            val catalog = offerCatalog()
+            assertThat(catalog.of(productId(), storeId())).isNull()
         }
     }
 
@@ -84,10 +76,10 @@ class AvailableOfferCatalogTest {
             val storeId2 = storeId()
 
             val catalog =
-                offersCatalog(
-                    offer(productId1, storeId1, 1),
-                    offer(productId1, storeId2, 2),
-                    offer(productId2, storeId2, 3),
+                offerCatalog(
+                    available(productId1, storeId1),
+                    available(productId1, storeId2),
+                    available(productId2, storeId2),
                 )
 
             assertThat(catalog.forProduct(productId1)).hasSize(2)

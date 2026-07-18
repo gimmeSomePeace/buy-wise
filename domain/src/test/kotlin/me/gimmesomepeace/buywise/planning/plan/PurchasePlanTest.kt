@@ -1,18 +1,16 @@
 package me.gimmesomepeace.buywise.planning.plan
 
-import me.gimmesomepeace.buywise.plan
-import me.gimmesomepeace.buywise.productId
-import me.gimmesomepeace.buywise.purchase
-import me.gimmesomepeace.buywise.shared.Currency
-import me.gimmesomepeace.buywise.shared.Money
-import me.gimmesomepeace.buywise.shared.Quantity
-import me.gimmesomepeace.buywise.storeId
-import me.gimmesomepeace.buywise.storePlan
+import me.gimmesomepeace.buywise.domain.planning.plan
+import me.gimmesomepeace.buywise.domain.planning.purchase
+import me.gimmesomepeace.buywise.domain.planning.storePlan
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.shared.rub
+import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.store.storeId
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
 
 class PurchasePlanTest {
     @Nested
@@ -35,18 +33,16 @@ class PurchasePlanTest {
                 plan(
                     storePlan(
                         storeId1,
-                        PurchaseItem(
-                            productId,
-                            Quantity(1),
-                            Money(BigDecimal.ONE, Currency.EUR),
+                        purchase(
+                            productId = productId,
+                            unitPrice = 1.usd(),
                         ),
                     ),
                     storePlan(
                         storeId2,
-                        PurchaseItem(
-                            productId,
-                            Quantity(1),
-                            Money(BigDecimal.ONE, Currency.RUB),
+                        purchase(
+                            productId = productId,
+                            unitPrice = 1.rub(),
                         ),
                     ),
                 )
@@ -75,11 +71,11 @@ class PurchasePlanTest {
                 plan(
                     storePlan(
                         storeId1,
-                        purchase(productId, 1, 1),
+                        purchase(productId),
                     ),
                     storePlan(
                         storeId2,
-                        purchase(productId, 1, 1),
+                        purchase(productId),
                     ),
                 )
 
