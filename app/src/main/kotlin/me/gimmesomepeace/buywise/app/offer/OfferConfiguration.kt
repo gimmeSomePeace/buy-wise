@@ -19,34 +19,24 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class OfferConfiguration {
     @Bean
-    fun offerRepository(
-        offerJpaRepository: OfferJpaRepository
-    ) : OfferRepository = OfferRepositoryImpl(offerJpaRepository)
+    fun offerRepository(offerJpaRepository: OfferJpaRepository): OfferRepository = OfferRepositoryImpl(offerJpaRepository)
 
     @Bean
-    fun offerQuery(
-        offerJpaRepository: OfferJpaRepository
-    ) : OfferQuery = OfferQueryImpl(offerJpaRepository)
+    fun offerQuery(offerJpaRepository: OfferJpaRepository): OfferQuery = OfferQueryImpl(offerJpaRepository)
 
     @Bean
     fun createOfferUseCase(
         @Qualifier(BeanNames.OFFER_ID_GENERATOR)
         idGenerator: IdGenerator<OfferId>,
-        repository: OfferRepository
+        repository: OfferRepository,
     ) = CreateOfferUseCase(idGenerator, repository)
 
     @Bean
-    fun deleteOfferUseCase(
-        repository: OfferRepository
-    ) = DeleteOfferUseCase(repository)
+    fun deleteOfferUseCase(repository: OfferRepository) = DeleteOfferUseCase(repository)
 
     @Bean
-    fun listOffersUseCase(
-        query: OfferQuery,
-    ) = ListOffersUseCase(query)
+    fun listOffersUseCase(query: OfferQuery) = ListOffersUseCase(query)
 
     @Bean
-    fun changePriceUseCase(
-        offerRepository: OfferRepository
-    ) = ChangePriceUseCase(offerRepository)
+    fun changePriceUseCase(offerRepository: OfferRepository) = ChangePriceUseCase(offerRepository)
 }

@@ -9,5 +9,5 @@ internal data class OfferDetailsResponse(
     val productId: UUID,
     val storeId: UUID,
     val unitPrice: BigDecimal,
-    val currency: Currency
+    val currency: Currency,
 )

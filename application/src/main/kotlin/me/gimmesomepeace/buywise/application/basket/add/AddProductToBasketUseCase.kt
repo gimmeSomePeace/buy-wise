@@ -10,7 +10,7 @@ class AddProductToBasketUseCase(
 ) {
     suspend fun execute(
         productId: ProductId,
-        quantity: Quantity
+        quantity: Quantity,
     ) {
         val basket = basketRepository.find() ?: Basket()
 

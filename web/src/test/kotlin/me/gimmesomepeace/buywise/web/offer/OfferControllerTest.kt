@@ -49,12 +49,16 @@ class OfferControllerTest {
 
     @MockkBean
     lateinit var offerQuery: OfferQuery
+
     @MockkBean
     lateinit var createOfferUseCase: CreateOfferUseCase
+
     @MockkBean
     lateinit var changePriceUseCase: ChangePriceUseCase
+
     @MockkBean
     lateinit var deleteOfferUseCase: DeleteOfferUseCase
+
     @MockkBean
     lateinit var listOffersUseCase: ListOffersUseCase
 
@@ -65,11 +69,14 @@ class OfferControllerTest {
             val offerId = offerId()
             coEvery { offerQuery.find(offerId) } returns offer(offerId)
 
-            val mvcResult = mockMvc.get("/offers/${offerId.value}") {
-                contentType = MediaType.APPLICATION_JSON
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .get("/offers/${offerId.value}") {
+                        contentType = MediaType.APPLICATION_JSON
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(offerId.value.toString()))
@@ -79,11 +86,14 @@ class OfferControllerTest {
         fun `should return 404 when not found`() {
             coEvery { offerQuery.find(any()) } returns null
 
-            val mvcResult = mockMvc.get("/offers/${offerId().value}") {
-                contentType = MediaType.APPLICATION_JSON
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .get("/offers/${offerId().value}") {
+                        contentType = MediaType.APPLICATION_JSON
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNotFound)
         }
     }
@@ -97,17 +107,21 @@ class OfferControllerTest {
                 createOfferUseCase.execute(any(), any(), 5.usd())
             } returns offer(offerId = offerId)
 
-            val mvcResult = mockMvc.post("/offers") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    createOfferRequest(
-                        unitPrice = 5.toBigDecimal(),
-                        currency = Currency.USD
-                    )
-                )
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .post("/offers") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                createOfferRequest(
+                                    unitPrice = 5.toBigDecimal(),
+                                    currency = Currency.USD,
+                                ),
+                            )
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.id").value(offerId.value.toString()))
                 .andExpect(header().string("Location", "/offers/${offerId.value}"))
@@ -120,14 +134,18 @@ class OfferControllerTest {
         @ParameterizedTest
         @ValueSource(ints = [-5, 0])
         fun `should fail when unit price is not positive`(unitPrice: Int) {
-            mockMvc.post("/offers") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(createOfferRequest(
-                    unitPrice = unitPrice.toBigDecimal(),
-                ))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .post("/offers") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                        mapper.writeValueAsString(
+                            createOfferRequest(
+                                unitPrice = unitPrice.toBigDecimal(),
+                            ),
+                        )
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
     }
 
@@ -138,17 +156,21 @@ class OfferControllerTest {
             val offerId = offerId()
             coEvery { changePriceUseCase.execute(offerId, 1.usd()) } just Runs
 
-            val mvcResult = mockMvc.patch("/offers/${offerId.value}") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    ChangePriceRequest(
-                        newPrice = 1.toBigDecimal(),
-                        newCurrency = Currency.USD
-                    )
-                )
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .patch("/offers/${offerId.value}") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                ChangePriceRequest(
+                                    newPrice = 1.toBigDecimal(),
+                                    newCurrency = Currency.USD,
+                                ),
+                            )
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNoContent)
 
             coVerify {
@@ -159,17 +181,19 @@ class OfferControllerTest {
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
         fun `should fail when unit price is not positive`(unitPrice: Int) {
-            mockMvc.patch("/offers/${offerId().value}") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    ChangePriceRequest(
-                        newPrice = unitPrice.toBigDecimal(),
-                        newCurrency = Currency.USD
-                    )
-                )
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .patch("/offers/${offerId().value}") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                        mapper.writeValueAsString(
+                            ChangePriceRequest(
+                                newPrice = unitPrice.toBigDecimal(),
+                                newCurrency = Currency.USD,
+                            ),
+                        )
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         @Test
@@ -180,17 +204,21 @@ class OfferControllerTest {
                 changePriceUseCase.execute(offerId, 1.usd())
             } throws OfferException.NotFound(offerId)
 
-            val mvcResult = mockMvc.patch("/offers/${offerId.value}") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    ChangePriceRequest(
-                        newPrice = 1.toBigDecimal(),
-                        newCurrency = Currency.USD
-                    )
-                )
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .patch("/offers/${offerId.value}") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                ChangePriceRequest(
+                                    newPrice = 1.toBigDecimal(),
+                                    newCurrency = Currency.USD,
+                                ),
+                            )
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNotFound)
         }
     }
@@ -203,7 +231,8 @@ class OfferControllerTest {
             coEvery { deleteOfferUseCase.execute(any()) } just Runs
 
             val mvcResult = mockMvc.delete("/offers/${offerId.value}").andReturn()
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNoContent)
 
             coVerify(exactly = 1) {
@@ -217,7 +246,8 @@ class OfferControllerTest {
             coEvery { deleteOfferUseCase.execute(offerId) } throws OfferException.NotFound(offerId)
 
             val mvcResult = mockMvc.delete("/offers/${offerId.value}").andReturn()
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNotFound)
         }
     }
@@ -225,67 +255,81 @@ class OfferControllerTest {
     @Nested
     inner class List {
         @Test
-        fun `should return first page`() = runTest {
-            val request = PageRequest(
-                pageSize = 20,
-                cursor = null,
-            )
+        fun `should return first page`() =
+            runTest {
+                val request =
+                    PageRequest(
+                        pageSize = 20,
+                        cursor = null,
+                    )
 
-            val page = Page(
-                items = listOf(offer()),
-                cursor = cursor("next-page"),
-            )
+                val page =
+                    Page(
+                        items = listOf(offer()),
+                        cursor = cursor("next-page"),
+                    )
 
-            coEvery {
-                listOffersUseCase.execute(request)
-            } returns page
+                coEvery {
+                    listOffersUseCase.execute(request)
+                } returns page
 
-            val mvcResult = mockMvc.get("/offers").andReturn()
+                val mvcResult = mockMvc.get("/offers").andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.offers").isArray)
-                .andExpect(jsonPath("$.offers.length()").value(1))
-                .andExpect(jsonPath("$.nextPageToken").value("next-page"))
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isOk)
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.offers").isArray)
+                    .andExpect(jsonPath("$.offers.length()").value(1))
+                    .andExpect(jsonPath("$.nextPageToken").value("next-page"))
+            }
 
         @Test
-        fun `should pass page request`() = runTest {
-            val request = PageRequest(
-                pageSize = 5,
-                cursor = cursor("abc"),
-            )
+        fun `should pass page request`() =
+            runTest {
+                val request =
+                    PageRequest(
+                        pageSize = 5,
+                        cursor = cursor("abc"),
+                    )
 
-            coEvery {
-                listOffersUseCase.execute(request)
-            } returns Page(
-                items = emptyList(),
-                cursor = null,
-            )
+                coEvery {
+                    listOffersUseCase.execute(request)
+                } returns
+                    Page(
+                        items = emptyList(),
+                        cursor = null,
+                    )
 
-            val mvcResult = mockMvc.get("/offers") {
-                param("page_size", "5")
-                param("page_token", "abc")
-            }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .get("/offers") {
+                            param("page_size", "5")
+                            param("page_token", "abc")
+                        }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk)
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isOk)
 
-            coVerify(exactly = 1) {
-                listOffersUseCase.execute(request)
+                coVerify(exactly = 1) {
+                    listOffersUseCase.execute(request)
+                }
             }
-        }
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(pageSize: Int) = runTest {
-            val mvcResult = mockMvc.get("/offers") {
-                param("page_size", pageSize.toString())
-            }.andReturn()
+        fun `should fail when page size is not positive`(pageSize: Int) =
+            runTest {
+                val mvcResult =
+                    mockMvc
+                        .get("/offers") {
+                            param("page_size", pageSize.toString())
+                        }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isBadRequest)
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isBadRequest)
+            }
     }
 }

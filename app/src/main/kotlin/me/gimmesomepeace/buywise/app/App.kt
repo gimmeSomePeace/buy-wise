@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     scanBasePackages = [
         "me.gimmesomepeace.buywise.app",
         "me.gimmesomepeace.buywise.web",
-    ]
+    ],
 )
 @EntityScan("me.gimmesomepeace.buywise.infrastructure.persistence")
 @EnableJpaRepositories("me.gimmesomepeace.buywise.infrastructure.persistence")

@@ -8,25 +8,25 @@ import me.gimmesomepeace.buywise.domain.product.Product
 import me.gimmesomepeace.buywise.domain.product.ProductId
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
-import java.util.*
+import java.util.UUID
 
 class ProductQueryImpl(
-    private val repository: ProductJpaRepository
+    private val repository: ProductJpaRepository,
 ) : ProductQuery {
-    override suspend fun find(id: ProductId): Product? =
-        repository.findByIdOrNull(id.value)?.toDomain()
+    override suspend fun find(id: ProductId): Product? = repository.findByIdOrNull(id.value)?.toDomain()
 
     override suspend fun list(request: PageRequest): Page<Product> {
         val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
 
-        val entities = request.cursor
-            ?.let { cursor ->
-                repository.findByIdGreaterThanOrderByIdAsc(
-                    id = UUID.fromString(cursor.value),
-                    pageable = requestWithExtra,
-                )
-            }
-            ?: repository.findAll(requestWithExtra).content
+        val entities =
+            request.cursor
+                ?.let { cursor ->
+                    repository.findByIdGreaterThanOrderByIdAsc(
+                        id = UUID.fromString(cursor.value),
+                        pageable = requestWithExtra,
+                    )
+                }
+                ?: repository.findAll(requestWithExtra).content
 
         val hasExtra = entities.size > request.pageSize
         val pageItems = if (hasExtra) entities.dropLast(1) else entities

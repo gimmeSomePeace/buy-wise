@@ -7,7 +7,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 abstract class PostgresSqlContainer {
-
     companion object {
         @Container
         @JvmStatic

@@ -31,97 +31,113 @@ internal class StoreRepositoryImplTest : PostgresSqlContainer() {
     @Nested
     inner class Get {
         @Test
-        fun `should return store when exists`() = runTest {
-            val expected = persistence.persist(store())
+        fun `should return store when exists`() =
+            runTest {
+                val expected = persistence.persist(store())
 
-            val actual = repository.get(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
-
-        @Test
-        fun `should throw exception when not found`() = runTest {
-            val expectedId = storeId()
-            val ex = assertFailsWith<StoreException.NotFound> {
-                repository.get(expectedId)
+                val actual = repository.get(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
             }
 
-            assertThat(ex.storeId).isEqualTo(expectedId)
-        }
+        @Test
+        fun `should throw exception when not found`() =
+            runTest {
+                val expectedId = storeId()
+                val ex =
+                    assertFailsWith<StoreException.NotFound> {
+                        repository.get(expectedId)
+                    }
+
+                assertThat(ex.storeId).isEqualTo(expectedId)
+            }
     }
 
     @Nested
     inner class Add {
         @Test
-        fun `should save new store`() = runTest {
-            val expected = store()
-            repository.add(expected)
+        fun `should save new store`() =
+            runTest {
+                val expected = store()
+                repository.add(expected)
 
-            val actual = repository.get(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
+                val actual = repository.get(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
+            }
 
         @Test
-        fun `should fail when id is busy`() = runTest {
-            val store = persistence.persist(store())
+        fun `should fail when id is busy`() =
+            runTest {
+                val store = persistence.persist(store())
 
-            val ex = assertFailsWith<StoreException.AlreadyExists> {
-                repository.add(store)
+                val ex =
+                    assertFailsWith<StoreException.AlreadyExists> {
+                        repository.add(store)
+                    }
+                assertThat(ex.storeId).isEqualTo(store.id)
             }
-            assertThat(ex.storeId).isEqualTo(store.id)
-        }
     }
 
     @Nested
     inner class Update {
         @Test
-        fun `should update store`() = runTest {
-            val store = persistence.persist(store(
-                name = "OLD NAME"
-            ))
+        fun `should update store`() =
+            runTest {
+                val store =
+                    persistence.persist(
+                        store(
+                            name = "OLD NAME",
+                        ),
+                    )
 
-            store.rename("NEW NAME")
-            repository.update(store)
+                store.rename("NEW NAME")
+                repository.update(store)
 
-            val actual = repository.get(store.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(store)
-        }
+                val actual = repository.get(store.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(store)
+            }
 
         @Test
-        fun `should fail when not found`() = runTest {
-            val store = store()
-            val ex = assertFailsWith<StoreException.NotFound> {
-                repository.update(store)
+        fun `should fail when not found`() =
+            runTest {
+                val store = store()
+                val ex =
+                    assertFailsWith<StoreException.NotFound> {
+                        repository.update(store)
+                    }
+                assertThat(ex.storeId).isEqualTo(store.id)
             }
-            assertThat(ex.storeId).isEqualTo(store.id)
-        }
     }
 
     @Nested
     inner class Delete {
         @Test
-        fun `should delete store`() = runTest {
-            val store = persistence.persist(store())
+        fun `should delete store`() =
+            runTest {
+                val store = persistence.persist(store())
 
-            repository.delete(store.id)
-            val ex = assertFailsWith<StoreException.NotFound> {
-                repository.get(store.id)
+                repository.delete(store.id)
+                val ex =
+                    assertFailsWith<StoreException.NotFound> {
+                        repository.get(store.id)
+                    }
+                assertThat(ex.storeId).isEqualTo(store.id)
             }
-            assertThat(ex.storeId).isEqualTo(store.id)
-        }
 
         @Test
-        fun `should fail when not found`() = runTest {
-            val storeId = storeId()
-            val ex = assertFailsWith<StoreException.NotFound> {
-                repository.delete(storeId)
+        fun `should fail when not found`() =
+            runTest {
+                val storeId = storeId()
+                val ex =
+                    assertFailsWith<StoreException.NotFound> {
+                        repository.delete(storeId)
+                    }
+                assertThat(ex.storeId).isEqualTo(storeId)
             }
-            assertThat(ex.storeId).isEqualTo(storeId)
-        }
     }
 }

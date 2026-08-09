@@ -10,13 +10,14 @@ import org.junit.jupiter.api.Test
 
 class AddProductToBasketUseCaseTest {
     @Test
-    fun `should add product to basket`() = runTest {
-        val repository = InMemoryBasketRepository()
-        val useCase = AddProductToBasketUseCase(repository)
+    fun `should add product to basket`() =
+        runTest {
+            val repository = InMemoryBasketRepository()
+            val useCase = AddProductToBasketUseCase(repository)
 
-        val productId = productId()
-        useCase.execute(productId, 3.qty())
+            val productId = productId()
+            useCase.execute(productId, 3.qty())
 
-        assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(3.qty())
-    }
+            assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(3.qty())
+        }
 }

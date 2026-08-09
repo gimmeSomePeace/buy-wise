@@ -5,5 +5,5 @@ import me.gimmesomepeace.buywise.domain.shared.Quantity
 
 data class BasketItemDetails(
     val productId: ProductId,
-    val quantity: Quantity
+    val quantity: Quantity,
 )

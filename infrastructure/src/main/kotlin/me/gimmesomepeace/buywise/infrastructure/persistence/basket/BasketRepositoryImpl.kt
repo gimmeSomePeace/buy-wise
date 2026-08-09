@@ -6,7 +6,7 @@ import me.gimmesomepeace.buywise.domain.product.ProductId
 import me.gimmesomepeace.buywise.domain.shared.Quantity
 
 class BasketRepositoryImpl(
-    private val repository: BasketJpaRepository
+    private val repository: BasketJpaRepository,
 ) : BasketRepository {
     override suspend fun find(): Basket? {
         val items = repository.findAll()
@@ -16,7 +16,7 @@ class BasketRepositoryImpl(
             items.forEach {
                 add(
                     ProductId(it.productId),
-                    Quantity(it.quantity)
+                    Quantity(it.quantity),
                 )
             }
         }
@@ -27,7 +27,7 @@ class BasketRepositoryImpl(
         repository.saveAll(
             basket.items().map {
                 it.toEntity()
-            }
+            },
         )
     }
 }

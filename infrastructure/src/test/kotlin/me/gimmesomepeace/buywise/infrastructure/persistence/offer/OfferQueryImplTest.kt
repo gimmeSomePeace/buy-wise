@@ -32,70 +32,78 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
     @Nested
     inner class Find {
         @Test
-        fun `should return offer when exists`() = runTest {
-            val store = persistence.persist(store())
-            val product = persistence.persist(product())
+        fun `should return offer when exists`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product = persistence.persist(product())
 
-            val expected = persistence.persist(
-                offer(storeId = store.id, productId = product.id)
-            )
+                val expected =
+                    persistence.persist(
+                        offer(storeId = store.id, productId = product.id),
+                    )
 
-            val actual = query.find(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
+                val actual = query.find(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
+            }
 
         @Test
-        fun `should return null when not found`() = runTest {
-            val actual = query.find(offerId())
-            assertThat(actual).isNull()
-        }
+        fun `should return null when not found`() =
+            runTest {
+                val actual = query.find(offerId())
+                assertThat(actual).isNull()
+            }
     }
 
     @Nested
     inner class List {
         @Test
-        fun `should paginate offers using cursor`() = runTest {
-            val offers = (1..5).map {
-                val store = persistence.persist(store())
-                val product = persistence.persist(product())
-                persistence.persist(offer(storeId = store.id, productId = product.id))
+        fun `should paginate offers using cursor`() =
+            runTest {
+                val offers =
+                    (1..5).map {
+                        val store = persistence.persist(store())
+                        val product = persistence.persist(product())
+                        persistence.persist(offer(storeId = store.id, productId = product.id))
+                    }
+
+                val firstPage = query.list(PageRequest(2))
+
+                assertThat(firstPage.items)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(offers[0], offers[1])
+                assertThat(firstPage.cursor).isNotNull()
+
+                val lastPage = query.list(PageRequest(3, firstPage.cursor))
+                assertThat(lastPage.items)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(offers[2], offers[3], offers[4])
+                assertThat(lastPage.cursor).isNull()
             }
 
-            val firstPage = query.list(PageRequest(2))
-
-            assertThat(firstPage.items)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(offers[0], offers[1])
-            assertThat(firstPage.cursor).isNotNull()
-
-            val lastPage = query.list(PageRequest(3, firstPage.cursor))
-            assertThat(lastPage.items)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(offers[2], offers[3], offers[4])
-            assertThat(lastPage.cursor).isNull()
-        }
-
         @Test
-        fun `should return empty page when no offers exist`() = runTest {
-            val firstPage = query.list(PageRequest(10))
+        fun `should return empty page when no offers exist`() =
+            runTest {
+                val firstPage = query.list(PageRequest(10))
 
-            assertThat(firstPage.items).isEmpty()
-            assertThat(firstPage.cursor).isNull()
-        }
-
-        @Test
-        fun `should return all offers when less than page size`() = runTest {
-            val offers = (1..3).map {
-                val store = persistence.persist(store())
-                val product = persistence.persist(product())
-                persistence.persist(offer(storeId = store.id, productId = product.id))
+                assertThat(firstPage.items).isEmpty()
+                assertThat(firstPage.cursor).isNull()
             }
 
-            val page = query.list(PageRequest(10))
-            assertThat(page.items.size).isEqualTo(offers.size)
-            assertThat(page.cursor).isNull()
-        }
+        @Test
+        fun `should return all offers when less than page size`() =
+            runTest {
+                val offers =
+                    (1..3).map {
+                        val store = persistence.persist(store())
+                        val product = persistence.persist(product())
+                        persistence.persist(offer(storeId = store.id, productId = product.id))
+                    }
+
+                val page = query.list(PageRequest(10))
+                assertThat(page.items.size).isEqualTo(offers.size)
+                assertThat(page.cursor).isNull()
+            }
     }
 }

@@ -16,7 +16,16 @@ import me.gimmesomepeace.buywise.web.store.rename.RenameStoreRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
@@ -27,12 +36,12 @@ internal open class StoreController(
     private val renameStoreUseCase: RenameStoreUseCase,
     private val createStoreUseCase: CreateStoreUseCase,
     private val deleteStoreUseCase: DeleteStoreUseCase,
-    private val listStoresUseCase: ListStoresUseCase
+    private val listStoresUseCase: ListStoresUseCase,
 ) {
     @GetMapping("/{id}")
     open suspend fun get(
         @PathVariable id: StoreId,
-    ) : ResponseEntity<StoreDetailsResponse> {
+    ): ResponseEntity<StoreDetailsResponse> {
         val store =
             storeQuery.find(id)
                 ?: return ResponseEntity.notFound().build()
@@ -43,7 +52,7 @@ internal open class StoreController(
     open suspend fun list(
         @RequestParam(value = "page_size", defaultValue = "20") @Positive pageSize: Int,
         @RequestParam(value = "page_token", required = false) pageToken: String?,
-    ) : ResponseEntity<ListStoresResponse> {
+    ): ResponseEntity<ListStoresResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
         val result = listStoresUseCase.execute(request).toListStoresResponse()
@@ -53,10 +62,11 @@ internal open class StoreController(
     @PostMapping
     open suspend fun create(
         @Valid @RequestBody request: CreateStoreRequest,
-    ) : ResponseEntity<StoreDetailsResponse> {
-        val store = createStoreUseCase.execute(
-            name = request.name,
-        )
+    ): ResponseEntity<StoreDetailsResponse> {
+        val store =
+            createStoreUseCase.execute(
+                name = request.name,
+            )
         return ResponseEntity
             .created(URI("/stores/${store.id}"))
             .body(store.toDetailsResponse())
@@ -66,7 +76,7 @@ internal open class StoreController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun rename(
         @PathVariable id: StoreId,
-        @RequestBody request: RenameStoreRequest
+        @RequestBody request: RenameStoreRequest,
     ) {
         renameStoreUseCase.execute(
             storeId = id,

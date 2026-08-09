@@ -7,5 +7,6 @@ import me.gimmesomepeace.buywise.domain.product.ProductId
 
 interface ProductQuery {
     suspend fun find(id: ProductId): Product?
+
     suspend fun list(request: PageRequest): Page<Product>
 }

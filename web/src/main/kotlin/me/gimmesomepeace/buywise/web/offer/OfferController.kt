@@ -19,7 +19,16 @@ import me.gimmesomepeace.buywise.web.offer.update.ChangePriceRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
@@ -30,12 +39,12 @@ internal open class OfferController(
     private val createOfferUseCase: CreateOfferUseCase,
     private val changePriceUseCase: ChangePriceUseCase,
     private val deleteOfferUseCase: DeleteOfferUseCase,
-    private val listOffersUseCase: ListOffersUseCase
+    private val listOffersUseCase: ListOffersUseCase,
 ) {
     @GetMapping("/{id}")
     open suspend fun get(
-        @PathVariable id: OfferId
-    ) : ResponseEntity<OfferDetailsResponse> {
+        @PathVariable id: OfferId,
+    ): ResponseEntity<OfferDetailsResponse> {
         val offer =
             offerQuery.find(id)
                 ?: return ResponseEntity.notFound().build()
@@ -46,23 +55,23 @@ internal open class OfferController(
     open suspend fun list(
         @RequestParam(value = "page_size", defaultValue = "20") @Positive pageSize: Int,
         @RequestParam(value = "page_token", required = false) pageToken: String?,
-    ) : ResponseEntity<ListOffersResponse> {
+    ): ResponseEntity<ListOffersResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
         val result = listOffersUseCase.execute(request).toListOffersResponse()
         return ResponseEntity.ok(result)
     }
 
-
     @PostMapping
     open suspend fun create(
-        @Valid @RequestBody request : CreateOfferRequest
-    ) : ResponseEntity<OfferDetailsResponse> {
-        val offer = createOfferUseCase.execute(
-            productId = ProductId(request.productId),
-            storeId = StoreId(request.storeId),
-            unitPrice = Money(request.unitPrice, request.currency),
-        )
+        @Valid @RequestBody request: CreateOfferRequest,
+    ): ResponseEntity<OfferDetailsResponse> {
+        val offer =
+            createOfferUseCase.execute(
+                productId = ProductId(request.productId),
+                storeId = StoreId(request.storeId),
+                unitPrice = Money(request.unitPrice, request.currency),
+            )
         return ResponseEntity
             .created(URI("/offers/${offer.id.value}"))
             .body(offer.toDetailsResponse())
@@ -72,24 +81,25 @@ internal open class OfferController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun changePrice(
         @PathVariable id: OfferId,
-        @Valid @RequestBody request: ChangePriceRequest
+        @Valid @RequestBody request: ChangePriceRequest,
     ) {
         changePriceUseCase.execute(
             offerId = id,
-            newPrice = Money(
-                request.newPrice,
-                request.newCurrency
-            )
+            newPrice =
+                Money(
+                    request.newPrice,
+                    request.newCurrency,
+                ),
         )
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun delete(
-        @PathVariable id: OfferId
+        @PathVariable id: OfferId,
     ) {
         deleteOfferUseCase.execute(
-            offerId = id
+            offerId = id,
         )
     }
 }

@@ -17,17 +17,17 @@ internal class TestPersistence(
     private val productJpaRepository: ProductJpaRepository,
     private val storeJpaRepository: StoreJpaRepository,
 ) {
-    fun persist(store: Store) : Store =
+    fun persist(store: Store): Store =
         store.also {
             storeJpaRepository.save(it.toEntity())
         }
 
-    fun persist(product: Product) : Product =
+    fun persist(product: Product): Product =
         product.also {
             productJpaRepository.save(it.toEntity())
         }
 
-    fun persist(offer: Offer) : Offer =
+    fun persist(offer: Offer): Offer =
         offer.also {
             offerJpaRepository.save(it.toEntity())
         }

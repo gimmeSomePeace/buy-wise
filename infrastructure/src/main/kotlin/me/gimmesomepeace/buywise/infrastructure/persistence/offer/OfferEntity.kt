@@ -15,16 +15,12 @@ import java.util.UUID
 class OfferEntity(
     @Id
     var id: UUID,
-
     @Column(nullable = false)
     var productId: UUID,
-
     @Column(nullable = false)
     var storeId: UUID,
-
     @Column(nullable = false)
     var price: BigDecimal,
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var currency: Currency,

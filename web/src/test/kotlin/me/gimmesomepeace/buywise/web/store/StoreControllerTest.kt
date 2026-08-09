@@ -45,241 +45,288 @@ class StoreControllerTest {
 
     @MockkBean
     lateinit var storeQuery: StoreQuery
+
     @MockkBean
     lateinit var createStoreUseCase: CreateStoreUseCase
+
     @MockkBean
     lateinit var deleteStoreUseCase: DeleteStoreUseCase
+
     @MockkBean
     lateinit var renameStoreUseCase: RenameStoreUseCase
+
     @MockkBean
     lateinit var listStoresUseCase: ListStoresUseCase
 
     @Nested
     inner class Get {
+        @Test
+        fun `should return store`() =
+            runTest {
+                val store = store()
+
+                coEvery {
+                    storeQuery.find(store.id)
+                } returns store
+
+                val mvcResult =
+                    mockMvc
+                        .get("/stores/${store.id.value}")
+                        .andReturn()
+
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isOk)
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.id").value(store.id.value.toString()))
+            }
 
         @Test
-        fun `should return store`() = runTest {
-            val store = store()
+        fun `should return 404 when store not found`() =
+            runTest {
+                val storeId = storeId()
 
-            coEvery {
-                storeQuery.find(store.id)
-            } returns store
+                coEvery {
+                    storeQuery.find(storeId)
+                } returns null
 
-            val mvcResult = mockMvc.get("/stores/${store.id.value}")
-                .andReturn()
+                val mvcResult =
+                    mockMvc
+                        .get("/stores/${storeId.value}")
+                        .andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(store.id.value.toString()))
-        }
-
-        @Test
-        fun `should return 404 when store not found`() = runTest {
-            val storeId = storeId()
-
-            coEvery {
-                storeQuery.find(storeId)
-            } returns null
-
-            val mvcResult = mockMvc.get("/stores/${storeId.value}")
-                .andReturn()
-
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isNotFound)
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isNotFound)
+            }
     }
 
     @Nested
     inner class Create {
-
         @Test
-        fun `should create store`() = runTest {
-            val store = store()
+        fun `should create store`() =
+            runTest {
+                val store = store()
 
-            coEvery {
-                createStoreUseCase.execute(store.name)
-            } returns store
+                coEvery {
+                    createStoreUseCase.execute(store.name)
+                } returns store
 
-            val mvcResult = mockMvc.post("/stores") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    createStoreRequest(store.name)
-                )
-            }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .post("/stores") {
+                            contentType = MediaType.APPLICATION_JSON
+                            content =
+                                mapper.writeValueAsString(
+                                    createStoreRequest(store.name),
+                                )
+                        }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isCreated)
-                .andExpect(header().string("Location", "/stores/${store.id}"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(store.id.value.toString()))
-                .andExpect(jsonPath("$.name").value(store.name))
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isCreated)
+                    .andExpect(header().string("Location", "/stores/${store.id}"))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.id").value(store.id.value.toString()))
+                    .andExpect(jsonPath("$.name").value(store.name))
 
-            coVerify(exactly = 1) {
-                createStoreUseCase.execute(store.name)
+                coVerify(exactly = 1) {
+                    createStoreUseCase.execute(store.name)
+                }
             }
-        }
 
         @ParameterizedTest
         @ValueSource(strings = ["", "   "])
-        fun `should fail when name is invalid`(name: String) = runTest {
-            mockMvc.post("/stores") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    createStoreRequest(name)
-                )
-            }.andExpect {
-                status { isBadRequest() }
+        fun `should fail when name is invalid`(name: String) =
+            runTest {
+                mockMvc
+                    .post("/stores") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                createStoreRequest(name),
+                            )
+                    }.andExpect {
+                        status { isBadRequest() }
+                    }
             }
-        }
-
     }
 
     @Nested
     inner class Rename {
-
         @Test
-        fun `should rename store`() = runTest {
-            val storeId = storeId()
+        fun `should rename store`() =
+            runTest {
+                val storeId = storeId()
 
-            coJustRun {
-                renameStoreUseCase.execute(storeId, "NEW NAME")
+                coJustRun {
+                    renameStoreUseCase.execute(storeId, "NEW NAME")
+                }
+
+                val mvcResult =
+                    mockMvc
+                        .patch("/stores/${storeId.value}") {
+                            contentType = MediaType.APPLICATION_JSON
+                            content =
+                                mapper.writeValueAsString(
+                                    renameStoreRequest("NEW NAME"),
+                                )
+                        }.andReturn()
+
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isNoContent)
+
+                coVerify(exactly = 1) {
+                    renameStoreUseCase.execute(storeId, "NEW NAME")
+                }
             }
 
-            val mvcResult = mockMvc.patch("/stores/${storeId.value}") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    renameStoreRequest("NEW NAME")
-                )
-            }.andReturn()
-
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isNoContent)
-
-            coVerify(exactly = 1) {
-                renameStoreUseCase.execute(storeId, "NEW NAME")
-            }
-        }
-
         @Test
-        fun `should return 404 when store is not found`() = runTest {
-            val storeId = storeId()
-            coEvery {
-                renameStoreUseCase.execute(storeId, any())
-            } throws StoreException.NotFound(storeId)
+        fun `should return 404 when store is not found`() =
+            runTest {
+                val storeId = storeId()
+                coEvery {
+                    renameStoreUseCase.execute(storeId, any())
+                } throws StoreException.NotFound(storeId)
 
-            val mvcResult = mockMvc.patch("/stores/${storeId.value}") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    renameStoreRequest()
-                )
-            }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .patch("/stores/${storeId.value}") {
+                            contentType = MediaType.APPLICATION_JSON
+                            content =
+                                mapper.writeValueAsString(
+                                    renameStoreRequest(),
+                                )
+                        }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isNotFound)
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isNotFound)
+            }
     }
-
 
     @Nested
     inner class Delete {
         @Test
-        fun `should delete store`() = runTest {
-            val storeId = storeId()
+        fun `should delete store`() =
+            runTest {
+                val storeId = storeId()
 
-            coJustRun {
-                deleteStoreUseCase.execute(storeId)
+                coJustRun {
+                    deleteStoreUseCase.execute(storeId)
+                }
+
+                val mvcResult =
+                    mockMvc
+                        .delete("/stores/${storeId.value}")
+                        .andReturn()
+
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isNoContent)
+
+                coVerify(exactly = 1) {
+                    deleteStoreUseCase.execute(storeId)
+                }
             }
-
-            val mvcResult = mockMvc.delete("/stores/${storeId.value}")
-                .andReturn()
-
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isNoContent)
-
-            coVerify(exactly = 1) {
-                deleteStoreUseCase.execute(storeId)
-            }
-        }
 
         @Test
-        fun `should return 404 when store is not found`() = runTest {
-            val storeId = storeId()
-            coEvery {
-                deleteStoreUseCase.execute(storeId)
-            } throws StoreException.NotFound(storeId)
+        fun `should return 404 when store is not found`() =
+            runTest {
+                val storeId = storeId()
+                coEvery {
+                    deleteStoreUseCase.execute(storeId)
+                } throws StoreException.NotFound(storeId)
 
-            val mvcResult = mockMvc.delete("/stores/${storeId.value}")
-                .andReturn()
+                val mvcResult =
+                    mockMvc
+                        .delete("/stores/${storeId.value}")
+                        .andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isNotFound)
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isNotFound)
+            }
     }
 
     @Nested
     inner class List {
         @Test
-        fun `should return first page`() = runTest {
-            val request = PageRequest(
-                pageSize = 20,
-                cursor = null,
-            )
+        fun `should return first page`() =
+            runTest {
+                val request =
+                    PageRequest(
+                        pageSize = 20,
+                        cursor = null,
+                    )
 
-            val page = Page(
-                items = listOf(store()),
-                cursor = cursor("next-page")
-            )
+                val page =
+                    Page(
+                        items = listOf(store()),
+                        cursor = cursor("next-page"),
+                    )
 
-            coEvery {
-                listStoresUseCase.execute(request)
-            } returns page
+                coEvery {
+                    listStoresUseCase.execute(request)
+                } returns page
 
-            val mvcResult = mockMvc.get("/stores").andReturn()
+                val mvcResult = mockMvc.get("/stores").andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.stores").isArray)
-                .andExpect(jsonPath("$.stores.length()").value(1))
-                .andExpect(jsonPath("$.nextPageToken").value("next-page"))
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isOk)
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.stores").isArray)
+                    .andExpect(jsonPath("$.stores.length()").value(1))
+                    .andExpect(jsonPath("$.nextPageToken").value("next-page"))
+            }
 
         @Test
-        fun `should pass page request`() = runTest {
-            val request = PageRequest(
-                pageSize = 5,
-                cursor = cursor("abc"),
-            )
+        fun `should pass page request`() =
+            runTest {
+                val request =
+                    PageRequest(
+                        pageSize = 5,
+                        cursor = cursor("abc"),
+                    )
 
-            coEvery {
-                listStoresUseCase.execute(request)
-            } returns Page(
-                items = emptyList(),
-                cursor = null,
-            )
+                coEvery {
+                    listStoresUseCase.execute(request)
+                } returns
+                    Page(
+                        items = emptyList(),
+                        cursor = null,
+                    )
 
-            val mvcResult = mockMvc.get("/stores") {
-                param("page_size", "5")
-                param("page_token", "abc")
-            }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .get("/stores") {
+                            param("page_size", "5")
+                            param("page_token", "abc")
+                        }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk)
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isOk)
 
-            coVerify(exactly = 1) {
-                listStoresUseCase.execute(request)
+                coVerify(exactly = 1) {
+                    listStoresUseCase.execute(request)
+                }
             }
-        }
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(pageSize: Int) = runTest {
-            val mvcResult = mockMvc.get("/stores") {
-                param("page_size", pageSize.toString())
-            }.andReturn()
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isBadRequest)
-        }
+        fun `should fail when page size is not positive`(pageSize: Int) =
+            runTest {
+                val mvcResult =
+                    mockMvc
+                        .get("/stores") {
+                            param("page_size", pageSize.toString())
+                        }.andReturn()
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isBadRequest)
+            }
     }
 }

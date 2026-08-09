@@ -16,7 +16,16 @@ import me.gimmesomepeace.buywise.web.product.rename.RenameProductRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
@@ -27,11 +36,11 @@ internal open class ProductController(
     private val createProductUseCase: CreateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val renameProductUseCase: RenameProductUseCase,
-    private val productQuery: ProductQuery
+    private val productQuery: ProductQuery,
 ) {
     @GetMapping("/{id}")
     open suspend fun get(
-        @PathVariable id: ProductId
+        @PathVariable id: ProductId,
     ): ResponseEntity<ProductDetailsResponse> {
         val product =
             productQuery.find(id)
@@ -43,7 +52,7 @@ internal open class ProductController(
     open suspend fun list(
         @RequestParam(value = "page_size", defaultValue = "20") @Positive pageSize: Int,
         @RequestParam(value = "page_token", required = false) pageToken: String?,
-    ) : ResponseEntity<ListProductsResponse> {
+    ): ResponseEntity<ListProductsResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
         val result = listProductsUseCase.execute(request).toListProductsResponse()
@@ -52,8 +61,8 @@ internal open class ProductController(
 
     @PostMapping
     open suspend fun create(
-        @Valid @RequestBody request: CreateProductRequest
-    ) : ResponseEntity<ProductDetailsResponse> {
+        @Valid @RequestBody request: CreateProductRequest,
+    ): ResponseEntity<ProductDetailsResponse> {
         val product = createProductUseCase.execute(request.name)
         return ResponseEntity
             .created(URI("/products/${product.id.value}"))
@@ -63,10 +72,10 @@ internal open class ProductController(
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun delete(
-        @PathVariable id: ProductId
+        @PathVariable id: ProductId,
     ) {
         deleteProductUseCase.execute(
-            productId = id
+            productId = id,
         )
     }
 
@@ -74,7 +83,7 @@ internal open class ProductController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun rename(
         @PathVariable id: ProductId,
-        @RequestBody request: RenameProductRequest
+        @RequestBody request: RenameProductRequest,
     ) {
         renameProductUseCase.execute(
             productId = id,

@@ -23,7 +23,6 @@ import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(PurchasePlanController::class)
 class PurchasePlanControllerTest {
-
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -35,52 +34,60 @@ class PurchasePlanControllerTest {
 
     @Nested
     inner class PurchasePlan {
-
         @Test
-        fun `should create purchase plan`() = runTest {
-            val result = PurchasePlanningResult.Success(
-                plans = emptyList(),
-            )
-
-            coEvery {
-                createPurchasePlanUseCase.execute(2)
-            } returns result
-
-            val mvcResult = mockMvc.post("/purchase-plan") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    CreatePurchasePlanRequest(
-                        storeCountLimit = 2
+        fun `should create purchase plan`() =
+            runTest {
+                val result =
+                    PurchasePlanningResult.Success(
+                        plans = emptyList(),
                     )
-                )
-            }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                coEvery {
+                    createPurchasePlanUseCase.execute(2)
+                } returns result
 
-            coVerify(exactly = 1) {
-                createPurchasePlanUseCase.execute(2)
+                val mvcResult =
+                    mockMvc
+                        .post("/purchase-plan") {
+                            contentType = MediaType.APPLICATION_JSON
+                            content =
+                                mapper.writeValueAsString(
+                                    CreatePurchasePlanRequest(
+                                        storeCountLimit = 2,
+                                    ),
+                                )
+                        }.andReturn()
+
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isOk)
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                coVerify(exactly = 1) {
+                    createPurchasePlanUseCase.execute(2)
+                }
             }
-        }
 
         @ParameterizedTest
         @ValueSource(ints = [0, -1])
-        fun `should fail when store count limit is invalid`(limit: Int) = runTest {
-            mockMvc.post("/purchase-plan") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(
-                    CreatePurchasePlanRequest(
-                        storeCountLimit = limit
-                    )
-                )
-            }.andExpect {
-                status { isBadRequest() }
-            }
+        fun `should fail when store count limit is invalid`(limit: Int) =
+            runTest {
+                mockMvc
+                    .post("/purchase-plan") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                CreatePurchasePlanRequest(
+                                    storeCountLimit = limit,
+                                ),
+                            )
+                    }.andExpect {
+                        status { isBadRequest() }
+                    }
 
-            coVerify(exactly = 0) {
-                createPurchasePlanUseCase.execute(any())
+                coVerify(exactly = 0) {
+                    createPurchasePlanUseCase.execute(any())
+                }
             }
-        }
     }
 }

@@ -30,57 +30,62 @@ internal class StoreQueryImplTest : PostgresSqlContainer() {
     @Nested
     inner class Find {
         @Test
-        fun `should return store when exists`() = runTest {
-            val expected = persistence.persist(store())
+        fun `should return store when exists`() =
+            runTest {
+                val expected = persistence.persist(store())
 
-            val actual = query.find(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
+                val actual = query.find(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
+            }
 
         @Test
-        fun `should return null when not found`() = runTest {
-            val actual = query.find(storeId())
-            assertThat(actual).isNull()
-        }
+        fun `should return null when not found`() =
+            runTest {
+                val actual = query.find(storeId())
+                assertThat(actual).isNull()
+            }
     }
 
     @Nested
     inner class List {
         @Test
-        fun `should paginate stores using cursor`() = runTest {
-            val stores = (1..5).map { persistence.persist(store()) }
+        fun `should paginate stores using cursor`() =
+            runTest {
+                val stores = (1..5).map { persistence.persist(store()) }
 
-            val firstPage = query.list(PageRequest(2))
+                val firstPage = query.list(PageRequest(2))
 
-            assertThat(firstPage.items)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(stores[0], stores[1])
-            assertThat(firstPage.cursor).isNotNull()
+                assertThat(firstPage.items)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(stores[0], stores[1])
+                assertThat(firstPage.cursor).isNotNull()
 
-            val lastPage = query.list(PageRequest(3, firstPage.cursor))
-            assertThat(lastPage.items)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(stores[2], stores[3], stores[4])
-            assertThat(lastPage.cursor).isNull()
-        }
-
-        @Test
-        fun `should return empty page when no stores exist`() = runTest {
-            val firstPage = query.list(PageRequest(10))
-
-            assertThat(firstPage.items).isEmpty()
-            assertThat(firstPage.cursor).isNull()
-        }
+                val lastPage = query.list(PageRequest(3, firstPage.cursor))
+                assertThat(lastPage.items)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(stores[2], stores[3], stores[4])
+                assertThat(lastPage.cursor).isNull()
+            }
 
         @Test
-        fun `should return all stores when less than page size`() = runTest {
-            val stores = (1..3).map { persistence.persist(store()) }
+        fun `should return empty page when no stores exist`() =
+            runTest {
+                val firstPage = query.list(PageRequest(10))
 
-            val page = query.list(PageRequest(10))
-            assertThat(page.items.size).isEqualTo(stores.size)
-            assertThat(page.cursor).isNull()
-        }
+                assertThat(firstPage.items).isEmpty()
+                assertThat(firstPage.cursor).isNull()
+            }
+
+        @Test
+        fun `should return all stores when less than page size`() =
+            runTest {
+                val stores = (1..3).map { persistence.persist(store()) }
+
+                val page = query.list(PageRequest(10))
+                assertThat(page.items.size).isEqualTo(stores.size)
+                assertThat(page.cursor).isNull()
+            }
     }
 }

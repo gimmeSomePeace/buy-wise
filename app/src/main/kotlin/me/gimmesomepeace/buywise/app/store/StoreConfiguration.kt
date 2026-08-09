@@ -19,34 +19,24 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class StoreConfiguration {
     @Bean
-    fun storeRepository(
-        storeJpaRepository: StoreJpaRepository
-    ) : StoreRepository = StoreRepositoryImpl(storeJpaRepository)
+    fun storeRepository(storeJpaRepository: StoreJpaRepository): StoreRepository = StoreRepositoryImpl(storeJpaRepository)
 
     @Bean
-    fun storeQuery(
-        storeJpaRepository: StoreJpaRepository
-    ) : StoreQuery = StoreQueryImpl(storeJpaRepository)
+    fun storeQuery(storeJpaRepository: StoreJpaRepository): StoreQuery = StoreQueryImpl(storeJpaRepository)
 
     @Bean
     fun createStoreUseCase(
         @Qualifier(BeanNames.STORE_ID_GENERATOR)
         idGenerator: IdGenerator<StoreId>,
-        repository: StoreRepository
+        repository: StoreRepository,
     ) = CreateStoreUseCase(repository, idGenerator)
 
     @Bean
-    fun deleteStoreUseCase(
-        repository: StoreRepository
-    ) = DeleteStoreUseCase(repository)
+    fun deleteStoreUseCase(repository: StoreRepository) = DeleteStoreUseCase(repository)
 
     @Bean
-    fun listStoresUseCase(
-        query: StoreQuery,
-    ) = ListStoresUseCase(query)
+    fun listStoresUseCase(query: StoreQuery) = ListStoresUseCase(query)
 
     @Bean
-    fun renameStoreUseCase(
-        repository: StoreRepository
-    ) = RenameStoreUseCase(repository)
+    fun renameStoreUseCase(repository: StoreRepository) = RenameStoreUseCase(repository)
 }

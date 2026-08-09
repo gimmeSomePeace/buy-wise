@@ -4,5 +4,5 @@ import jakarta.validation.constraints.PositiveOrZero
 
 internal data class ChangeProductQuantityRequest(
     @field:PositiveOrZero
-    val newQuantity: Int
+    val newQuantity: Int,
 )

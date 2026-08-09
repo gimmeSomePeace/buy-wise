@@ -10,7 +10,6 @@ import java.util.UUID
 class BasketEntity(
     @Id
     var productId: UUID,
-
     @Column(nullable = false)
     @field:Positive
     var quantity: Int,

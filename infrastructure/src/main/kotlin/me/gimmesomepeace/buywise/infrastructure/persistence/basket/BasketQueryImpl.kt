@@ -4,7 +4,7 @@ import me.gimmesomepeace.buywise.application.basket.BasketDetails
 import me.gimmesomepeace.buywise.application.basket.BasketQuery
 
 class BasketQueryImpl(
-    private val repository: BasketJpaRepository
+    private val repository: BasketJpaRepository,
 ) : BasketQuery {
     override suspend fun find(): BasketDetails? {
         val items = repository.findAll()

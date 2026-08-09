@@ -7,7 +7,6 @@ import me.gimmesomepeace.buywise.web.offer.create.CreateOfferRequest
 import java.math.BigDecimal
 import java.util.UUID
 
-
 internal fun createOfferRequest(
     productId: UUID = productId().value,
     storeId: UUID = storeId().value,

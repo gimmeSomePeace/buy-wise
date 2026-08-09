@@ -34,137 +34,153 @@ internal class OfferRepositoryImplTest : PostgresSqlContainer() {
     @Nested
     inner class Get {
         @Test
-        fun `should return offer when exists`() = runTest {
-            val store = persistence.persist(store())
-            val product = persistence.persist(product())
+        fun `should return offer when exists`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product = persistence.persist(product())
 
-            val expected = persistence.persist(
-                offer(storeId = store.id, productId = product.id)
-            )
+                val expected =
+                    persistence.persist(
+                        offer(storeId = store.id, productId = product.id),
+                    )
 
-            val actual = repository.get(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
-
-        @Test
-        fun `should throw exception when not found`() = runTest {
-            val expectedId = offerId()
-            val ex = assertFailsWith<OfferException.NotFound> {
-                repository.get(expectedId)
+                val actual = repository.get(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
             }
 
-            assertThat(ex.offerId).isEqualTo(expectedId)
-        }
+        @Test
+        fun `should throw exception when not found`() =
+            runTest {
+                val expectedId = offerId()
+                val ex =
+                    assertFailsWith<OfferException.NotFound> {
+                        repository.get(expectedId)
+                    }
+
+                assertThat(ex.offerId).isEqualTo(expectedId)
+            }
     }
 
     @Nested
     inner class Add {
         @Test
-        fun `should save new offer`() = runTest {
-            val store = persistence.persist(store())
-            val product = persistence.persist(product())
+        fun `should save new offer`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product = persistence.persist(product())
 
-            val expected = offer(storeId = store.id, productId = product.id)
-            repository.add(expected)
+                val expected = offer(storeId = store.id, productId = product.id)
+                repository.add(expected)
 
-            val actual = repository.get(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
+                val actual = repository.get(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
+            }
 
         @Test
-        fun `should fail when id is busy`() = runTest {
-            val store = persistence.persist(store())
-            val product = persistence.persist(product())
+        fun `should fail when id is busy`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product = persistence.persist(product())
 
-            val offer = offer(storeId = store.id, productId = product.id)
-            repository.add(offer)
-
-            val ex = assertFailsWith<OfferException.AlreadyExists> {
+                val offer = offer(storeId = store.id, productId = product.id)
                 repository.add(offer)
+
+                val ex =
+                    assertFailsWith<OfferException.AlreadyExists> {
+                        repository.add(offer)
+                    }
+                assertThat(ex.offerId).isEqualTo(offer.id)
             }
-            assertThat(ex.offerId).isEqualTo(offer.id)
-        }
     }
 
     @Nested
     inner class Update {
         @Test
-        fun `should update offer`() = runTest {
-            val store = persistence.persist(store())
-            val product = persistence.persist(product())
+        fun `should update offer`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product = persistence.persist(product())
 
-            val expected = offer(
-                storeId = store.id,
-                productId = product.id,
-                unitPrice = 5.usd()
-            )
-            repository.add(expected)
+                val expected =
+                    offer(
+                        storeId = store.id,
+                        productId = product.id,
+                        unitPrice = 5.usd(),
+                    )
+                repository.add(expected)
 
-            expected.changePrice(10.usd())
-            repository.update(expected)
+                expected.changePrice(10.usd())
+                repository.update(expected)
 
-            val actual = repository.get(expected.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
+                val actual = repository.get(expected.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
+            }
 
         @Test
-        fun `should fail when not found`() = runTest {
-            val offer = offer()
-            val ex = assertFailsWith<OfferException.NotFound> {
-                repository.update(offer)
+        fun `should fail when not found`() =
+            runTest {
+                val offer = offer()
+                val ex =
+                    assertFailsWith<OfferException.NotFound> {
+                        repository.update(offer)
+                    }
+                assertThat(ex.offerId).isEqualTo(offer.id)
             }
-            assertThat(ex.offerId).isEqualTo(offer.id)
-        }
     }
 
     @Nested
     inner class Delete {
         @Test
-        fun `should delete offer`() = runTest {
-            val store = persistence.persist(store())
-            val product = persistence.persist(product())
-            val offer = persistence.persist(offer(storeId = store.id, productId = product.id))
+        fun `should delete offer`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product = persistence.persist(product())
+                val offer = persistence.persist(offer(storeId = store.id, productId = product.id))
 
-            repository.delete(offer.id)
-            val ex = assertFailsWith<OfferException.NotFound> {
-                repository.get(offer.id)
+                repository.delete(offer.id)
+                val ex =
+                    assertFailsWith<OfferException.NotFound> {
+                        repository.get(offer.id)
+                    }
+                assertThat(ex.offerId).isEqualTo(offer.id)
             }
-            assertThat(ex.offerId).isEqualTo(offer.id)
-        }
 
         @Test
-        fun `should fail when not found`() = runTest {
-            val offerId = offerId()
-            val ex = assertFailsWith<OfferException.NotFound> {
-                repository.delete(offerId)
+        fun `should fail when not found`() =
+            runTest {
+                val offerId = offerId()
+                val ex =
+                    assertFailsWith<OfferException.NotFound> {
+                        repository.delete(offerId)
+                    }
+                assertThat(ex.offerId).isEqualTo(offerId)
             }
-            assertThat(ex.offerId).isEqualTo(offerId)
-        }
     }
 
     @Nested
     inner class AvailableOffers {
         @Test
-        fun `should return all available offers`() = runTest {
-            val store = persistence.persist(store())
-            val product1 = persistence.persist(product())
-            val product2 = persistence.persist(product())
-            val product3 = persistence.persist(product())
+        fun `should return all available offers`() =
+            runTest {
+                val store = persistence.persist(store())
+                val product1 = persistence.persist(product())
+                val product2 = persistence.persist(product())
+                val product3 = persistence.persist(product())
 
-            with(repository) {
-                add(offer(storeId = store.id, productId = product1.id))
-                add(offer(storeId = store.id, productId = product2.id))
-                add(offer(storeId = store.id, productId = product3.id))
+                with(repository) {
+                    add(offer(storeId = store.id, productId = product1.id))
+                    add(offer(storeId = store.id, productId = product2.id))
+                    add(offer(storeId = store.id, productId = product3.id))
+                }
+
+                val result = repository.availableOffers()
+                assertThat(result.stores().size).isEqualTo(1)
             }
-
-            val result = repository.availableOffers()
-            assertThat(result.stores().size).isEqualTo(1)
-        }
     }
 }

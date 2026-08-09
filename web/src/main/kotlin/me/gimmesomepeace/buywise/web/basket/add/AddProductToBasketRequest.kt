@@ -5,7 +5,6 @@ import java.util.UUID
 
 internal data class AddProductToBasketRequest(
     val productId: UUID,
-
     @field:Positive
-    val quantity: Int
+    val quantity: Int,
 )

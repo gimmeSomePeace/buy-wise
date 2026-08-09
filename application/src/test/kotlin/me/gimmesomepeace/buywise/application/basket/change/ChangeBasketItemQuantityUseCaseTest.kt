@@ -11,27 +11,30 @@ import kotlin.test.Test
 
 class ChangeBasketItemQuantityUseCaseTest {
     @Test
-    fun `should change basket item quantity`() = runTest {
-        val productId = productId()
-        val repository = basketRepository(
-            basket {
-                add(productId, 3.qty())
-            }
-        )
+    fun `should change basket item quantity`() =
+        runTest {
+            val productId = productId()
+            val repository =
+                basketRepository(
+                    basket {
+                        add(productId, 3.qty())
+                    },
+                )
 
-        val useCase = ChangeBasketItemQuantityUseCase(repository)
+            val useCase = ChangeBasketItemQuantityUseCase(repository)
 
-        useCase.execute(productId, 5.qty())
-        assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(5.qty())
-    }
+            useCase.execute(productId, 5.qty())
+            assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(5.qty())
+        }
 
     @Test
-    fun `should not fail when changing not existing items's quantity`() = runTest {
-        val productId = productId()
-        val repository = basketRepository()
-        val useCase = ChangeBasketItemQuantityUseCase(repository)
+    fun `should not fail when changing not existing items's quantity`() =
+        runTest {
+            val productId = productId()
+            val repository = basketRepository()
+            val useCase = ChangeBasketItemQuantityUseCase(repository)
 
-        useCase.execute(productId, 5.qty())
-        assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(5.qty())
-    }
+            useCase.execute(productId, 5.qty())
+            assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(5.qty())
+        }
 }

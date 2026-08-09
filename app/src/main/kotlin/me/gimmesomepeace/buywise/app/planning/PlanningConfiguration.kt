@@ -14,6 +14,6 @@ class PlanningConfiguration {
         offerRepository: OfferRepository,
     ) = CreatePurchasePlanUseCase(
         basketRepository,
-        offerRepository
+        offerRepository,
     )
 }

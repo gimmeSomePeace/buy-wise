@@ -7,6 +7,5 @@ import java.util.UUID
 
 @Component
 class UuidV7Generator : IdGenerator<UUID> {
-    override fun generate(): UUID =
-        UuidCreator.getTimeOrderedEpoch()
+    override fun generate(): UUID = UuidCreator.getTimeOrderedEpoch()
 }

@@ -11,15 +11,16 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 internal class PurchasePlanController(
-    private val createPurchasePlanUseCase: CreatePurchasePlanUseCase
+    private val createPurchasePlanUseCase: CreatePurchasePlanUseCase,
 ) {
     @PostMapping("/purchase-plan")
     suspend fun purchasePlan(
-        @Valid @RequestBody request: CreatePurchasePlanRequest
-    ) : ResponseEntity<PurchasePlanningResult> {
-        val result = createPurchasePlanUseCase.execute(
-            request.storeCountLimit
-        )
+        @Valid @RequestBody request: CreatePurchasePlanRequest,
+    ): ResponseEntity<PurchasePlanningResult> {
+        val result =
+            createPurchasePlanUseCase.execute(
+                request.storeCountLimit,
+            )
         return ResponseEntity.ok(result)
     }
 }

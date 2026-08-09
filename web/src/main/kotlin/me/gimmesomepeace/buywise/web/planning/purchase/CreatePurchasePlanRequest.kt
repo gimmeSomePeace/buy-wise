@@ -4,5 +4,5 @@ import jakarta.validation.constraints.Positive
 
 internal data class CreatePurchasePlanRequest(
     @field:Positive
-    val storeCountLimit: Int?
+    val storeCountLimit: Int?,
 )

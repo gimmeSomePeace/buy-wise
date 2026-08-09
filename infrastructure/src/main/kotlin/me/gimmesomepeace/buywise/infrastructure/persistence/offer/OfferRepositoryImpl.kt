@@ -7,10 +7,11 @@ import me.gimmesomepeace.buywise.domain.offer.OfferRepository
 import me.gimmesomepeace.buywise.domain.planning.offer.AvailableOfferCatalog
 
 class OfferRepositoryImpl(
-    private val repository: OfferJpaRepository
+    private val repository: OfferJpaRepository,
 ) : OfferRepository {
     override suspend fun get(offerId: OfferId): Offer =
-        repository.findById(offerId.value)
+        repository
+            .findById(offerId.value)
             .orElseThrow { OfferException.NotFound(offerId) }
             .toDomain()
 
@@ -31,6 +32,6 @@ class OfferRepositoryImpl(
 
     override suspend fun availableOffers(): AvailableOfferCatalog =
         AvailableOfferCatalog(
-            offers = repository.findAll().map { it.toAvailableOffer() }
+            offers = repository.findAll().map { it.toAvailableOffer() },
         )
 }

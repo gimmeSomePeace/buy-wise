@@ -16,7 +16,7 @@ class CreateOfferUseCase(
         productId: ProductId,
         storeId: StoreId,
         unitPrice: Money,
-    ) : Offer {
+    ): Offer {
         val id = idGenerator.generate()
         val offer =
             Offer(

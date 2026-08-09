@@ -7,6 +7,6 @@ import java.util.UUID
 interface StoreJpaRepository : JpaRepository<StoreEntity, UUID> {
     fun findByIdGreaterThanOrderByIdAsc(
         id: UUID,
-        pageable: Pageable
+        pageable: Pageable,
     ): List<StoreEntity>
 }
