@@ -19,7 +19,7 @@ class CreatePurchasePlanUseCaseTest {
     fun `should create purchase plan`() =
         runTest {
             val productId = productId()
-            val offerId = offerId(productId = productId)
+            val offerId = offerId()
 
             val basket =
                 basket {
@@ -48,7 +48,7 @@ class CreatePurchasePlanUseCaseTest {
                     maxStores = StoreCountLimit.Unlimited,
                 )
 
-            val result = useCase.execute(StoreCountLimit.Unlimited)
+            val result = useCase.execute()
 
             assertThat(result)
                 .usingRecursiveComparison()

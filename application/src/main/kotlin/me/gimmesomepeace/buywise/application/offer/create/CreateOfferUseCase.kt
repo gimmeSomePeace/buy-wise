@@ -1,6 +1,6 @@
 package me.gimmesomepeace.buywise.application.offer.create
 
-import me.gimmesomepeace.buywise.application.IdGenerator
+import me.gimmesomepeace.buywise.application.shared.IdGenerator
 import me.gimmesomepeace.buywise.domain.offer.Offer
 import me.gimmesomepeace.buywise.domain.offer.OfferId
 import me.gimmesomepeace.buywise.domain.offer.OfferRepository
@@ -16,7 +16,7 @@ class CreateOfferUseCase(
         productId: ProductId,
         storeId: StoreId,
         unitPrice: Money,
-    ) {
+    ) : Offer {
         val id = idGenerator.generate()
         val offer =
             Offer(
@@ -27,5 +27,6 @@ class CreateOfferUseCase(
             )
 
         offerRepository.add(offer)
+        return offer
     }
 }

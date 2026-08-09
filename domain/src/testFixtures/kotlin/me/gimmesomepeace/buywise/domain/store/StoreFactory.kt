@@ -1,8 +1,8 @@
 package me.gimmesomepeace.buywise.domain.store
 
-import java.util.UUID
+import com.github.f4b6a3.uuid.UuidCreator
 
-fun storeId() = StoreId(UUID.randomUUID())
+fun storeId() = StoreId(UuidCreator.getTimeOrderedEpoch())
 
 fun store(
     id: StoreId = storeId(),

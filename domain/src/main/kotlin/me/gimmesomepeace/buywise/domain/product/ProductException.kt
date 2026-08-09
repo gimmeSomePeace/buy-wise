@@ -6,10 +6,10 @@ sealed class ProductException(
     message: String,
 ) : DomainException(message) {
     class NotFound(
-        productId: ProductId,
+        val productId: ProductId,
     ) : ProductException("Product with id $productId not found")
 
     class AlreadyExists(
-        productId: ProductId,
+        val productId: ProductId,
     ) : ProductException("Product with id $productId already exists")
 }

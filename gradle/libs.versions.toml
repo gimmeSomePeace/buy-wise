@@ -4,6 +4,12 @@ spotless = "8.6.0"
 junit = "5.13.4"
 assertj = "3.27.7"
 coroutines-test = "1.11.0"
+spring-boot = "4.1.0"
+spring-mockk = "5.0.1"
+mockk = "1.14.5"
+testcontainers = "1.21.3"
+uuid-creator = "6.1.1"
+springdoc-bom = "3.0.3"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit"}
@@ -11,7 +17,42 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test"}
+kotlin-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor" }
+jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin" }
+postgresql = { module = "org.postgresql:postgresql", version = "42.7.7" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+uuid-creator = { module = "com.github.f4b6a3:uuid-creator", version.ref = "uuid-creator" }
+
+spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
+spring-boot-starter-flyway-test = { module = "org.springframework.boot:spring-boot-starter-flyway-test" }
+flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
+
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-data-jpa-test = { module = "org.springframework.boot:spring-boot-starter-data-jpa-test" }
+
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+
+springdoc-openapi-bom = { module = "org.springdoc:springdoc-openapi-bom", version.ref = "springdoc-bom" }
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui" }
+
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+spring-mockk = { module = "com.ninja-squad:springmockk", version.ref = "spring-mockk" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

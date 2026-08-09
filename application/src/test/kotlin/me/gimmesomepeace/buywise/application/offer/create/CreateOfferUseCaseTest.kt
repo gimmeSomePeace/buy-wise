@@ -3,7 +3,9 @@ package me.gimmesomepeace.buywise.application.offer.create
 import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.application.offer.offerRepository
 import me.gimmesomepeace.buywise.domain.offer.offerId
+import me.gimmesomepeace.buywise.domain.product.productId
 import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.store.storeId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -18,8 +20,8 @@ class CreateOfferUseCaseTest {
                 idGenerator = { offerId },
                 offerRepository = repository,
             ).execute(
-                productId = offerId.productId,
-                storeId = offerId.storeId,
+                productId = productId(),
+                storeId = storeId(),
                 unitPrice = 1.usd(),
             )
 

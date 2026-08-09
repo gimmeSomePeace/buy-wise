@@ -13,7 +13,7 @@ value class Quantity(
     val value: Int,
 ) {
     init {
-        require(value >= 0) { "Quantity must be greater than or equal to 0" }
+        require(value >= 0) { "Quantity must be greater than or equal to 0 but got $value" }
     }
 
     /**

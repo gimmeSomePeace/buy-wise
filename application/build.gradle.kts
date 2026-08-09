@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    `java-test-fixtures`
     id("buywise.detekt")
 }
 
@@ -18,8 +19,11 @@ dependencies {
 
     // AssertJ
     testImplementation(libs.assertj)
-    testImplementation(testFixtures(project(":domain")))
+
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(kotlin("test"))
+    testImplementation(testFixtures(project(":domain")))
 }
 
 kotlin {

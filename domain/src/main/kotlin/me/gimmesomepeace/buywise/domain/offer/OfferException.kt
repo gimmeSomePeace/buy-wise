@@ -6,10 +6,10 @@ sealed class OfferException(
     message: String,
 ) : DomainException(message) {
     class NotFound(
-        offerId: OfferId,
+        val offerId: OfferId,
     ) : OfferException("Offer with id $offerId not found")
 
     class AlreadyExists(
-        offerId: OfferId,
+        val offerId: OfferId,
     ) : OfferException("Offer with id $offerId already exists")
 }

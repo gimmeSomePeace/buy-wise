@@ -15,7 +15,7 @@ class ChangePriceUseCaseTest {
             val offerId = offerId()
             val repository =
                 offerRepository(
-                    offer(offerId, 10.usd()),
+                    offer(offerId,  unitPrice = 10.usd()),
                 )
 
             ChangePriceUseCase(repository)

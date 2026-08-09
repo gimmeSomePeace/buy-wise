@@ -24,4 +24,7 @@ include(":app")
 include("domain")
 
 include("application")
-include("test-support")
+
+include("web")
+include("app")
+include("infrastructure")

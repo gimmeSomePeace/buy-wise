@@ -11,6 +11,8 @@ repositories {
 dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
+    testFixturesImplementation(libs.uuid.creator)
+
     testRuntimeOnly(libs.junit.platform.launcher)
 
     testImplementation(libs.assertj)
