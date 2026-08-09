@@ -8,7 +8,9 @@ class InMemoryBasketRepository : BasketRepository {
 
     override suspend fun find() = basket
 
-    override suspend fun save(basket: Basket) {
+    override suspend fun save(
+        basket: Basket,
+    ) {
         this.basket = basket
     }
 }

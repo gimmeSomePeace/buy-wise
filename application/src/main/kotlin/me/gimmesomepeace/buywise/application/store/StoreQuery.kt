@@ -6,7 +6,11 @@ import me.gimmesomepeace.buywise.domain.store.Store
 import me.gimmesomepeace.buywise.domain.store.StoreId
 
 interface StoreQuery {
-    suspend fun find(id: StoreId): Store?
+    suspend fun find(
+        id: StoreId,
+    ): Store?
 
-    suspend fun list(request: PageRequest): Page<Store>
+    suspend fun list(
+        request: PageRequest,
+    ): Page<Store>
 }

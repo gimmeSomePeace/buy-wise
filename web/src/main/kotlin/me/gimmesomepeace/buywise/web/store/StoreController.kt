@@ -50,8 +50,12 @@ internal open class StoreController(
 
     @GetMapping
     open suspend fun list(
-        @RequestParam(value = "page_size", defaultValue = "20") @Positive pageSize: Int,
-        @RequestParam(value = "page_token", required = false) pageToken: String?,
+        @RequestParam(
+            value = "page_size",
+            defaultValue = "20",
+        ) @Positive pageSize: Int,
+        @RequestParam(value = "page_token", required = false) pageToken:
+            String?,
     ): ResponseEntity<ListStoresResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)

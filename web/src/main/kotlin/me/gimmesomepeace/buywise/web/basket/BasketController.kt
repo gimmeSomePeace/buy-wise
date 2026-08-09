@@ -27,7 +27,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/basket")
 internal class BasketController(
     private val basketQuery: BasketQuery,
-    private val changeBasketItemQuantityUseCase: ChangeBasketItemQuantityUseCase,
+    private val changeBasketItemQuantityUseCase:
+        ChangeBasketItemQuantityUseCase,
     private val addProductToBasketUseCase: AddProductToBasketUseCase,
     private val clearBasketUseCase: ClearBasketUseCase,
     private val removeFromBasketUseCase: RemoveFromBasketUseCase,

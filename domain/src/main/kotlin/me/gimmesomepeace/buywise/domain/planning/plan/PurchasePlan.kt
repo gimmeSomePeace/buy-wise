@@ -21,7 +21,9 @@ data class PurchasePlan(
     val totalPrice: Money
 
     init {
-        require(storePlans.isNotEmpty()) { "store plans must have at least one store." }
+        require(
+            storePlans.isNotEmpty(),
+        ) { "store plans must have at least one store." }
 
         val currencies =
             storePlans
@@ -31,7 +33,9 @@ data class PurchasePlan(
         require(currencies.size == 1) {
             "Purchase plan must contain only one currency."
         }
-        require(storePlans.size == storePlans.map { it.storeId }.distinct().size) {
+        require(
+            storePlans.size == storePlans.map { it.storeId }.distinct().size,
+        ) {
             "Purchase plan must not have duplicate stores."
         }
 

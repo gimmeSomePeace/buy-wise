@@ -50,12 +50,20 @@ internal open class ProductController(
 
     @GetMapping
     open suspend fun list(
-        @RequestParam(value = "page_size", defaultValue = "20") @Positive pageSize: Int,
-        @RequestParam(value = "page_token", required = false) pageToken: String?,
+        @RequestParam(
+            value = "page_size",
+            defaultValue = "20",
+        ) @Positive pageSize: Int,
+        @RequestParam(value = "page_token", required = false) pageToken:
+            String?,
     ): ResponseEntity<ListProductsResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
-        val result = listProductsUseCase.execute(request).toListProductsResponse()
+        val result =
+            listProductsUseCase
+                .execute(
+                    request,
+                ).toListProductsResponse()
         return ResponseEntity.ok(result)
     }
 

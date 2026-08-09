@@ -15,20 +15,32 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class BasketConfiguration {
     @Bean
-    fun basketRepository(basketJpaRepository: BasketJpaRepository): BasketRepository = BasketRepositoryImpl(basketJpaRepository)
+    fun basketRepository(
+        basketJpaRepository: BasketJpaRepository,
+    ): BasketRepository = BasketRepositoryImpl(basketJpaRepository)
 
     @Bean
-    fun basketQuery(basketJpaRepository: BasketJpaRepository): BasketQuery = BasketQueryImpl(basketJpaRepository)
+    fun basketQuery(
+        basketJpaRepository: BasketJpaRepository,
+    ): BasketQuery = BasketQueryImpl(basketJpaRepository)
 
     @Bean
-    fun addProductToBasketUseCase(repository: BasketRepository) = AddProductToBasketUseCase(repository)
+    fun addProductToBasketUseCase(
+        repository: BasketRepository,
+    ) = AddProductToBasketUseCase(repository)
 
     @Bean
-    fun changeBasketItemQuantityUseCase(repository: BasketRepository) = ChangeBasketItemQuantityUseCase(repository)
+    fun changeBasketItemQuantityUseCase(
+        repository: BasketRepository,
+    ) = ChangeBasketItemQuantityUseCase(repository)
 
     @Bean
-    fun clearBasketUseCase(repository: BasketRepository) = ClearBasketUseCase(repository)
+    fun clearBasketUseCase(
+        repository: BasketRepository,
+    ) = ClearBasketUseCase(repository)
 
     @Bean
-    fun removeFromBasketUseCase(repository: BasketRepository) = RemoveFromBasketUseCase(repository)
+    fun removeFromBasketUseCase(
+        repository: BasketRepository,
+    ) = RemoveFromBasketUseCase(repository)
 }

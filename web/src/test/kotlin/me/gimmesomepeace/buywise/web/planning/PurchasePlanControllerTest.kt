@@ -61,7 +61,9 @@ class PurchasePlanControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    )
 
                 coVerify(exactly = 1) {
                     createPurchasePlanUseCase.execute(2)
@@ -70,24 +72,25 @@ class PurchasePlanControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [0, -1])
-        fun `should fail when store count limit is invalid`(limit: Int) =
-            runTest {
-                mockMvc
-                    .post("/purchase-plan") {
-                        contentType = MediaType.APPLICATION_JSON
-                        content =
-                            mapper.writeValueAsString(
-                                CreatePurchasePlanRequest(
-                                    storeCountLimit = limit,
-                                ),
-                            )
-                    }.andExpect {
-                        status { isBadRequest() }
-                    }
-
-                coVerify(exactly = 0) {
-                    createPurchasePlanUseCase.execute(any())
+        fun `should fail when store count limit is invalid`(
+            limit: Int,
+        ) = runTest {
+            mockMvc
+                .post("/purchase-plan") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                        mapper.writeValueAsString(
+                            CreatePurchasePlanRequest(
+                                storeCountLimit = limit,
+                            ),
+                        )
+                }.andExpect {
+                    status { isBadRequest() }
                 }
+
+            coVerify(exactly = 0) {
+                createPurchasePlanUseCase.execute(any())
             }
+        }
     }
 }

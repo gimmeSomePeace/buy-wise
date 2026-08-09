@@ -16,11 +16,17 @@ class IdGeneratorConfiguration {
     fun uuidV7Generator(): IdGenerator<UUID> = UuidV7Generator()
 
     @Bean(BeanNames.PRODUCT_ID_GENERATOR)
-    fun productIdGenerator(idGenerator: IdGenerator<UUID>) = IdGenerator { ProductId(idGenerator.generate()) }
+    fun productIdGenerator(
+        idGenerator: IdGenerator<UUID>,
+    ) = IdGenerator { ProductId(idGenerator.generate()) }
 
     @Bean(BeanNames.STORE_ID_GENERATOR)
-    fun storeIdGenerator(idGenerator: IdGenerator<UUID>) = IdGenerator { StoreId(idGenerator.generate()) }
+    fun storeIdGenerator(
+        idGenerator: IdGenerator<UUID>,
+    ) = IdGenerator { StoreId(idGenerator.generate()) }
 
     @Bean(BeanNames.OFFER_ID_GENERATOR)
-    fun offerIdGenerator(idGenerator: IdGenerator<UUID>) = IdGenerator { OfferId(idGenerator.generate()) }
+    fun offerIdGenerator(
+        idGenerator: IdGenerator<UUID>,
+    ) = IdGenerator { OfferId(idGenerator.generate()) }
 }

@@ -18,6 +18,8 @@ class AddProductToBasketUseCaseTest {
             val productId = productId()
             useCase.execute(productId, 3.qty())
 
-            assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(3.qty())
+            assertThat(
+                repository.getOrEmpty().quantityOf(productId),
+            ).isEqualTo(3.qty())
         }
 }

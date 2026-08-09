@@ -9,12 +9,16 @@ class InMemoryProductRepository : ProductRepository {
     private val data =
         mutableMapOf<ProductId, Product>()
 
-    override suspend fun get(productId: ProductId): Product =
+    override suspend fun get(
+        productId: ProductId,
+    ): Product =
         data[productId] ?: throw ProductException.NotFound(
             productId,
         )
 
-    override suspend fun add(product: Product) {
+    override suspend fun add(
+        product: Product,
+    ) {
         if (product.id in data) {
             throw ProductException.AlreadyExists(
                 product.id,
@@ -23,7 +27,9 @@ class InMemoryProductRepository : ProductRepository {
         data[product.id] = product
     }
 
-    override suspend fun update(product: Product) {
+    override suspend fun update(
+        product: Product,
+    ) {
         if (product.id !in data) {
             throw ProductException.NotFound(
                 product.id,
@@ -32,7 +38,9 @@ class InMemoryProductRepository : ProductRepository {
         data[product.id] = product
     }
 
-    override suspend fun delete(productId: ProductId) {
+    override suspend fun delete(
+        productId: ProductId,
+    ) {
         if (productId !in data) {
             throw ProductException.NotFound(
                 productId,

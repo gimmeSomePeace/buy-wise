@@ -9,24 +9,47 @@ import me.gimmesomepeace.buywise.domain.planning.offer.AvailableOfferCatalog
 class OfferRepositoryImpl(
     private val repository: OfferJpaRepository,
 ) : OfferRepository {
-    override suspend fun get(offerId: OfferId): Offer =
+    override suspend fun get(
+        offerId: OfferId,
+    ): Offer =
         repository
             .findById(offerId.value)
             .orElseThrow { OfferException.NotFound(offerId) }
             .toDomain()
 
-    override suspend fun add(offer: Offer) {
-        if (repository.existsById(offer.id.value)) throw OfferException.AlreadyExists(offer.id)
+    override suspend fun add(
+        offer: Offer,
+    ) {
+        if (repository.existsById(
+                offer.id.value,
+            )
+        ) {
+            throw OfferException.AlreadyExists(offer.id)
+        }
         repository.save(offer.toEntity())
     }
 
-    override suspend fun update(offer: Offer) {
-        if (!repository.existsById(offer.id.value)) throw OfferException.NotFound(offer.id)
+    override suspend fun update(
+        offer: Offer,
+    ) {
+        if (!repository.existsById(
+                offer.id.value,
+            )
+        ) {
+            throw OfferException.NotFound(offer.id)
+        }
         repository.save(offer.toEntity())
     }
 
-    override suspend fun delete(offerId: OfferId) {
-        if (!repository.existsById(offerId.value)) throw OfferException.NotFound(offerId)
+    override suspend fun delete(
+        offerId: OfferId,
+    ) {
+        if (!repository.existsById(
+                offerId.value,
+            )
+        ) {
+            throw OfferException.NotFound(offerId)
+        }
         repository.deleteById(offerId.value)
     }
 

@@ -14,6 +14,9 @@ style:
     singleLine: 'never'
   BracesOnWhenStatements:
     active: true
+  UtilityClassWithPublicConstructor:
+    ignoreAnnotated:
+      - 'Testcontainers'
   CascadingCallWrapping:
     active: true
   ClassOrdering:
@@ -80,6 +83,7 @@ naming:
     active: true
   FunctionNameMaxLength:
     active: true
+    maximumFunctionNameLength: 50
     ignoreAnnotated:
       - Test
   FunctionNameMinLength:

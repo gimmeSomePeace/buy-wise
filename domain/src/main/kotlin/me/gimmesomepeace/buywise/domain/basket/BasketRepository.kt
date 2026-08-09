@@ -11,5 +11,7 @@ interface BasketRepository {
      *
      * Повторный вызов заменяет ранее сохраненную корзину.
      */
-    suspend fun save(basket: Basket)
+    suspend fun save(
+        basket: Basket,
+    )
 }

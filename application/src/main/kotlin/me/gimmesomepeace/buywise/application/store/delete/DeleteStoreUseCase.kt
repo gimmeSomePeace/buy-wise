@@ -6,7 +6,9 @@ import me.gimmesomepeace.buywise.domain.store.StoreRepository
 class DeleteStoreUseCase(
     private val storeRepository: StoreRepository,
 ) {
-    suspend fun execute(storeId: StoreId) {
+    suspend fun execute(
+        storeId: StoreId,
+    ) {
         storeRepository.delete(storeId)
     }
 }

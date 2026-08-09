@@ -141,7 +141,10 @@ internal class OfferRepositoryImplTest : PostgresSqlContainer() {
             runTest {
                 val store = persistence.persist(store())
                 val product = persistence.persist(product())
-                val offer = persistence.persist(offer(storeId = store.id, productId = product.id))
+                val offer =
+                    persistence.persist(
+                        offer(storeId = store.id, productId = product.id),
+                    )
 
                 repository.delete(offer.id)
                 val ex =

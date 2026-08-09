@@ -65,7 +65,9 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
                     (1..5).map {
                         val store = persistence.persist(store())
                         val product = persistence.persist(product())
-                        persistence.persist(offer(storeId = store.id, productId = product.id))
+                        persistence.persist(
+                            offer(storeId = store.id, productId = product.id),
+                        )
                     }
 
                 val firstPage = query.list(PageRequest(2))
@@ -98,7 +100,9 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
                     (1..3).map {
                         val store = persistence.persist(store())
                         val product = persistence.persist(product())
-                        persistence.persist(offer(storeId = store.id, productId = product.id))
+                        persistence.persist(
+                            offer(storeId = store.id, productId = product.id),
+                        )
                     }
 
                 val page = query.list(PageRequest(10))

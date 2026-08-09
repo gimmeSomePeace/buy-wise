@@ -124,7 +124,9 @@ class OfferControllerTest {
                 .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.id").value(offerId.value.toString()))
-                .andExpect(header().string("Location", "/offers/${offerId.value}"))
+                .andExpect(
+                    header().string("Location", "/offers/${offerId.value}"),
+                )
 
             coVerify {
                 createOfferUseCase.execute(any(), any(), 5.usd())
@@ -133,7 +135,9 @@ class OfferControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-5, 0])
-        fun `should fail when unit price is not positive`(unitPrice: Int) {
+        fun `should fail when unit price is not positive`(
+            unitPrice: Int,
+        ) {
             mockMvc
                 .post("/offers") {
                     contentType = MediaType.APPLICATION_JSON
@@ -180,7 +184,9 @@ class OfferControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when unit price is not positive`(unitPrice: Int) {
+        fun `should fail when unit price is not positive`(
+            unitPrice: Int,
+        ) {
             mockMvc
                 .patch("/offers/${offerId().value}") {
                     contentType = MediaType.APPLICATION_JSON
@@ -230,7 +236,11 @@ class OfferControllerTest {
             val offerId = offerId()
             coEvery { deleteOfferUseCase.execute(any()) } just Runs
 
-            val mvcResult = mockMvc.delete("/offers/${offerId.value}").andReturn()
+            val mvcResult =
+                mockMvc
+                    .delete(
+                        "/offers/${offerId.value}",
+                    ).andReturn()
             mockMvc
                 .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNoContent)
@@ -243,9 +253,14 @@ class OfferControllerTest {
         @Test
         fun `should return 404 when offer does not exist`() {
             val offerId = offerId()
-            coEvery { deleteOfferUseCase.execute(offerId) } throws OfferException.NotFound(offerId)
+            coEvery { deleteOfferUseCase.execute(offerId) } throws
+                OfferException.NotFound(offerId)
 
-            val mvcResult = mockMvc.delete("/offers/${offerId.value}").andReturn()
+            val mvcResult =
+                mockMvc
+                    .delete(
+                        "/offers/${offerId.value}",
+                    ).andReturn()
             mockMvc
                 .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isNotFound)
@@ -278,8 +293,9 @@ class OfferControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.offers").isArray)
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(jsonPath("$.offers").isArray)
                     .andExpect(jsonPath("$.offers.length()").value(1))
                     .andExpect(jsonPath("$.nextPageToken").value("next-page"))
             }
@@ -319,17 +335,18 @@ class OfferControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(pageSize: Int) =
-            runTest {
-                val mvcResult =
-                    mockMvc
-                        .get("/offers") {
-                            param("page_size", pageSize.toString())
-                        }.andReturn()
-
+        fun `should fail when page size is not positive`(
+            pageSize: Int,
+        ) = runTest {
+            val mvcResult =
                 mockMvc
-                    .perform(asyncDispatch(mvcResult))
-                    .andExpect(status().isBadRequest)
-            }
+                    .get("/offers") {
+                        param("page_size", pageSize.toString())
+                    }.andReturn()
+
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
+                .andExpect(status().isBadRequest)
+        }
     }
 }

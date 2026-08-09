@@ -44,7 +44,8 @@ class BasketControllerTest {
     lateinit var basketQuery: BasketQuery
 
     @MockkBean(relaxed = true)
-    lateinit var changeBasketItemQuantityUseCase: ChangeBasketItemQuantityUseCase
+    lateinit var changeBasketItemQuantityUseCase:
+        ChangeBasketItemQuantityUseCase
 
     @MockkBean(relaxed = true)
     lateinit var addProductToBasketUseCase: AddProductToBasketUseCase
@@ -75,8 +76,9 @@ class BasketControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.items").isArray)
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(jsonPath("$.items").isArray)
                     .andExpect(jsonPath("$.items.length()").value(2))
             }
 
@@ -94,8 +96,9 @@ class BasketControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.items").isArray)
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(jsonPath("$.items").isArray)
                     .andExpect(jsonPath("$.items.length()").value(0))
             }
     }
@@ -113,7 +116,10 @@ class BasketControllerTest {
                             contentType = MediaType.APPLICATION_JSON
                             content =
                                 objectMapper.writeValueAsString(
-                                    AddProductToBasketRequest(productId.value, 5),
+                                    AddProductToBasketRequest(
+                                        productId.value,
+                                        5,
+                                    ),
                                 )
                         }.andReturn()
 
@@ -128,19 +134,23 @@ class BasketControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when quantity is not positive`(quantity: Int) =
-            runTest {
-                mockMvc
-                    .post("/basket/items") {
-                        contentType = MediaType.APPLICATION_JSON
-                        content =
-                            objectMapper.writeValueAsString(
-                                AddProductToBasketRequest(productId().value, quantity),
-                            )
-                    }.andExpect {
-                        status { isBadRequest() }
-                    }
-            }
+        fun `should fail when quantity is not positive`(
+            quantity: Int,
+        ) = runTest {
+            mockMvc
+                .post("/basket/items") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                        objectMapper.writeValueAsString(
+                            AddProductToBasketRequest(
+                                productId().value,
+                                quantity,
+                            ),
+                        )
+                }.andExpect {
+                    status { isBadRequest() }
+                }
+        }
     }
 
     @Nested
@@ -214,7 +224,11 @@ class BasketControllerTest {
                     removeFromBasketUseCase.execute(productId)
                 } throws BasketException.ProductNotInBasket(productId)
 
-                val mvcResult = mockMvc.delete("/basket/items/${productId.value}").andReturn()
+                val mvcResult =
+                    mockMvc
+                        .delete(
+                            "/basket/items/${productId.value}",
+                        ).andReturn()
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isNotFound)

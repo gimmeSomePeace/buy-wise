@@ -13,9 +13,13 @@ import java.util.UUID
 class ProductQueryImpl(
     private val repository: ProductJpaRepository,
 ) : ProductQuery {
-    override suspend fun find(id: ProductId): Product? = repository.findByIdOrNull(id.value)?.toDomain()
+    override suspend fun find(
+        id: ProductId,
+    ): Product? = repository.findByIdOrNull(id.value)?.toDomain()
 
-    override suspend fun list(request: PageRequest): Page<Product> {
+    override suspend fun list(
+        request: PageRequest,
+    ): Page<Product> {
         val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
 
         val entities =
@@ -33,7 +37,14 @@ class ProductQueryImpl(
 
         return Page(
             items = pageItems.map { it.toDomain() },
-            cursor = if (hasExtra) Cursor(pageItems.last().id.toString()) else null,
+            cursor =
+                if (hasExtra) {
+                    Cursor(
+                        pageItems.last().id.toString(),
+                    )
+                } else {
+                    null
+                },
         )
     }
 }

@@ -24,7 +24,9 @@ class ChangeBasketItemQuantityUseCaseTest {
             val useCase = ChangeBasketItemQuantityUseCase(repository)
 
             useCase.execute(productId, 5.qty())
-            assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(5.qty())
+            assertThat(
+                repository.getOrEmpty().quantityOf(productId),
+            ).isEqualTo(5.qty())
         }
 
     @Test
@@ -35,6 +37,8 @@ class ChangeBasketItemQuantityUseCaseTest {
             val useCase = ChangeBasketItemQuantityUseCase(repository)
 
             useCase.execute(productId, 5.qty())
-            assertThat(repository.getOrEmpty().quantityOf(productId)).isEqualTo(5.qty())
+            assertThat(
+                repository.getOrEmpty().quantityOf(productId),
+            ).isEqualTo(5.qty())
         }
 }

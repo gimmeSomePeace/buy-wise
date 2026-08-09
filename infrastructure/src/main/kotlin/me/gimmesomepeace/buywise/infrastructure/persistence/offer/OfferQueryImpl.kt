@@ -13,9 +13,13 @@ import java.util.UUID
 class OfferQueryImpl(
     private val repository: OfferJpaRepository,
 ) : OfferQuery {
-    override suspend fun find(id: OfferId): Offer? = repository.findByIdOrNull(id.value)?.toDomain()
+    override suspend fun find(
+        id: OfferId,
+    ): Offer? = repository.findByIdOrNull(id.value)?.toDomain()
 
-    override suspend fun list(request: PageRequest): Page<Offer> {
+    override suspend fun list(
+        request: PageRequest,
+    ): Page<Offer> {
         val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
 
         val entities =
@@ -33,7 +37,14 @@ class OfferQueryImpl(
 
         return Page(
             items = pageItems.map { it.toDomain() },
-            cursor = if (hasExtra) Cursor(pageItems.last().id.toString()) else null,
+            cursor =
+                if (hasExtra) {
+                    Cursor(
+                        pageItems.last().id.toString(),
+                    )
+                } else {
+                    null
+                },
         )
     }
 }

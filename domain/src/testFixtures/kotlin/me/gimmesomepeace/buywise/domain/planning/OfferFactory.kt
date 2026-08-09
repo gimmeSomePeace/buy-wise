@@ -19,7 +19,8 @@ fun available(
     unitPrice = price,
 )
 
-fun offerCatalog(vararg availableOffers: AvailableOffer) =
-    AvailableOfferCatalog(
-        availableOffers.toList(),
-    )
+fun offerCatalog(
+    vararg availableOffers: AvailableOffer,
+) = AvailableOfferCatalog(
+    availableOffers.toList(),
+)

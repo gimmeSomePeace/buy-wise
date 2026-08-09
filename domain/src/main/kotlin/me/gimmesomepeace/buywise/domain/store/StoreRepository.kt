@@ -6,7 +6,9 @@ interface StoreRepository {
      *
      * @throws StoreException.NotFound если магазин с указанным идентификатором не существует.
      */
-    suspend fun get(storeId: StoreId): Store
+    suspend fun get(
+        storeId: StoreId,
+    ): Store
 
     /**
      * Сохраняет переданный магазин, воспринимая его как новый.
@@ -14,19 +16,25 @@ interface StoreRepository {
      * @throws StoreException.AlreadyExists если магазин с таким
      * идентификатором уже существует.
      */
-    suspend fun add(store: Store)
+    suspend fun add(
+        store: Store,
+    )
 
     /**
      * Сохраняет изменения существующего магазина.
      *
      * @throws StoreException.NotFound если магазин не существует.
      */
-    suspend fun update(store: Store)
+    suspend fun update(
+        store: Store,
+    )
 
     /**
      * Удаляет магазин по указанному идентификатору.
      *
      * @throws StoreException.NotFound если магазин не существует.
      */
-    suspend fun delete(id: StoreId)
+    suspend fun delete(
+        id: StoreId,
+    )
 }

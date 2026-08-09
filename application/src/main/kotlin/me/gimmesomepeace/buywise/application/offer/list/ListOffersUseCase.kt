@@ -8,5 +8,7 @@ import me.gimmesomepeace.buywise.domain.offer.Offer
 class ListOffersUseCase(
     private val offerQuery: OfferQuery,
 ) {
-    suspend fun execute(request: PageRequest): Page<Offer> = offerQuery.list(request)
+    suspend fun execute(
+        request: PageRequest,
+    ): Page<Offer> = offerQuery.list(request)
 }

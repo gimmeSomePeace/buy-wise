@@ -35,7 +35,9 @@ class AvailableOfferCatalog(
      *
      * @param productId Идентификатор продукта, предложения на который будут возвращены.
      */
-    fun forProduct(productId: ProductId): List<AvailableOffer> = offers[productId]?.values?.toList() ?: emptyList()
+    fun forProduct(
+        productId: ProductId,
+    ): List<AvailableOffer> = offers[productId]?.values?.toList() ?: emptyList()
 
     /**
      * Возвращает предложение указанного магазина на указанный товар.

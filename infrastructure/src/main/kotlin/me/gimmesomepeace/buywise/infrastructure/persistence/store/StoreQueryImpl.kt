@@ -13,9 +13,13 @@ import java.util.UUID
 class StoreQueryImpl(
     private val repository: StoreJpaRepository,
 ) : StoreQuery {
-    override suspend fun find(id: StoreId) = repository.findByIdOrNull(id.value)?.toDomain()
+    override suspend fun find(
+        id: StoreId,
+    ) = repository.findByIdOrNull(id.value)?.toDomain()
 
-    override suspend fun list(request: PageRequest): Page<Store> {
+    override suspend fun list(
+        request: PageRequest,
+    ): Page<Store> {
         val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
 
         val entities =
@@ -33,7 +37,14 @@ class StoreQueryImpl(
 
         return Page(
             items = pageItems.map { it.toDomain() },
-            cursor = if (hasExtra) Cursor(pageItems.last().id.toString()) else null,
+            cursor =
+                if (hasExtra) {
+                    Cursor(
+                        pageItems.last().id.toString(),
+                    )
+                } else {
+                    null
+                },
         )
     }
 }

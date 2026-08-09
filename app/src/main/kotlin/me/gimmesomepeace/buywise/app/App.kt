@@ -13,8 +13,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 )
 @EntityScan("me.gimmesomepeace.buywise.infrastructure.persistence")
 @EnableJpaRepositories("me.gimmesomepeace.buywise.infrastructure.persistence")
-class BuyWiseApplication
+class App
 
-fun main(args: Array<String>) {
-    runApplication<BuyWiseApplication>(*args)
+fun main(
+    args: Array<String>,
+) {
+    runApplication<App>(*args)
 }

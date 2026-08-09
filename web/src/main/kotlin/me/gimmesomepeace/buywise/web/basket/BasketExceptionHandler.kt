@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice(assignableTypes = [BasketController::class])
 internal class BasketExceptionHandler {
     @ExceptionHandler(BasketException.ProductNotInBasket::class)
-    fun handleProductNotInBasket(ex: BasketException.ProductNotInBasket) =
-        ProblemDetail.forStatus(HttpStatus.NOT_FOUND).apply {
-            title = "Product not in basket"
-            detail = "Product with id ${ex.productId} not in basket"
-        }
+    fun handleProductNotInBasket(
+        ex: BasketException.ProductNotInBasket,
+    ) = ProblemDetail.forStatus(HttpStatus.NOT_FOUND).apply {
+        title = "Product not in basket"
+        detail = "Product with id ${ex.productId} not in basket"
+    }
 }

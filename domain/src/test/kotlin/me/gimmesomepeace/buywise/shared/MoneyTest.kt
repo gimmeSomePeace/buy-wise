@@ -83,8 +83,12 @@ class MoneyTest {
             val money1 = 1.rub()
             val money2 = 2.usd()
 
-            assertThatThrownBy { money1 <= money2 }.isInstanceOf(IllegalArgumentException::class.java)
-            assertThatThrownBy { money1 > money2 }.isInstanceOf(IllegalArgumentException::class.java)
+            assertThatThrownBy {
+                money1 <= money2
+            }.isInstanceOf(IllegalArgumentException::class.java)
+            assertThatThrownBy {
+                money1 > money2
+            }.isInstanceOf(IllegalArgumentException::class.java)
         }
     }
 }

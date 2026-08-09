@@ -64,7 +64,8 @@ class ProductControllerTest {
         @Test
         fun `should return existing product`() {
             val productId = productId()
-            coEvery { productQuery.find(productId) } returns product(id = productId)
+            coEvery { productQuery.find(productId) } returns
+                product(id = productId)
 
             val mvcResult =
                 mockMvc
@@ -81,7 +82,8 @@ class ProductControllerTest {
         @Test
         fun `should return 404 when product not found`() {
             val productId = productId()
-            coEvery { productQuery.find(productId) } throws ProductException.NotFound(productId)
+            coEvery { productQuery.find(productId) } throws
+                ProductException.NotFound(productId)
 
             val mvcResult =
                 mockMvc
@@ -99,20 +101,24 @@ class ProductControllerTest {
         @Test
         fun `should create new product`() {
             val productId = productId()
-            coEvery { createProductUseCase.execute(any()) } returns product(id = productId)
+            coEvery { createProductUseCase.execute(any()) } returns
+                product(id = productId)
 
             val mvcResult =
                 mockMvc
                     .post("/products") {
                         contentType = MediaType.APPLICATION_JSON
-                        content = mapper.writeValueAsString(createProductRequest())
+                        content =
+                            mapper.writeValueAsString(createProductRequest())
                     }.andReturn()
 
             mockMvc
                 .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.id").value(productId.value.toString()))
-                .andExpect(header().string("Location", "/products/${productId.value}"))
+                .andExpect(
+                    header().string("Location", "/products/${productId.value}"),
+                )
         }
 
         @Test
@@ -120,7 +126,10 @@ class ProductControllerTest {
             mockMvc
                 .post("/products") {
                     contentType = MediaType.APPLICATION_JSON
-                    content = mapper.writeValueAsString(createProductRequest(name = "   "))
+                    content =
+                        mapper.writeValueAsString(
+                            createProductRequest(name = "   "),
+                        )
                 }.andExpect {
                     status { isBadRequest() }
                 }
@@ -225,8 +234,9 @@ class ProductControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.products").isArray)
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(jsonPath("$.products").isArray)
                     .andExpect(jsonPath("$.products.length()").value(1))
                     .andExpect(jsonPath("$.nextPageToken").value("next-page"))
             }
@@ -266,17 +276,18 @@ class ProductControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(pageSize: Int) =
-            runTest {
-                val mvcResult =
-                    mockMvc
-                        .get("/products") {
-                            param("page_size", pageSize.toString())
-                        }.andReturn()
-
+        fun `should fail when page size is not positive`(
+            pageSize: Int,
+        ) = runTest {
+            val mvcResult =
                 mockMvc
-                    .perform(asyncDispatch(mvcResult))
-                    .andExpect(status().isBadRequest)
-            }
+                    .get("/products") {
+                        param("page_size", pageSize.toString())
+                    }.andReturn()
+
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
+                .andExpect(status().isBadRequest)
+        }
     }
 }

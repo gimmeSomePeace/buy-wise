@@ -9,7 +9,9 @@ class CreateProductUseCase(
     private val idGenerator: IdGenerator<ProductId>,
     private val productRepository: ProductRepository,
 ) {
-    suspend fun execute(productName: String): Product {
+    suspend fun execute(
+        productName: String,
+    ): Product {
         val id = idGenerator.generate()
         val product =
             Product(

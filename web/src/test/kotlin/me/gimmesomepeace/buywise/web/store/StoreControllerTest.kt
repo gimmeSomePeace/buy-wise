@@ -77,8 +77,11 @@ class StoreControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.id").value(store.id.value.toString()))
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(
+                        jsonPath("$.id").value(store.id.value.toString()),
+                    )
             }
 
         @Test
@@ -125,10 +128,13 @@ class StoreControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isCreated)
-                    .andExpect(header().string("Location", "/stores/${store.id}"))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.id").value(store.id.value.toString()))
-                    .andExpect(jsonPath("$.name").value(store.name))
+                    .andExpect(
+                        header().string("Location", "/stores/${store.id}"),
+                    ).andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(
+                        jsonPath("$.id").value(store.id.value.toString()),
+                    ).andExpect(jsonPath("$.name").value(store.name))
 
                 coVerify(exactly = 1) {
                     createStoreUseCase.execute(store.name)
@@ -137,19 +143,20 @@ class StoreControllerTest {
 
         @ParameterizedTest
         @ValueSource(strings = ["", "   "])
-        fun `should fail when name is invalid`(name: String) =
-            runTest {
-                mockMvc
-                    .post("/stores") {
-                        contentType = MediaType.APPLICATION_JSON
-                        content =
-                            mapper.writeValueAsString(
-                                createStoreRequest(name),
-                            )
-                    }.andExpect {
-                        status { isBadRequest() }
-                    }
-            }
+        fun `should fail when name is invalid`(
+            name: String,
+        ) = runTest {
+            mockMvc
+                .post("/stores") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content =
+                        mapper.writeValueAsString(
+                            createStoreRequest(name),
+                        )
+                }.andExpect {
+                    status { isBadRequest() }
+                }
+        }
     }
 
     @Nested
@@ -276,8 +283,9 @@ class StoreControllerTest {
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
                     .andExpect(status().isOk)
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.stores").isArray)
+                    .andExpect(
+                        content().contentType(MediaType.APPLICATION_JSON),
+                    ).andExpect(jsonPath("$.stores").isArray)
                     .andExpect(jsonPath("$.stores.length()").value(1))
                     .andExpect(jsonPath("$.nextPageToken").value("next-page"))
             }
@@ -317,16 +325,17 @@ class StoreControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(pageSize: Int) =
-            runTest {
-                val mvcResult =
-                    mockMvc
-                        .get("/stores") {
-                            param("page_size", pageSize.toString())
-                        }.andReturn()
+        fun `should fail when page size is not positive`(
+            pageSize: Int,
+        ) = runTest {
+            val mvcResult =
                 mockMvc
-                    .perform(asyncDispatch(mvcResult))
-                    .andExpect(status().isBadRequest)
-            }
+                    .get("/stores") {
+                        param("page_size", pageSize.toString())
+                    }.andReturn()
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
+                .andExpect(status().isBadRequest)
+        }
     }
 }

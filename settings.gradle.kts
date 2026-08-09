@@ -21,10 +21,9 @@ plugins {
 }
 
 include(":app")
-include("domain")
 
-include("application")
+include(":domain")
+include(":application")
 
-include("web")
-include("app")
-include("infrastructure")
+include(":web")
+include(":infrastructure")

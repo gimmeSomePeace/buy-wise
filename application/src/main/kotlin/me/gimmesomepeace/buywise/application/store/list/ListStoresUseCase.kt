@@ -6,5 +6,7 @@ import me.gimmesomepeace.buywise.application.store.StoreQuery
 class ListStoresUseCase(
     private val storeQuery: StoreQuery,
 ) {
-    suspend fun execute(request: PageRequest) = storeQuery.list(request)
+    suspend fun execute(
+        request: PageRequest,
+    ) = storeQuery.list(request)
 }
