@@ -35,7 +35,9 @@ class Basket {
      * @param productId Идентификатор товара.
      * @return Количество товара в корзине или [Quantity.ZERO], если продукт отсутствует.
      */
-    fun quantityOf(productId: ProductId): Quantity = items[productId] ?: Quantity.ZERO
+    fun quantityOf(
+        productId: ProductId,
+    ): Quantity = items[productId] ?: Quantity.ZERO
 
     /**
      * Уменьшает количество товара в корзине на указанную величину.
@@ -52,7 +54,9 @@ class Basket {
         productId: ProductId,
         quantity: Quantity,
     ) {
-        require(quantity.isPositive()) { "Quantity to decrease must be positive" }
+        require(
+            quantity.isPositive(),
+        ) { "Quantity to decrease must be positive" }
 
         val currentQuantity =
             items[productId]
@@ -68,7 +72,10 @@ class Basket {
     /**
      * Возвращает все позиции корзины.
      */
-    fun items(): List<BasketItem> = items.map { (productId, quantity) -> BasketItem(productId, quantity) }
+    fun items(): List<BasketItem> =
+        items.map { (productId, quantity) ->
+            BasketItem(productId, quantity)
+        }
 
     /**
      * Удаляет указанный продукт из корзины.
@@ -76,8 +83,14 @@ class Basket {
      * @param productId Идентификатор продукта, который необходимо удалить из корзины.
      * @throws BasketException.ProductNotInBasket если продукт отсутствует в корзине.
      */
-    fun remove(productId: ProductId) {
-        if (productId !in items) throw BasketException.ProductNotInBasket(productId)
+    fun remove(
+        productId: ProductId,
+    ) {
+        if (productId !in
+            items
+        ) {
+            throw BasketException.ProductNotInBasket(productId)
+        }
         items.remove(productId)
     }
 

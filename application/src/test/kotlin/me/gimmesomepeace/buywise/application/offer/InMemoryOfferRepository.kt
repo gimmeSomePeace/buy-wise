@@ -11,11 +11,15 @@ class InMemoryOfferRepository : OfferRepository {
     private val data =
         mutableMapOf<OfferId, Offer>()
 
-    override suspend fun get(offerId: OfferId): Offer =
+    override suspend fun get(
+        offerId: OfferId,
+    ): Offer =
         data[offerId]
             ?: throw OfferException.NotFound(offerId)
 
-    override suspend fun add(offer: Offer) {
+    override suspend fun add(
+        offer: Offer,
+    ) {
         if (offer.id in data) {
             throw OfferException.AlreadyExists(
                 offer.id,
@@ -24,7 +28,9 @@ class InMemoryOfferRepository : OfferRepository {
         data[offer.id] = offer
     }
 
-    override suspend fun update(offer: Offer) {
+    override suspend fun update(
+        offer: Offer,
+    ) {
         if (offer.id !in data) {
             throw OfferException.NotFound(
                 offer.id,
@@ -33,7 +39,9 @@ class InMemoryOfferRepository : OfferRepository {
         data[offer.id] = offer
     }
 
-    override suspend fun delete(offerId: OfferId) {
+    override suspend fun delete(
+        offerId: OfferId,
+    ) {
         if (offerId !in data) {
             throw OfferException.NotFound(
                 offerId,

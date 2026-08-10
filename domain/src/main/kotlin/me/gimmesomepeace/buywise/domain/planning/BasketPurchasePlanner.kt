@@ -16,7 +16,9 @@ internal fun <T> combinations(
     sequence {
         val current = ArrayList<T>(maxSize)
 
-        suspend fun SequenceScope<List<T>>.dfs(start: Int) {
+        suspend fun SequenceScope<List<T>>.dfs(
+            start: Int,
+        ) {
             if (current.size == maxSize) {
                 yield(current.toList())
                 return
@@ -61,8 +63,16 @@ object BasketPurchasePlanner {
         val storeIds = offers.stores()
         val maxSize =
             when (maxStores) {
-                StoreCountLimit.Unlimited -> storeIds.size
-                is StoreCountLimit.Limited -> min(storeIds.size, maxStores.value)
+                StoreCountLimit.Unlimited -> {
+                    storeIds.size
+                }
+
+                is StoreCountLimit.Limited -> {
+                    min(
+                        storeIds.size,
+                        maxStores.value,
+                    )
+                }
             }
 
         val plans =

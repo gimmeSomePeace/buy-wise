@@ -16,7 +16,8 @@ gradlePlugin {
     plugins {
         register("DetektConventionPlugin") {
             id = detektPluginId
-            implementationClass = "me.gimmesomepeace.buildlogic.DetektConventionPlugin"
+            implementationClass =
+                "me.gimmesomepeace.buildlogic.DetektConventionPlugin"
         }
     }
 }

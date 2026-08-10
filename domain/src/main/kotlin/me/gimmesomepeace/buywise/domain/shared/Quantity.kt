@@ -13,7 +13,9 @@ value class Quantity(
     val value: Int,
 ) {
     init {
-        require(value >= 0) { "Quantity must be greater than or equal to 0" }
+        require(value >= 0) {
+            "Quantity must be greater than or equal to 0 but got $value"
+        }
     }
 
     /**
@@ -29,14 +31,18 @@ value class Quantity(
     /**
      * Возвращает количество, равное сумме текущего и переданного количества.
      */
-    operator fun plus(quantity: Quantity): Quantity = Quantity(value + quantity.value)
+    operator fun plus(
+        quantity: Quantity,
+    ): Quantity = Quantity(value + quantity.value)
 
     /**
      * Возвращает разницу двух количеств.
      *
      * @throws IllegalArgumentException если результат вычитания будет отрицательным.
      */
-    operator fun minus(quantity: Quantity): Quantity {
+    operator fun minus(
+        quantity: Quantity,
+    ): Quantity {
         val newValue = value - quantity.value
         require(newValue >= 0) {
             "Cannot subtract ${quantity.value} from $value: got negative quantity"
@@ -49,7 +55,9 @@ value class Quantity(
      *
      * @throws IllegalArgumentException если переданный коэффициент отрицательный.
      */
-    operator fun times(t: Int): Quantity {
+    operator fun times(
+        t: Int,
+    ): Quantity {
         require(t >= 0) {
             "Multiplier must be greater than or equal to 0"
         }
@@ -59,7 +67,9 @@ value class Quantity(
     /**
      * Сравнивает 2 количества.
      */
-    operator fun compareTo(other: Quantity): Int = value.compareTo(other.value)
+    operator fun compareTo(
+        other: Quantity,
+    ): Int = value.compareTo(other.value)
 
     companion object {
         /**

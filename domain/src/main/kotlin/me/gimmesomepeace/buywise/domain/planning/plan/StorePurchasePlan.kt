@@ -24,7 +24,9 @@ data class StorePurchasePlan(
     val totalPrice: Money
 
     init {
-        require(purchases.isNotEmpty()) { "Store purchase items must not be empty." }
+        require(
+            purchases.isNotEmpty(),
+        ) { "Store purchase items must not be empty." }
 
         val currencies = purchases.map { it.unitPrice.currency }.distinct()
 

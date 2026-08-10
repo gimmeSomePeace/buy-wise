@@ -21,5 +21,8 @@ jobs:
       - name: Настройка Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Проверка Docker
+        run: docker info
+
       - name: Сборка
-        run: ./gradlew build
+        run: ./gradlew build --console=plain --info --stacktrace

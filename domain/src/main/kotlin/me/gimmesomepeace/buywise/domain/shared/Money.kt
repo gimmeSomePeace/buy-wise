@@ -27,7 +27,9 @@ data class Money(
      * @param money Денежная сумма, которую нужно прибавить к текущей.
      * @throws IllegalArgumentException если денежные суммы указаны в разных валютах.
      */
-    operator fun plus(money: Money): Money {
+    operator fun plus(
+        money: Money,
+    ): Money {
         requireSameCurrency(money)
         return Money(value + money.value, currency)
     }
@@ -38,7 +40,9 @@ data class Money(
      * @param money Денежная сумма, которую нужно вычесть из текущей.
      * @throws IllegalArgumentException если полученная разница отрицательная.
      */
-    operator fun minus(money: Money): Money {
+    operator fun minus(
+        money: Money,
+    ): Money {
         requireSameCurrency(money)
 
         val newValue = value - money.value
@@ -54,7 +58,9 @@ data class Money(
      * @param quantity Количество единиц товара.
      * @return Стоимость указанного количества товара.
      */
-    operator fun times(quantity: Quantity) = Money(value * quantity.value.toBigDecimal(), currency)
+    operator fun times(
+        quantity: Quantity,
+    ) = Money(value * quantity.value.toBigDecimal(), currency)
 
     /**
      * Сравнивает две денежные суммы.
@@ -62,12 +68,16 @@ data class Money(
      * @param other Денежная сумма для сравнения.
      * @throws IllegalArgumentException если суммы выражены в разных валютах.
      */
-    override fun compareTo(other: Money): Int {
+    override fun compareTo(
+        other: Money,
+    ): Int {
         requireSameCurrency(other)
         return value.compareTo(other.value)
     }
 
-    private fun requireSameCurrency(other: Money) {
+    private fun requireSameCurrency(
+        other: Money,
+    ) {
         require(currency == other.currency) {
             "Currency mismatch: $currency vs ${other.currency}"
         }
@@ -79,6 +89,8 @@ data class Money(
          *
          * @param currency Денежная валюта, в которой необходимо выразить денежную сумму, равную нулю.
          */
-        fun zero(currency: Currency): Money = Money(BigDecimal.ZERO, currency)
+        fun zero(
+            currency: Currency,
+        ): Money = Money(BigDecimal.ZERO, currency)
     }
 }

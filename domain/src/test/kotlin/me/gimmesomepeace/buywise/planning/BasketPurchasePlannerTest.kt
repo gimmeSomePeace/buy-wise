@@ -192,7 +192,9 @@ class BasketPurchasePlannerTest {
                 maxStores = StoreCountLimit.Unlimited,
             )
 
-        assertThat(result).isInstanceOf(PurchasePlanningResult.Impossible::class.java)
+        assertThat(
+            result,
+        ).isInstanceOf(PurchasePlanningResult.Impossible::class.java)
     }
 
     @Test
@@ -306,7 +308,9 @@ class BasketPurchasePlannerTest {
             )
 
         assertThat(result)
-            .isInstanceOfSatisfying(PurchasePlanningResult.Success::class.java) { success ->
+            .isInstanceOfSatisfying(
+                PurchasePlanningResult.Success::class.java,
+            ) { success ->
                 assertThat(success.plans.map { it.totalPrice }).containsExactly(
                     1.usd(),
                     1.usd(),
