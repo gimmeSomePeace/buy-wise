@@ -1,4 +1,4 @@
-package me.gimmesomepeace.buywise.offer
+package me.gimmesomepeace.buywise.domain.offer
 
 import me.gimmesomepeace.buywise.domain.planning.available
 import me.gimmesomepeace.buywise.domain.planning.offerCatalog

@@ -1,10 +1,6 @@
-package me.gimmesomepeace.buywise.shared
+package me.gimmesomepeace.buywise.domain.shared
 
-import me.gimmesomepeace.buywise.domain.shared.Quantity
-import me.gimmesomepeace.buywise.domain.shared.qty
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatCode
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 

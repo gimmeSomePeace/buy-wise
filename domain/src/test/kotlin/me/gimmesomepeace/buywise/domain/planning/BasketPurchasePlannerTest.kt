@@ -1,13 +1,7 @@
-package me.gimmesomepeace.buywise.planning
+package me.gimmesomepeace.buywise.domain.planning
 
 import me.gimmesomepeace.buywise.domain.basket.Basket
 import me.gimmesomepeace.buywise.domain.basket.basket
-import me.gimmesomepeace.buywise.domain.planning.BasketPurchasePlanner
-import me.gimmesomepeace.buywise.domain.planning.PurchasePlanningResult
-import me.gimmesomepeace.buywise.domain.planning.StoreCountLimit
-import me.gimmesomepeace.buywise.domain.planning.available
-import me.gimmesomepeace.buywise.domain.planning.offerCatalog
-import me.gimmesomepeace.buywise.domain.planning.purchase
 import me.gimmesomepeace.buywise.domain.product.productId
 import me.gimmesomepeace.buywise.domain.shared.Quantity
 import me.gimmesomepeace.buywise.domain.shared.qty

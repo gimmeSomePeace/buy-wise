@@ -1,9 +1,5 @@
-package me.gimmesomepeace.buywise.basket
+package me.gimmesomepeace.buywise.domain.basket
 
-import me.gimmesomepeace.buywise.domain.basket.Basket
-import me.gimmesomepeace.buywise.domain.basket.BasketException
-import me.gimmesomepeace.buywise.domain.basket.BasketItem
-import me.gimmesomepeace.buywise.domain.basket.basket
 import me.gimmesomepeace.buywise.domain.product.productId
 import me.gimmesomepeace.buywise.domain.shared.Quantity
 import me.gimmesomepeace.buywise.domain.shared.qty

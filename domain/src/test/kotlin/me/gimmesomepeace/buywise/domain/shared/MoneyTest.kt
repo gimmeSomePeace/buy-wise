@@ -1,8 +1,5 @@
-package me.gimmesomepeace.buywise.shared
+package me.gimmesomepeace.buywise.domain.shared
 
-import me.gimmesomepeace.buywise.domain.shared.qty
-import me.gimmesomepeace.buywise.domain.shared.rub
-import me.gimmesomepeace.buywise.domain.shared.usd
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested

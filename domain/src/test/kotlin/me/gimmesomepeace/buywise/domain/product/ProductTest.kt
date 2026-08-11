@@ -1,10 +1,6 @@
-package me.gimmesomepeace.buywise.product
+package me.gimmesomepeace.buywise.domain.product
 
-import me.gimmesomepeace.buywise.domain.product.product
-import me.gimmesomepeace.buywise.domain.product.productId
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatCode
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class ProductTest {
