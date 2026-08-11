@@ -1,8 +1,5 @@
 package me.gimmesomepeace.buywise.domain.user
 
-import me.gimmesomepeace.buywise.domain.offer.Offer
-import me.gimmesomepeace.buywise.domain.offer.OfferId
-
 interface UserRepository {
     /**
      * Возвращает пользователя по его идентификатору.
@@ -18,18 +15,22 @@ interface UserRepository {
      *
      * @throws UserException.AlreadyExists если пользователь с таким
      * идентификатором уже существует.
+     * @throws UserException.LoginBusy если пользователь с таким
+     * логином уже существует
      */
     suspend fun add(
-        offer: Offer,
+        user: User,
     )
 
     /**
      * Сохраняет изменения существующего пользователя.
      *
      * @throws UserException.NotFound если пользователя не существует.
+     * @throws UserException.LoginBusy если пользователь с новым
+     * логином уже существует
      */
     suspend fun update(
-        offer: Offer,
+        user: User,
     )
 
     /**
@@ -38,6 +39,6 @@ interface UserRepository {
      * @throws UserException.NotFound если пользователя не существует.
      */
     suspend fun delete(
-        offerId: OfferId,
+        userId: UserId,
     )
 }

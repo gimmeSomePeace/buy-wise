@@ -15,7 +15,7 @@ import me.gimmesomepeace.buywise.domain.shared.password.PasswordHash
  */
 class User(
     val id: UserId,
-    val passwordHash: PasswordHash,
     val login: Login,
+    val passwordHash: PasswordHash,
     val role: UserRole,
 )

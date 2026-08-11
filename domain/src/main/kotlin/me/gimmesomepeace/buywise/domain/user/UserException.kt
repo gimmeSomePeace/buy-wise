@@ -12,4 +12,8 @@ sealed class UserException(
     class AlreadyExists(
         val userId: UserId,
     ) : UserException("User with id $userId already exists")
+
+    class LoginBusy(
+        val login: Login,
+    ) : UserException("Login $login is already busy")
 }

@@ -24,6 +24,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(kotlin("test"))
     testImplementation(testFixtures(project(":domain")))
+
+    testFixturesImplementation(testFixtures(project(":domain")))
 }
 
 kotlin {
