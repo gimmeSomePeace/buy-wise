@@ -15,4 +15,3 @@ fun user(
     passwordHash: PasswordHash = PasswordHash("password-hash"),
     role: UserRole = UserRole.USER
 ) = User(id, login, passwordHash, role)
-

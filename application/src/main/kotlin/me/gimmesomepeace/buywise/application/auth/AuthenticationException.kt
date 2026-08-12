@@ -1,4 +1,4 @@
-package me.gimmesomepeace.buywise.application.user.auth
+package me.gimmesomepeace.buywise.application.auth
 
 sealed class AuthenticationException(
     message: String,

@@ -1,4 +1,4 @@
-package me.gimmesomepeace.buywise.application.user.auth
+package me.gimmesomepeace.buywise.application.auth
 
 import io.mockk.coEvery
 import io.mockk.every
@@ -16,13 +16,16 @@ class AuthenticateUserUseCaseTest {
     private val query = mockk<UserQuery>()
     private val passwordHasher = mockk<PasswordHasher>()
 
-    private val useCase = AuthenticateUserUseCase(
-        query = query,
-        passwordHasher = passwordHasher
-    )
 
     @Test
     fun `should authenticate user`() = runTest {
+        val accessToken = accessToken()
+        val useCase = AuthenticateUserUseCase(
+            query = query,
+            passwordHasher = passwordHasher,
+            accessTokenGenerator = { _, _ -> accessToken }
+        )
+
         val password = "password"
         val userDetails = userDetails()
 
@@ -31,16 +34,17 @@ class AuthenticateUserUseCaseTest {
 
         val result = useCase.execute(userDetails.login, password)
 
-        assertThat(result).isEqualTo(
-            AuthenticationResult(
-                userId = userDetails.id,
-                role = userDetails.role,
-            )
-        )
+        assertThat(result).isEqualTo(accessToken)
     }
 
     @Test
     fun `should fail when user not found`() = runTest {
+        val useCase = AuthenticateUserUseCase(
+            query = query,
+            passwordHasher = passwordHasher,
+            accessTokenGenerator = { _, _ -> accessToken() }
+        )
+
         coEvery { query.findByLogin(any()) } returns null
 
         assertFailsWith<AuthenticationException.InvalidCredentials> {
@@ -50,6 +54,12 @@ class AuthenticateUserUseCaseTest {
 
     @Test
     fun `should fail when password is incorrect`() = runTest {
+        val useCase = AuthenticateUserUseCase(
+            query = query,
+            passwordHasher = passwordHasher,
+            accessTokenGenerator = { _, _ -> accessToken() }
+        )
+
         val userDetails = userDetails()
         coEvery { query.findByLogin(any()) } returns userDetails
         coEvery { passwordHasher.matches(any(), any()) } returns false
