@@ -1,11 +1,28 @@
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    login VARCHAR(64) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL
+);
+
 CREATE TABLE products (
     id UUID PRIMARY KEY,
-    name TEXT NOT NULL
+    owner_id UUID NOT NULL,
+    name TEXT NOT NULL,
+
+    CONSTRAINT fk_product_user
+        FOREIGN KEY (owner_id)
+            REFERENCES users(id)
 );
 
 CREATE TABLE stores (
     id UUID PRIMARY KEY,
-    name TEXT NOT NULL
+    owner_id UUID NOT NULL,
+    name TEXT NOT NULL,
+
+    CONSTRAINT fk_store_user
+        FOREIGN KEY (owner_id)
+            REFERENCES users(id)
 );
 
 CREATE TABLE offers (
