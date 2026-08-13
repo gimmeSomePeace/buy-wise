@@ -15,6 +15,7 @@ import java.util.UUID
 class OfferEntity(
     @Id
     var id: UUID,
+
     @Column(nullable = false)
     var productId: UUID,
     @Column(nullable = false)

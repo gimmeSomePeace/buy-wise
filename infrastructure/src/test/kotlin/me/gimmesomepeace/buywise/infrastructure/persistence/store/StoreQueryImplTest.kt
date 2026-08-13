@@ -4,6 +4,8 @@ import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.application.shared.PageRequest
 import me.gimmesomepeace.buywise.domain.store.store
 import me.gimmesomepeace.buywise.domain.store.storeId
+import me.gimmesomepeace.buywise.domain.user.user
+import me.gimmesomepeace.buywise.domain.user.userId
 import me.gimmesomepeace.buywise.infrastructure.PostgresSqlContainer
 import me.gimmesomepeace.buywise.infrastructure.persistence.TestPersistence
 import org.assertj.core.api.Assertions.assertThat
@@ -53,16 +55,17 @@ internal class StoreQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should paginate stores using cursor`() =
             runTest {
-                val stores = (1..5).map { persistence.persist(store()) }
+                val ownerId = persistence.persist(user()).id
+                val stores = (1..5).map { persistence.persist(store(ownerId = ownerId)) }
 
-                val firstPage = query.list(PageRequest(2))
+                val firstPage = query.list(ownerId = ownerId, PageRequest(2))
 
                 assertThat(firstPage.items)
                     .usingRecursiveFieldByFieldElementComparator()
                     .containsExactly(stores[0], stores[1])
                 assertThat(firstPage.cursor).isNotNull()
 
-                val lastPage = query.list(PageRequest(3, firstPage.cursor))
+                val lastPage = query.list(ownerId = ownerId, PageRequest(3, firstPage.cursor))
                 assertThat(lastPage.items)
                     .usingRecursiveFieldByFieldElementComparator()
                     .containsExactly(stores[2], stores[3], stores[4])
@@ -72,7 +75,7 @@ internal class StoreQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return empty page when no stores exist`() =
             runTest {
-                val firstPage = query.list(PageRequest(10))
+                val firstPage = query.list(ownerId = userId(), PageRequest(10))
 
                 assertThat(firstPage.items).isEmpty()
                 assertThat(firstPage.cursor).isNull()
@@ -81,9 +84,10 @@ internal class StoreQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return all stores when less than page size`() =
             runTest {
-                val stores = (1..3).map { persistence.persist(store()) }
+                val ownerId = persistence.persist(user()).id
+                val stores = (1..3).map { persistence.persist(store(ownerId = ownerId)) }
 
-                val page = query.list(PageRequest(10))
+                val page = query.list(ownerId = ownerId, PageRequest(10))
                 assertThat(page.items.size).isEqualTo(stores.size)
                 assertThat(page.cursor).isNull()
             }

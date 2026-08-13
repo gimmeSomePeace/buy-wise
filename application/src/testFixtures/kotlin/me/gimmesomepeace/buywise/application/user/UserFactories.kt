@@ -12,7 +12,7 @@ fun userDetails(
     login: Login = login(),
     passwordHash: PasswordHash = PasswordHash("password-hash"),
     role: UserRole = UserRole.USER
-) = UserDetails(
+) = UserView(
     id = id,
     login =login,
     passwordHash = passwordHash,

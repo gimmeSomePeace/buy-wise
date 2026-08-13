@@ -1,5 +1,7 @@
 package me.gimmesomepeace.buywise.domain.store
 
+import me.gimmesomepeace.buywise.domain.user.UserId
+
 /**
  * Магазин, в котором покупатель может приобрести то, что он предлагает.
  *
@@ -10,6 +12,7 @@ package me.gimmesomepeace.buywise.domain.store
  */
 class Store(
     val id: StoreId,
+    val ownerId: UserId,
     name: String,
 ) {
     /**

@@ -5,7 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface ProductJpaRepository : JpaRepository<ProductEntity, UUID> {
-    fun findByIdGreaterThanOrderByIdAsc(
+    fun findByOwnerId(
+        ownerId: UUID,
+        pageable: Pageable
+    ): List<ProductEntity>
+
+    fun findByOwnerIdAndIdGreaterThanOrderByIdAsc(
+        ownerId: UUID,
         id: UUID,
         pageable: Pageable,
     ): List<ProductEntity>

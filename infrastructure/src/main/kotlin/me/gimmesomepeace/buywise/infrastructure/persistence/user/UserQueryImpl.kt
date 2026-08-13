@@ -1,33 +1,28 @@
-package me.gimmesomepeace.buywise.infrastructure.persistence.offer
+package me.gimmesomepeace.buywise.infrastructure.persistence.user
 
-import me.gimmesomepeace.buywise.application.offer.OfferQuery
 import me.gimmesomepeace.buywise.application.shared.Cursor
 import me.gimmesomepeace.buywise.application.shared.Page
 import me.gimmesomepeace.buywise.application.shared.PageRequest
-import me.gimmesomepeace.buywise.domain.offer.Offer
-import me.gimmesomepeace.buywise.domain.offer.OfferId
-import me.gimmesomepeace.buywise.domain.user.UserId
+import me.gimmesomepeace.buywise.application.user.UserListItem
+import me.gimmesomepeace.buywise.application.user.UserQuery
+import me.gimmesomepeace.buywise.application.user.UserView
+import me.gimmesomepeace.buywise.domain.user.Login
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
-import java.util.UUID
+import java.util.*
 
-class OfferQueryImpl(
-    private val repository: OfferJpaRepository,
-) : OfferQuery {
-    override suspend fun find(
-        id: OfferId,
-    ): Offer? = repository.findByIdOrNull(id.value)?.toDomain()
+class UserQueryImpl(
+    private val repository: UserJpaRepository,
+) : UserQuery {
 
-    override suspend fun list(
-        ownerId: UserId,
-        request: PageRequest,
-    ): Page<Offer> {
+    override suspend fun findByLogin(login: Login): UserView? =
+        repository.findByLogin(login.value)?.toView()
+
+    override suspend fun list(request: PageRequest): Page<UserListItem> {
         val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
 
         val entities =
             request.cursor
                 ?.let { cursor ->
-                    // TODO: нужно потом заменить на фильтрацию только по своим offer
                     repository.findByIdGreaterThanOrderByIdAsc(
                         id = UUID.fromString(cursor.value),
                         pageable = requestWithExtra,
@@ -39,7 +34,7 @@ class OfferQueryImpl(
         val pageItems = if (hasExtra) entities.dropLast(1) else entities
 
         return Page(
-            items = pageItems.map { it.toDomain() },
+            items = pageItems.map { it.toListItem() },
             cursor =
                 if (hasExtra) {
                     Cursor(

@@ -19,9 +19,15 @@ dependencies {
     implementation(libs.jackson.module.kotlin)
     implementation(libs.springdoc.openapi.starter.webmvc.ui)
 
+    implementation(libs.spring.security.core)
+
     testImplementation(libs.coroutines.test)
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.boot.starter.webmvc.test)
+    testImplementation(libs.spring.security.test)
+
+    testImplementation(libs.spring.security.config)
+    testImplementation(libs.spring.security.web)
 
     testImplementation(libs.spring.mockk)
     testRuntimeOnly(libs.junit.platform.launcher)

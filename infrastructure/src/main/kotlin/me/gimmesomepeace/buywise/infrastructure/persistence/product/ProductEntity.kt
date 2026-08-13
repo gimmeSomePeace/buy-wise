@@ -11,6 +11,10 @@ import java.util.UUID
 class ProductEntity(
     @Id
     var id: UUID,
+
+    @Column(nullable = false)
+    var ownerId: UUID,
+
     @Column(nullable = false)
     var name: String,
 )

@@ -10,6 +10,7 @@ mockk = "1.14.5"
 testcontainers = "1.21.3"
 uuid-creator = "6.1.1"
 springdoc-bom = "3.0.3"
+jjwt = "0.13.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit"}
@@ -30,8 +31,19 @@ flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql
 
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-secutiry = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-security-core = { module = "org.springframework.security:spring-security-core" }
+spring-security-crypto = { module = "org.springframework.security:spring-security-crypto" }
+spring-security-config = { module = "org.springframework.security:spring-security-config" }
+spring-security-web = { module = "org.springframework.security:spring-security-web" }
+spring-security-test = { module = "org.springframework.security:spring-security-test" }
+
 spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson  = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
 spring-boot-starter-data-jpa-test = { module = "org.springframework.boot:spring-boot-starter-data-jpa-test" }

@@ -10,23 +10,17 @@ import me.gimmesomepeace.buywise.application.store.delete.DeleteStoreUseCase
 import me.gimmesomepeace.buywise.application.store.list.ListStoresUseCase
 import me.gimmesomepeace.buywise.application.store.rename.RenameStoreUseCase
 import me.gimmesomepeace.buywise.domain.store.StoreId
+import me.gimmesomepeace.buywise.domain.user.UserId
 import me.gimmesomepeace.buywise.web.store.create.CreateStoreRequest
 import me.gimmesomepeace.buywise.web.store.list.ListStoresResponse
 import me.gimmesomepeace.buywise.web.store.rename.RenameStoreRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.net.URI
+import java.util.UUID
 
 @RestController
 @Validated
@@ -40,6 +34,7 @@ internal open class StoreController(
 ) {
     @GetMapping("/{id}")
     open suspend fun get(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: StoreId,
     ): ResponseEntity<StoreDetailsResponse> {
         val store =
@@ -50,6 +45,7 @@ internal open class StoreController(
 
     @GetMapping
     open suspend fun list(
+        @AuthenticationPrincipal userId: UUID,
         @RequestParam(
             value = "page_size",
             defaultValue = "20",
@@ -59,16 +55,18 @@ internal open class StoreController(
     ): ResponseEntity<ListStoresResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
-        val result = listStoresUseCase.execute(request).toListStoresResponse()
+        val result = listStoresUseCase.execute(UserId(userId), request).toListStoresResponse()
         return ResponseEntity.ok(result)
     }
 
     @PostMapping
     open suspend fun create(
+        @AuthenticationPrincipal userId: UUID,
         @Valid @RequestBody request: CreateStoreRequest,
     ): ResponseEntity<StoreDetailsResponse> {
         val store =
             createStoreUseCase.execute(
+                ownerId = UserId(userId),
                 name = request.name,
             )
         return ResponseEntity

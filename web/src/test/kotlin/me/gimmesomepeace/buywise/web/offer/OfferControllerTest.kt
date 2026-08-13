@@ -19,6 +19,9 @@ import me.gimmesomepeace.buywise.domain.offer.offer
 import me.gimmesomepeace.buywise.domain.offer.offerId
 import me.gimmesomepeace.buywise.domain.shared.Currency
 import me.gimmesomepeace.buywise.domain.shared.usd
+import me.gimmesomepeace.buywise.domain.user.userId
+import me.gimmesomepeace.buywise.web.TestSecurityConfig
+import me.gimmesomepeace.buywise.web.authenticatedAs
 import me.gimmesomepeace.buywise.web.offer.update.ChangePriceRequest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -26,6 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
@@ -40,6 +44,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(OfferController::class)
+@Import(TestSecurityConfig::class)
 class OfferControllerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
@@ -272,6 +277,7 @@ class OfferControllerTest {
         @Test
         fun `should return first page`() =
             runTest {
+                val ownerId = userId()
                 val request =
                     PageRequest(
                         pageSize = 20,
@@ -285,10 +291,12 @@ class OfferControllerTest {
                     )
 
                 coEvery {
-                    listOffersUseCase.execute(request)
+                    listOffersUseCase.execute(ownerId = ownerId, request)
                 } returns page
 
-                val mvcResult = mockMvc.get("/offers").andReturn()
+                val mvcResult = mockMvc.get("/offers") {
+                    with(authenticatedAs(ownerId))
+                }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -303,6 +311,7 @@ class OfferControllerTest {
         @Test
         fun `should pass page request`() =
             runTest {
+                val ownerId = userId()
                 val request =
                     PageRequest(
                         pageSize = 5,
@@ -310,7 +319,7 @@ class OfferControllerTest {
                     )
 
                 coEvery {
-                    listOffersUseCase.execute(request)
+                    listOffersUseCase.execute(ownerId = ownerId, request)
                 } returns
                     Page(
                         items = emptyList(),
@@ -322,6 +331,7 @@ class OfferControllerTest {
                         .get("/offers") {
                             param("page_size", "5")
                             param("page_token", "abc")
+                            with(authenticatedAs(ownerId))
                         }.andReturn()
 
                 mockMvc
@@ -329,7 +339,7 @@ class OfferControllerTest {
                     .andExpect(status().isOk)
 
                 coVerify(exactly = 1) {
-                    listOffersUseCase.execute(request)
+                    listOffersUseCase.execute(ownerId = ownerId, request)
                 }
             }
 

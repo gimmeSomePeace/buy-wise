@@ -10,11 +10,13 @@ import me.gimmesomepeace.buywise.application.product.rename.RenameProductUseCase
 import me.gimmesomepeace.buywise.application.shared.Cursor
 import me.gimmesomepeace.buywise.application.shared.PageRequest
 import me.gimmesomepeace.buywise.domain.product.ProductId
+import me.gimmesomepeace.buywise.domain.user.UserId
 import me.gimmesomepeace.buywise.web.product.create.CreateProductRequest
 import me.gimmesomepeace.buywise.web.product.list.ListProductsResponse
 import me.gimmesomepeace.buywise.web.product.rename.RenameProductRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
+import java.util.UUID
 
 @RestController
 @Validated
@@ -50,6 +53,7 @@ internal open class ProductController(
 
     @GetMapping
     open suspend fun list(
+        @AuthenticationPrincipal userId: UUID,
         @RequestParam(
             value = "page_size",
             defaultValue = "20",
@@ -62,6 +66,7 @@ internal open class ProductController(
         val result =
             listProductsUseCase
                 .execute(
+                    ownerId = UserId(userId),
                     request,
                 ).toListProductsResponse()
         return ResponseEntity.ok(result)
@@ -69,9 +74,10 @@ internal open class ProductController(
 
     @PostMapping
     open suspend fun create(
+        @AuthenticationPrincipal userId: UUID,
         @Valid @RequestBody request: CreateProductRequest,
     ): ResponseEntity<ProductDetailsResponse> {
-        val product = createProductUseCase.execute(request.name)
+        val product = createProductUseCase.execute(UserId(userId), request.name)
         return ResponseEntity
             .created(URI("/products/${product.id.value}"))
             .body(product.toDetailsResponse())

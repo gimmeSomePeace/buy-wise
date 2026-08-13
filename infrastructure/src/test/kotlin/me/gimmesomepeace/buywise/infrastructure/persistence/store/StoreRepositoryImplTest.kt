@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.domain.store.StoreException
 import me.gimmesomepeace.buywise.domain.store.store
 import me.gimmesomepeace.buywise.domain.store.storeId
+import me.gimmesomepeace.buywise.domain.user.user
 import me.gimmesomepeace.buywise.infrastructure.PostgresSqlContainer
 import me.gimmesomepeace.buywise.infrastructure.persistence.TestPersistence
 import org.assertj.core.api.Assertions.assertThat
@@ -71,7 +72,8 @@ internal class StoreRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should fail when id is busy`() =
             runTest {
-                val store = persistence.persist(store())
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(store(ownerId = ownerId))
 
                 val ex =
                     assertFailsWith<StoreException.AlreadyExists> {
@@ -86,12 +88,10 @@ internal class StoreRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should update store`() =
             runTest {
-                val store =
-                    persistence.persist(
-                        store(
-                            name = "OLD NAME",
-                        ),
-                    )
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(
+                    store(name = "OLD NAME", ownerId = ownerId)
+                )
 
                 store.rename("NEW NAME")
                 repository.update(store)
@@ -119,7 +119,8 @@ internal class StoreRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should delete store`() =
             runTest {
-                val store = persistence.persist(store())
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(store(ownerId = ownerId))
 
                 repository.delete(store.id)
                 val ex =

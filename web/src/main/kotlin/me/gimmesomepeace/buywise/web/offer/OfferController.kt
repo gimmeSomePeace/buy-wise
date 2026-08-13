@@ -13,23 +13,17 @@ import me.gimmesomepeace.buywise.domain.offer.OfferId
 import me.gimmesomepeace.buywise.domain.product.ProductId
 import me.gimmesomepeace.buywise.domain.shared.Money
 import me.gimmesomepeace.buywise.domain.store.StoreId
+import me.gimmesomepeace.buywise.domain.user.UserId
 import me.gimmesomepeace.buywise.web.offer.create.CreateOfferRequest
 import me.gimmesomepeace.buywise.web.offer.list.ListOffersResponse
 import me.gimmesomepeace.buywise.web.offer.update.ChangePriceRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.net.URI
+import java.util.*
 
 @RestController
 @Validated
@@ -53,6 +47,7 @@ internal open class OfferController(
 
     @GetMapping
     open suspend fun list(
+        @AuthenticationPrincipal userId: UUID,
         @RequestParam(
             value = "page_size",
             defaultValue = "20",
@@ -62,7 +57,7 @@ internal open class OfferController(
     ): ResponseEntity<ListOffersResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
-        val result = listOffersUseCase.execute(request).toListOffersResponse()
+        val result = listOffersUseCase.execute(UserId(userId), request).toListOffersResponse()
         return ResponseEntity.ok(result)
     }
 

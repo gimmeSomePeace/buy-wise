@@ -17,12 +17,17 @@ dependencies {
     implementation(platform(libs.spring.boot.dependencies))
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.validation)
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.secutiry)
     implementation(libs.kotlin.reflect)
     implementation(libs.spring.boot.starter.flyway)
     implementation(libs.uuid.creator)
+    implementation(libs.jjwt.api)
 
     runtimeOnly(libs.postgresql)
     runtimeOnly(libs.flyway.database.postgresql)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
 
     testImplementation(libs.assertj)
     testImplementation(libs.coroutines.test)
@@ -37,6 +42,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(testFixtures(project(":domain")))
     testImplementation(testFixtures(project(":application")))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 }
 
 kotlin {

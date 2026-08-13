@@ -16,26 +16,24 @@ import me.gimmesomepeace.buywise.application.store.rename.RenameStoreUseCase
 import me.gimmesomepeace.buywise.domain.store.StoreException
 import me.gimmesomepeace.buywise.domain.store.store
 import me.gimmesomepeace.buywise.domain.store.storeId
+import me.gimmesomepeace.buywise.domain.user.userId
+import me.gimmesomepeace.buywise.web.TestSecurityConfig
+import me.gimmesomepeace.buywise.web.authenticatedAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.patch
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.*
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(StoreController::class)
+@Import(TestSecurityConfig::class)
 class StoreControllerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
@@ -109,15 +107,17 @@ class StoreControllerTest {
         @Test
         fun `should create store`() =
             runTest {
+                val ownerId = userId()
                 val store = store()
 
                 coEvery {
-                    createStoreUseCase.execute(store.name)
+                    createStoreUseCase.execute(ownerId, store.name)
                 } returns store
 
                 val mvcResult =
                     mockMvc
                         .post("/stores") {
+                            with(authenticatedAs(ownerId))
                             contentType = MediaType.APPLICATION_JSON
                             content =
                                 mapper.writeValueAsString(
@@ -137,7 +137,7 @@ class StoreControllerTest {
                     ).andExpect(jsonPath("$.name").value(store.name))
 
                 coVerify(exactly = 1) {
-                    createStoreUseCase.execute(store.name)
+                    createStoreUseCase.execute(ownerId, store.name)
                 }
             }
 
@@ -262,6 +262,7 @@ class StoreControllerTest {
         @Test
         fun `should return first page`() =
             runTest {
+                val ownerId = userId()
                 val request =
                     PageRequest(
                         pageSize = 20,
@@ -275,10 +276,12 @@ class StoreControllerTest {
                     )
 
                 coEvery {
-                    listStoresUseCase.execute(request)
+                    listStoresUseCase.execute(ownerId, request)
                 } returns page
 
-                val mvcResult = mockMvc.get("/stores").andReturn()
+                val mvcResult = mockMvc.get("/stores") {
+                    with(authenticatedAs(ownerId))
+                }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -293,6 +296,7 @@ class StoreControllerTest {
         @Test
         fun `should pass page request`() =
             runTest {
+                val ownerId = userId()
                 val request =
                     PageRequest(
                         pageSize = 5,
@@ -300,7 +304,7 @@ class StoreControllerTest {
                     )
 
                 coEvery {
-                    listStoresUseCase.execute(request)
+                    listStoresUseCase.execute(ownerId = ownerId, request)
                 } returns
                     Page(
                         items = emptyList(),
@@ -312,6 +316,7 @@ class StoreControllerTest {
                         .get("/stores") {
                             param("page_size", "5")
                             param("page_token", "abc")
+                            with(authenticatedAs(ownerId))
                         }.andReturn()
 
                 mockMvc
@@ -319,7 +324,7 @@ class StoreControllerTest {
                     .andExpect(status().isOk)
 
                 coVerify(exactly = 1) {
-                    listStoresUseCase.execute(request)
+                    listStoresUseCase.execute(ownerId, request)
                 }
             }
 
@@ -332,6 +337,7 @@ class StoreControllerTest {
                 mockMvc
                     .get("/stores") {
                         param("page_size", pageSize.toString())
+                        with(authenticatedAs(userId()))
                     }.andReturn()
             mockMvc
                 .perform(asyncDispatch(mvcResult))

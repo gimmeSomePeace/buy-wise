@@ -5,7 +5,7 @@ import me.gimmesomepeace.buywise.domain.user.Login
 import me.gimmesomepeace.buywise.domain.user.UserId
 import me.gimmesomepeace.buywise.domain.user.UserRole
 
-data class UserDetails(
+data class UserView(
     val id: UserId,
     val login: Login,
     val passwordHash: PasswordHash,

@@ -3,6 +3,7 @@ package me.gimmesomepeace.buywise.application.store.create
 import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.application.store.storeRepository
 import me.gimmesomepeace.buywise.domain.store.storeId
+import me.gimmesomepeace.buywise.domain.user.userId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -20,6 +21,7 @@ class CreateStoreUseCaseTest {
                 )
 
             useCase.execute(
+                ownerId = userId(),
                 name = "Test store",
             )
 

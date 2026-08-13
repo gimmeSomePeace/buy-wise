@@ -16,6 +16,9 @@ import me.gimmesomepeace.buywise.application.shared.cursor
 import me.gimmesomepeace.buywise.domain.product.ProductException
 import me.gimmesomepeace.buywise.domain.product.product
 import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.user.userId
+import me.gimmesomepeace.buywise.web.TestSecurityConfig
+import me.gimmesomepeace.buywise.web.authenticatedAs
 import me.gimmesomepeace.buywise.web.product.rename.RenameProductRequest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -23,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
@@ -37,6 +41,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(ProductController::class)
+@Import(TestSecurityConfig::class)
 class ProductControllerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
@@ -100,16 +105,18 @@ class ProductControllerTest {
     inner class Create {
         @Test
         fun `should create new product`() {
+            val ownerId = userId()
             val productId = productId()
-            coEvery { createProductUseCase.execute(any()) } returns
-                product(id = productId)
+
+            coEvery { createProductUseCase.execute(ownerId = ownerId, any()) } returns
+                product(id = productId, ownerId = ownerId)
 
             val mvcResult =
                 mockMvc
                     .post("/products") {
                         contentType = MediaType.APPLICATION_JSON
-                        content =
-                            mapper.writeValueAsString(createProductRequest())
+                        content = mapper.writeValueAsString(createProductRequest())
+                        with(authenticatedAs(ownerId))
                     }.andReturn()
 
             mockMvc
@@ -213,6 +220,7 @@ class ProductControllerTest {
         @Test
         fun `should return first page`() =
             runTest {
+                val ownerId = userId()
                 val request =
                     PageRequest(
                         pageSize = 20,
@@ -226,10 +234,12 @@ class ProductControllerTest {
                     )
 
                 coEvery {
-                    listProductsUseCase.execute(request)
+                    listProductsUseCase.execute(ownerId = ownerId, request = request)
                 } returns page
 
-                val mvcResult = mockMvc.get("/products").andReturn()
+                val mvcResult = mockMvc.get("/products") {
+                    with(authenticatedAs(ownerId))
+                }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -244,6 +254,7 @@ class ProductControllerTest {
         @Test
         fun `should pass page request`() =
             runTest {
+                val ownerId = userId()
                 val request =
                     PageRequest(
                         pageSize = 5,
@@ -251,7 +262,7 @@ class ProductControllerTest {
                     )
 
                 coEvery {
-                    listProductsUseCase.execute(request)
+                    listProductsUseCase.execute(ownerId = ownerId, request)
                 } returns
                     Page(
                         items = emptyList(),
@@ -261,6 +272,7 @@ class ProductControllerTest {
                 val mvcResult =
                     mockMvc
                         .get("/products") {
+                            with(authenticatedAs(ownerId))
                             param("page_size", "5")
                             param("page_token", "abc")
                         }.andReturn()
@@ -270,7 +282,7 @@ class ProductControllerTest {
                     .andExpect(status().isOk)
 
                 coVerify(exactly = 1) {
-                    listProductsUseCase.execute(request)
+                    listProductsUseCase.execute(ownerId, request)
                 }
             }
 

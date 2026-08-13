@@ -6,6 +6,8 @@ import me.gimmesomepeace.buywise.domain.offer.offer
 import me.gimmesomepeace.buywise.domain.offer.offerId
 import me.gimmesomepeace.buywise.domain.product.product
 import me.gimmesomepeace.buywise.domain.store.store
+import me.gimmesomepeace.buywise.domain.user.user
+import me.gimmesomepeace.buywise.domain.user.userId
 import me.gimmesomepeace.buywise.infrastructure.PostgresSqlContainer
 import me.gimmesomepeace.buywise.infrastructure.persistence.TestPersistence
 import org.assertj.core.api.Assertions.assertThat
@@ -34,8 +36,9 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return offer when exists`() =
             runTest {
-                val store = persistence.persist(store())
-                val product = persistence.persist(product())
+                val owner = persistence.persist(user())
+                val store = persistence.persist(store(ownerId = owner.id))
+                val product = persistence.persist(product(ownerId = owner.id))
 
                 val expected =
                     persistence.persist(
@@ -61,23 +64,24 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should paginate offers using cursor`() =
             runTest {
+                val ownerId = persistence.persist(user()).id
                 val offers =
                     (1..5).map {
-                        val store = persistence.persist(store())
-                        val product = persistence.persist(product())
+                        val store = persistence.persist(store(ownerId = ownerId))
+                        val product = persistence.persist(product(ownerId = ownerId))
                         persistence.persist(
                             offer(storeId = store.id, productId = product.id),
                         )
                     }
 
-                val firstPage = query.list(PageRequest(2))
+                val firstPage = query.list(ownerId = ownerId, PageRequest(2))
 
                 assertThat(firstPage.items)
                     .usingRecursiveFieldByFieldElementComparator()
                     .containsExactly(offers[0], offers[1])
                 assertThat(firstPage.cursor).isNotNull()
 
-                val lastPage = query.list(PageRequest(3, firstPage.cursor))
+                val lastPage = query.list(ownerId = ownerId, PageRequest(3, firstPage.cursor))
                 assertThat(lastPage.items)
                     .usingRecursiveFieldByFieldElementComparator()
                     .containsExactly(offers[2], offers[3], offers[4])
@@ -87,7 +91,7 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return empty page when no offers exist`() =
             runTest {
-                val firstPage = query.list(PageRequest(10))
+                val firstPage = query.list(ownerId = userId(), PageRequest(10))
 
                 assertThat(firstPage.items).isEmpty()
                 assertThat(firstPage.cursor).isNull()
@@ -96,16 +100,17 @@ internal class OfferQueryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return all offers when less than page size`() =
             runTest {
+                val ownerId = persistence.persist(user()).id
                 val offers =
                     (1..3).map {
-                        val store = persistence.persist(store())
-                        val product = persistence.persist(product())
+                        val store = persistence.persist(store(ownerId = ownerId))
+                        val product = persistence.persist(product(ownerId = ownerId))
                         persistence.persist(
                             offer(storeId = store.id, productId = product.id),
                         )
                     }
 
-                val page = query.list(PageRequest(10))
+                val page = query.list(ownerId = ownerId, PageRequest(10))
                 assertThat(page.items.size).isEqualTo(offers.size)
                 assertThat(page.cursor).isNull()
             }
