@@ -16,7 +16,6 @@ class AuthenticateUserUseCaseTest {
     private val query = mockk<UserQuery>()
     private val passwordHasher = mockk<PasswordHasher>()
 
-
     @Test
     fun `should authenticate user`() = runTest {
         val accessToken = accessToken()
