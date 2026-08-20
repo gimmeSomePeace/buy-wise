@@ -33,7 +33,7 @@ class StoreConfiguration {
         @Qualifier(BeanNames.STORE_ID_GENERATOR)
         idGenerator: IdGenerator<StoreId>,
         repository: StoreRepository,
-    ) = CreateStoreUseCase(repository, idGenerator)
+    ) = CreateStoreUseCase(idGenerator, repository)
 
     @Bean
     fun deleteStoreUseCase(

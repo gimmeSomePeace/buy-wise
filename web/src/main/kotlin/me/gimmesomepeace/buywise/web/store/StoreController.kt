@@ -4,9 +4,9 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Positive
 import me.gimmesomepeace.buywise.application.shared.Cursor
 import me.gimmesomepeace.buywise.application.shared.PageRequest
-import me.gimmesomepeace.buywise.application.store.StoreQuery
 import me.gimmesomepeace.buywise.application.store.create.CreateStoreUseCase
 import me.gimmesomepeace.buywise.application.store.delete.DeleteStoreUseCase
+import me.gimmesomepeace.buywise.application.store.get.GetStoreUseCase
 import me.gimmesomepeace.buywise.application.store.list.ListStoresUseCase
 import me.gimmesomepeace.buywise.application.store.rename.RenameStoreUseCase
 import me.gimmesomepeace.buywise.domain.store.StoreId
@@ -20,13 +20,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.net.URI
-import java.util.UUID
+import java.util.*
 
 @RestController
 @Validated
 @RequestMapping("/stores")
 internal open class StoreController(
-    private val storeQuery: StoreQuery,
+    private val getStoreUseCase: GetStoreUseCase,
     private val renameStoreUseCase: RenameStoreUseCase,
     private val createStoreUseCase: CreateStoreUseCase,
     private val deleteStoreUseCase: DeleteStoreUseCase,
@@ -37,9 +37,7 @@ internal open class StoreController(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable id: StoreId,
     ): ResponseEntity<StoreDetailsResponse> {
-        val store =
-            storeQuery.find(id)
-                ?: return ResponseEntity.notFound().build()
+        val store = getStoreUseCase.execute(UserId(userId), id)
         return ResponseEntity.ok(store.toDetailsResponse())
     }
 
@@ -77,10 +75,12 @@ internal open class StoreController(
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun rename(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: StoreId,
         @RequestBody request: RenameStoreRequest,
     ) {
         renameStoreUseCase.execute(
+            userId = UserId(userId),
             storeId = id,
             newName = request.name,
         )
@@ -89,9 +89,11 @@ internal open class StoreController(
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun delete(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: StoreId,
     ) {
         deleteStoreUseCase.execute(
+            userId = UserId(userId),
             storeId = id,
         )
     }

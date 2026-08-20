@@ -11,12 +11,12 @@ import me.gimmesomepeace.buywise.domain.store.storeId
 fun offerId() = OfferId(UuidCreator.getTimeOrderedEpoch())
 
 fun offer(
-    offerId: OfferId = offerId(),
+    id: OfferId = offerId(),
     productId: ProductId = productId(),
     storeId: StoreId = storeId(),
     unitPrice: Money = 1.usd(),
 ) = Offer(
-    id = offerId,
+    id = id,
     productId = productId,
     storeId = storeId,
     unitPrice = unitPrice,

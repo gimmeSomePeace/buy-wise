@@ -1,8 +1,8 @@
 package me.gimmesomepeace.buywise.web.store.list
 
-import me.gimmesomepeace.buywise.domain.store.Store
+import me.gimmesomepeace.buywise.application.store.StoreListItem
 
 data class ListStoresResponse(
-    val stores: List<Store>,
+    val stores: List<StoreListItem>,
     val nextPageToken: String?,
 )

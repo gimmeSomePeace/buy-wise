@@ -2,11 +2,11 @@ package me.gimmesomepeace.buywise.web.offer
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Positive
-import me.gimmesomepeace.buywise.application.offer.OfferQuery
 import me.gimmesomepeace.buywise.application.offer.create.CreateOfferUseCase
 import me.gimmesomepeace.buywise.application.offer.delete.DeleteOfferUseCase
+import me.gimmesomepeace.buywise.application.offer.get.GetOfferUseCase
 import me.gimmesomepeace.buywise.application.offer.list.ListOffersUseCase
-import me.gimmesomepeace.buywise.application.offer.price.change.ChangePriceUseCase
+import me.gimmesomepeace.buywise.application.offer.price.change.ChangeOfferPriceUseCase
 import me.gimmesomepeace.buywise.application.shared.Cursor
 import me.gimmesomepeace.buywise.application.shared.PageRequest
 import me.gimmesomepeace.buywise.domain.offer.OfferId
@@ -29,19 +29,18 @@ import java.util.*
 @Validated
 @RequestMapping("/offers")
 internal open class OfferController(
-    private val offerQuery: OfferQuery,
+    private val getOfferUseCase: GetOfferUseCase,
     private val createOfferUseCase: CreateOfferUseCase,
-    private val changePriceUseCase: ChangePriceUseCase,
+    private val changeOfferPriceUseCase: ChangeOfferPriceUseCase,
     private val deleteOfferUseCase: DeleteOfferUseCase,
     private val listOffersUseCase: ListOffersUseCase,
 ) {
     @GetMapping("/{id}")
     open suspend fun get(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: OfferId,
     ): ResponseEntity<OfferDetailsResponse> {
-        val offer =
-            offerQuery.find(id)
-                ?: return ResponseEntity.notFound().build()
+        val offer = getOfferUseCase.execute(UserId(userId), id)
         return ResponseEntity.ok(offer.toDetailsResponse())
     }
 
@@ -79,10 +78,12 @@ internal open class OfferController(
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun changePrice(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: OfferId,
         @Valid @RequestBody request: ChangePriceRequest,
     ) {
-        changePriceUseCase.execute(
+        changeOfferPriceUseCase.execute(
+            userId = UserId(userId),
             offerId = id,
             newPrice =
                 Money(
@@ -95,9 +96,11 @@ internal open class OfferController(
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun delete(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: OfferId,
     ) {
         deleteOfferUseCase.execute(
+            userId = UserId(userId),
             offerId = id,
         )
     }

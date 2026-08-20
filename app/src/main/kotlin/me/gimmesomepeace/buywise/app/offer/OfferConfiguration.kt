@@ -5,7 +5,7 @@ import me.gimmesomepeace.buywise.application.offer.OfferQuery
 import me.gimmesomepeace.buywise.application.offer.create.CreateOfferUseCase
 import me.gimmesomepeace.buywise.application.offer.delete.DeleteOfferUseCase
 import me.gimmesomepeace.buywise.application.offer.list.ListOffersUseCase
-import me.gimmesomepeace.buywise.application.offer.price.change.ChangePriceUseCase
+import me.gimmesomepeace.buywise.application.offer.price.change.ChangeOfferPriceUseCase
 import me.gimmesomepeace.buywise.application.shared.IdGenerator
 import me.gimmesomepeace.buywise.domain.offer.OfferId
 import me.gimmesomepeace.buywise.domain.offer.OfferRepository
@@ -33,12 +33,14 @@ class OfferConfiguration {
         @Qualifier(BeanNames.OFFER_ID_GENERATOR)
         idGenerator: IdGenerator<OfferId>,
         repository: OfferRepository,
-    ) = CreateOfferUseCase(idGenerator, repository)
+        query: OfferQuery,
+    ) = CreateOfferUseCase(idGenerator, repository, query)
 
     @Bean
     fun deleteOfferUseCase(
         repository: OfferRepository,
-    ) = DeleteOfferUseCase(repository)
+        query: OfferQuery,
+    ) = DeleteOfferUseCase(repository, query)
 
     @Bean
     fun listOffersUseCase(
@@ -47,6 +49,7 @@ class OfferConfiguration {
 
     @Bean
     fun changePriceUseCase(
-        offerRepository: OfferRepository,
-    ) = ChangePriceUseCase(offerRepository)
+        repository: OfferRepository,
+        query: OfferQuery,
+    ) = ChangeOfferPriceUseCase(repository, query)
 }

@@ -2,9 +2,9 @@ package me.gimmesomepeace.buywise.web.product
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Positive
-import me.gimmesomepeace.buywise.application.product.ProductQuery
 import me.gimmesomepeace.buywise.application.product.create.CreateProductUseCase
 import me.gimmesomepeace.buywise.application.product.delete.DeleteProductUseCase
+import me.gimmesomepeace.buywise.application.product.get.GetProductUseCase
 import me.gimmesomepeace.buywise.application.product.list.ListProductsUseCase
 import me.gimmesomepeace.buywise.application.product.rename.RenameProductUseCase
 import me.gimmesomepeace.buywise.application.shared.Cursor
@@ -35,19 +35,18 @@ import java.util.UUID
 @Validated
 @RequestMapping("/products")
 internal open class ProductController(
+    private val getProductUseCase: GetProductUseCase,
     private val listProductsUseCase: ListProductsUseCase,
     private val createProductUseCase: CreateProductUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
     private val renameProductUseCase: RenameProductUseCase,
-    private val productQuery: ProductQuery,
 ) {
     @GetMapping("/{id}")
     open suspend fun get(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: ProductId,
     ): ResponseEntity<ProductDetailsResponse> {
-        val product =
-            productQuery.find(id)
-                ?: return ResponseEntity.notFound().build()
+        val product = getProductUseCase.execute(UserId(userId), id)
         return ResponseEntity.ok(product.toDetailsResponse())
     }
 
@@ -86,9 +85,11 @@ internal open class ProductController(
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun delete(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: ProductId,
     ) {
         deleteProductUseCase.execute(
+            userId = UserId(userId),
             productId = id,
         )
     }
@@ -96,10 +97,12 @@ internal open class ProductController(
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     open suspend fun rename(
+        @AuthenticationPrincipal userId: UUID,
         @PathVariable id: ProductId,
         @RequestBody request: RenameProductRequest,
     ) {
         renameProductUseCase.execute(
+            userId = UserId(userId),
             productId = id,
             newName = request.name,
         )

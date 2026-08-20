@@ -1,29 +1,35 @@
 package me.gimmesomepeace.buywise.application.product.create
 
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
-import me.gimmesomepeace.buywise.application.product.productRepository
+import me.gimmesomepeace.buywise.application.shared.IdGenerator
+import me.gimmesomepeace.buywise.domain.product.ProductId
+import me.gimmesomepeace.buywise.domain.product.ProductRepository
 import me.gimmesomepeace.buywise.domain.product.productId
 import me.gimmesomepeace.buywise.domain.user.userId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class CreateProductUseCaseTest {
+    private val idGenerator = mockk<IdGenerator<ProductId>>()
+    private val repository = mockk<ProductRepository>()
+    private val useCase = CreateProductUseCase(idGenerator, repository)
+
     @Test
-    fun `should create new product`() =
-        runTest {
-            val ownerId = userId()
-            val productId = productId()
-            val repository = productRepository()
+    fun `should create product with correct owner`() = runTest {
+        val ownerId = userId()
+        val name = "New Product"
 
-            CreateProductUseCase(
-                idGenerator = { productId },
-                productRepository = repository,
-            ).execute(
-                ownerId = ownerId,
-                productName = "Test product",
-            )
+        coEvery { idGenerator.generate() } returns productId()
+        coEvery { repository.add(any()) } just runs
 
-            val product = repository.get(productId)
-            assertThat(product.name).isEqualTo("Test product")
+        val result = useCase.execute(ownerId, name)
+
+        assertThat(result.ownerId).isEqualTo(ownerId)
+        assertThat(result.name).isEqualTo(name)
+
+        coVerify(exactly = 1) {
+            repository.add(match { it.ownerId == ownerId })
         }
+    }
 }

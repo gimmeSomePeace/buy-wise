@@ -14,8 +14,12 @@ import me.gimmesomepeace.buywise.domain.shared.password.PasswordHash
  *  - Логин должен быть уникален среди пользователей.
  */
 class User(
-    val id: UserId,
-    val login: Login,
-    val passwordHash: PasswordHash,
-    val role: UserRole,
-)
+    var id: UserId,
+    var login: Login,
+    var passwordHash: PasswordHash,
+    var role: UserRole,
+) {
+    fun changeLogin(newLogin: Login) {
+        login = newLogin
+    }
+}

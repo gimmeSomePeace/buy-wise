@@ -18,9 +18,9 @@ class StoreRepositoryImpl(
     override suspend fun add(
         store: Store,
     ) {
-        if (repository.existsById(store.id.value)) {
+        if (repository.existsById(store.id.value))
             throw StoreException.AlreadyExists(store.id)
-        }
+
         repository.save(store.toEntity())
     }
 

@@ -1,16 +1,17 @@
 package me.gimmesomepeace.buywise.web.product
 
+import me.gimmesomepeace.buywise.application.product.ProductDetails
+import me.gimmesomepeace.buywise.application.product.ProductListItem
 import me.gimmesomepeace.buywise.application.shared.Page
-import me.gimmesomepeace.buywise.domain.product.Product
 import me.gimmesomepeace.buywise.web.product.list.ListProductsResponse
 
-internal fun Product.toDetailsResponse() =
+internal fun ProductDetails.toDetailsResponse() =
     ProductDetailsResponse(
         id = id.value,
         name = name,
     )
 
-internal fun Page<Product>.toListProductsResponse() =
+internal fun Page<ProductListItem>.toListProductsResponse() =
     ListProductsResponse(
         products = this.items,
         nextPageToken = this.cursor?.value,

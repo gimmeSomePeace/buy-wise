@@ -15,5 +15,6 @@ class RemoveFromBasketUseCase(
         basket.remove(
             productId = productId,
         )
+        basketRepository.save(basket)
     }
 }

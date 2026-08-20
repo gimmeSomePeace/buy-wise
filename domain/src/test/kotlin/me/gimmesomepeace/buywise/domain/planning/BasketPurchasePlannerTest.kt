@@ -27,7 +27,7 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId, storeId, 100.usd()),
+                        availableOffer(productId, storeId, 100.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -64,8 +64,8 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId, storeId1, 100.usd()),
-                        available(productId, storeId2, 1.usd()),
+                        availableOffer(productId, storeId1, 100.usd()),
+                        availableOffer(productId, storeId2, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -108,10 +108,10 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId1, storeId1, 1.usd()),
-                        available(productId1, storeId2, 999.usd()),
-                        available(productId2, storeId1, 999.usd()),
-                        available(productId2, storeId2, 1.usd()),
+                        availableOffer(productId1, storeId1, 1.usd()),
+                        availableOffer(productId1, storeId2, 999.usd()),
+                        availableOffer(productId2, storeId1, 999.usd()),
+                        availableOffer(productId2, storeId2, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -151,10 +151,10 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId1, storeId1, 100.usd()),
-                        available(productId2, storeId1, 100.usd()),
-                        available(productId1, storeId2, 50.usd()),
-                        available(productId2, storeId2, 900.usd()),
+                        availableOffer(productId1, storeId1, 100.usd()),
+                        availableOffer(productId2, storeId1, 100.usd()),
+                        availableOffer(productId1, storeId2, 50.usd()),
+                        availableOffer(productId2, storeId2, 900.usd()),
                     ),
                 maxStores = StoreCountLimit.Limited(1),
             )
@@ -224,12 +224,12 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId1, storeId1, 1.usd()),
-                        available(productId2, storeId1, 9.usd()),
-                        available(productId1, storeId2, 4.usd()),
-                        available(productId2, storeId2, 2.usd()),
-                        available(productId1, storeId3, 3.usd()),
-                        available(productId2, storeId3, 1.usd()),
+                        availableOffer(productId1, storeId1, 1.usd()),
+                        availableOffer(productId2, storeId1, 9.usd()),
+                        availableOffer(productId1, storeId2, 4.usd()),
+                        availableOffer(productId2, storeId2, 2.usd()),
+                        availableOffer(productId1, storeId3, 3.usd()),
+                        availableOffer(productId2, storeId3, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )
@@ -261,10 +261,10 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId1, storeId1, 2.usd()),
-                        available(productId2, storeId1, 5.usd()),
-                        available(productId1, storeId2, 5.usd()),
-                        available(productId2, storeId2, 3.usd()),
+                        availableOffer(productId1, storeId1, 2.usd()),
+                        availableOffer(productId2, storeId1, 5.usd()),
+                        availableOffer(productId1, storeId2, 5.usd()),
+                        availableOffer(productId2, storeId2, 3.usd()),
                     ),
                 maxStores = StoreCountLimit.Limited(1),
             )
@@ -295,8 +295,8 @@ class BasketPurchasePlannerTest {
                 basket = basket,
                 offers =
                     offerCatalog(
-                        available(productId1, storeId1, 1.usd()),
-                        available(productId1, storeId2, 1.usd()),
+                        availableOffer(productId1, storeId1, 1.usd()),
+                        availableOffer(productId1, storeId2, 1.usd()),
                     ),
                 maxStores = StoreCountLimit.Unlimited,
             )

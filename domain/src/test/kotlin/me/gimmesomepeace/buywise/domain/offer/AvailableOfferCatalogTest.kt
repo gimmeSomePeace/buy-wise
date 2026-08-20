@@ -1,6 +1,6 @@
 package me.gimmesomepeace.buywise.domain.offer
 
-import me.gimmesomepeace.buywise.domain.planning.available
+import me.gimmesomepeace.buywise.domain.planning.availableOffer
 import me.gimmesomepeace.buywise.domain.planning.offerCatalog
 import me.gimmesomepeace.buywise.domain.product.productId
 import me.gimmesomepeace.buywise.domain.shared.usd
@@ -20,8 +20,8 @@ class AvailableOfferCatalogTest {
 
             assertThatThrownBy {
                 offerCatalog(
-                    available(productId1, storeId1),
-                    available(productId1, storeId1),
+                    availableOffer(productId1, storeId1),
+                    availableOffer(productId1, storeId1),
                 )
             }.isInstanceOf(IllegalArgumentException::class.java)
         }
@@ -35,8 +35,8 @@ class AvailableOfferCatalogTest {
 
             val catalog =
                 offerCatalog(
-                    available(productId1, storeId()),
-                    available(productId1, storeId()),
+                    availableOffer(productId1, storeId()),
+                    availableOffer(productId1, storeId()),
                 )
 
             assertThat(catalog.stores().size).isEqualTo(2)
@@ -52,10 +52,10 @@ class AvailableOfferCatalogTest {
 
             val catalog =
                 offerCatalog(
-                    available(productId, storeId, 1.usd()),
+                    availableOffer(productId, storeId, 1.usd()),
                 )
             assertThat(catalog.of(productId, storeId))
-                .isEqualTo(available(productId, storeId, 1.usd()))
+                .isEqualTo(availableOffer(productId, storeId, 1.usd()))
         }
 
         @Test
@@ -77,9 +77,9 @@ class AvailableOfferCatalogTest {
 
             val catalog =
                 offerCatalog(
-                    available(productId1, storeId1),
-                    available(productId1, storeId2),
-                    available(productId2, storeId2),
+                    availableOffer(productId1, storeId1),
+                    availableOffer(productId1, storeId2),
+                    availableOffer(productId2, storeId2),
                 )
 
             assertThat(catalog.forProduct(productId1)).hasSize(2)
