@@ -47,13 +47,17 @@ internal open class StoreController(
         @RequestParam(
             value = "page_size",
             defaultValue = "20",
-        ) @Positive pageSize: Int,
+        )
+        @Positive pageSize: Int,
         @RequestParam(value = "page_token", required = false) pageToken:
             String?,
     ): ResponseEntity<ListStoresResponse> {
         val cursor = pageToken?.let { Cursor(it) }
         val request = PageRequest(pageSize, cursor)
-        val result = listStoresUseCase.execute(UserId(userId), request).toListStoresResponse()
+        val result = listStoresUseCase.execute(
+            UserId(userId),
+            request
+        ).toListStoresResponse()
         return ResponseEntity.ok(result)
     }
 

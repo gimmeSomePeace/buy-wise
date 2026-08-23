@@ -1,6 +1,7 @@
 package me.gimmesomepeace.buywise.application.offer.list
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.application.offer.OfferListItem
@@ -44,21 +45,20 @@ class ListOffersUseCaseTest {
         assertThat(result.items).isEmpty()
     }
 
-    // TODO: переделать
-//    @Test
-//    fun `should pass ownerId to query filter`() = runTest {
-//        val ownerId = userId()
-//        val page = Page<OfferListItem>(items = emptyList(), cursor = null)
-//
-//        coEvery { query.list(any(), any()) } returns page
-//
-//        useCase.execute(ownerId, PageRequest(pageSize = 20))
-//
-//        coVerify(exactly = 1) {
-//            query.list(
-//                match { filter -> filter.ownerId == ownerId },
-//                any(),
-//            )
-//        }
-//    }
+    @Test
+    fun `should pass ownerId to query filter`() = runTest {
+        val ownerId = userId()
+        val page = Page<OfferListItem>(items = emptyList(), cursor = null)
+
+        coEvery { query.list(any(), any()) } returns page
+
+        useCase.execute(ownerId, PageRequest(pageSize = 20))
+
+        coVerify(exactly = 1) {
+            query.list(
+                any(),
+                match { filter -> filter.ownerId == ownerId },
+            )
+        }
+    }
 }

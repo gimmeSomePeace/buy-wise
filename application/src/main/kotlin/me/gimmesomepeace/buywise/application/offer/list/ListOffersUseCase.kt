@@ -1,5 +1,6 @@
 package me.gimmesomepeace.buywise.application.offer.list
 
+import me.gimmesomepeace.buywise.application.offer.OfferFilters
 import me.gimmesomepeace.buywise.application.offer.OfferListItem
 import me.gimmesomepeace.buywise.application.offer.OfferQuery
 import me.gimmesomepeace.buywise.application.shared.Page
@@ -12,5 +13,5 @@ class ListOffersUseCase(
     suspend fun execute(
         userId: UserId,
         request: PageRequest,
-    ): Page<OfferListItem> = offerQuery.list(userId, request)
+    ): Page<OfferListItem> = offerQuery.list(request, OfferFilters(ownerId = userId))
 }

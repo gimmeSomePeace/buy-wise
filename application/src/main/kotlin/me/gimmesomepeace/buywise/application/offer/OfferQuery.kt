@@ -11,8 +11,8 @@ interface OfferQuery {
     ): OfferDetails?
 
     suspend fun list(
-        ownerId: UserId,
         request: PageRequest,
+        filters: OfferFilters = OfferFilters(),
     ): Page<OfferListItem>
 
     suspend fun existsByIdAndOwner(id: OfferId, userId: UserId): Boolean

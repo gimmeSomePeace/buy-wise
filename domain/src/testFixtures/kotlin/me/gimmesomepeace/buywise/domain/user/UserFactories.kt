@@ -2,11 +2,14 @@ package me.gimmesomepeace.buywise.domain.user
 
 import com.github.f4b6a3.uuid.UuidCreator
 import me.gimmesomepeace.buywise.domain.shared.password.PasswordHash
+import java.util.concurrent.atomic.AtomicLong
+
+private val loginCounter = AtomicLong(0)
 
 fun userId() = UserId(UuidCreator.getTimeOrderedEpoch())
 
 fun login(
-    value: String = "LOGIN"
+    value: String = "LOGIN-${loginCounter.incrementAndGet()}",
 ) = Login(value)
 
 fun user(
