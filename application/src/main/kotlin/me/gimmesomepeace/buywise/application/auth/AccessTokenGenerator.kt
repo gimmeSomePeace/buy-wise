@@ -7,5 +7,5 @@ fun interface AccessTokenGenerator {
     fun generate(
         userId: UserId,
         role: UserRole,
-    ) : AccessToken
+    ): AccessToken
 }

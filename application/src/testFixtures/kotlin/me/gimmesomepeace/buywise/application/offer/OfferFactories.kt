@@ -16,13 +16,13 @@ fun offerDetails(
     ownerId: UserId = userId(),
     productId: ProductId = productId(),
     storeId: StoreId = storeId(),
-    unitPrice: Money = 1.usd()
+    unitPrice: Money = 1.usd(),
 ) = OfferDetails(
     id = id,
     ownerId = ownerId,
     storeId = storeId,
     productId = productId,
-    unitPrice = unitPrice
+    unitPrice = unitPrice,
 )
 
 fun offerListItem(
@@ -30,11 +30,11 @@ fun offerListItem(
     ownerId: UserId = userId(),
     productId: ProductId = productId(),
     storeId: StoreId = storeId(),
-    unitPrice: Money = 1.usd()
+    unitPrice: Money = 1.usd(),
 ) = OfferListItem(
     id = id,
     ownerId = ownerId,
     storeId = storeId,
     productId = productId,
-    unitPrice = unitPrice
+    unitPrice = unitPrice,
 )

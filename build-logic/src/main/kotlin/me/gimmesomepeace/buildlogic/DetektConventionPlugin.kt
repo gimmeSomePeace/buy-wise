@@ -8,9 +8,7 @@ import org.gradle.internal.Actions.with
 import org.gradle.kotlin.dsl.configure
 
 class DetektConventionPlugin : Plugin<Project> {
-    override fun apply(
-        target: Project,
-    ) {
+    override fun apply(target: Project) {
         with(target) {
             pluginManager.apply("dev.detekt")
 

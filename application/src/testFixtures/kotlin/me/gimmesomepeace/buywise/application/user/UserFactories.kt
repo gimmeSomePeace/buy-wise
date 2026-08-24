@@ -10,11 +10,12 @@ import me.gimmesomepeace.buywise.domain.user.userId
 fun userDetails(
     id: UserId = userId(),
     login: Login = login(),
-    passwordHash: PasswordHash = PasswordHash("password-hash"),
-    role: UserRole = UserRole.USER
+    passwordHash: PasswordHash =
+        PasswordHash("password-hash"),
+    role: UserRole = UserRole.USER,
 ) = UserView(
     id = id,
-    login =login,
+    login = login,
     passwordHash = passwordHash,
-    role = role
+    role = role,
 )

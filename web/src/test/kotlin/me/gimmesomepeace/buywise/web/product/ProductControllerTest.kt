@@ -29,9 +29,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
+import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(ProductController::class)
@@ -72,8 +79,7 @@ class ProductControllerTest {
                 mockMvc
                     .get("/products/${productId.value}") {
                         with(authenticatedAs(userId))
-                    }
-                    .andReturn()
+                    }.andReturn()
 
             mockMvc
                 .perform(asyncDispatch(mvcResult))
@@ -85,11 +91,12 @@ class ProductControllerTest {
         @Test
         fun `should return 400 when productId is not valid UUID`() {
             val userId = userId()
-            mockMvc.get("/products/not-valid-UUID") {
-                with(authenticatedAs(userId))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .get("/products/not-valid-UUID") {
+                    with(authenticatedAs(userId))
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         @Test
@@ -103,8 +110,7 @@ class ProductControllerTest {
                 mockMvc
                     .get("/products/${productId.value}") {
                         with(authenticatedAs(userId))
-                    }
-                    .andReturn()
+                    }.andReturn()
 
             mockMvc
                 .perform(asyncDispatch(mvcResult))
@@ -119,14 +125,20 @@ class ProductControllerTest {
             val userId = userId()
             val productId = productId()
 
-            coEvery { createProductUseCase.execute(ownerId = userId, any()) } returns
+            coEvery {
+                createProductUseCase.execute(
+                    ownerId = userId,
+                    any(),
+                )
+            } returns
                 productDetails(id = productId, ownerId = userId)
 
             val mvcResult =
                 mockMvc
                     .post("/products") {
                         contentType = MediaType.APPLICATION_JSON
-                        content = mapper.writeValueAsString(createProductRequest())
+                        content =
+                            mapper.writeValueAsString(createProductRequest())
                         with(authenticatedAs(userId))
                     }.andReturn()
 
@@ -145,7 +157,10 @@ class ProductControllerTest {
             mockMvc
                 .post("/products") {
                     contentType = MediaType.APPLICATION_JSON
-                    content = mapper.writeValueAsString(createProductRequest(name = "   "))
+                    content =
+                        mapper.writeValueAsString(
+                            createProductRequest(name = "   "),
+                        )
                     with(authenticatedAs(userId))
                 }.andExpect {
                     status { isBadRequest() }
@@ -166,8 +181,7 @@ class ProductControllerTest {
                     mockMvc
                         .delete("/products/${productId.value}") {
                             with(authenticatedAs(userId))
-                        }
-                        .andReturn()
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -181,11 +195,12 @@ class ProductControllerTest {
         @Test
         fun `should return 400 when productId is not valid UUID`() {
             val userId = userId()
-            mockMvc.delete("/products/not-valid-UUID") {
-                with(authenticatedAs(userId))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .delete("/products/not-valid-UUID") {
+                    with(authenticatedAs(userId))
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         @Test
@@ -201,8 +216,7 @@ class ProductControllerTest {
                     mockMvc
                         .delete("/products/${productId.value}") {
                             with(authenticatedAs(userId))
-                        }
-                        .andReturn()
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -243,13 +257,14 @@ class ProductControllerTest {
         @Test
         fun `should return 400 when productId is not valid UUID`() {
             val userId = userId()
-            mockMvc.patch("/products/not-valid-UUID") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(renameProductRequest())
-                with(authenticatedAs(userId))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .patch("/products/not-valid-UUID") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = mapper.writeValueAsString(renameProductRequest())
+                    with(authenticatedAs(userId))
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
     }
 
@@ -272,12 +287,17 @@ class ProductControllerTest {
                     )
 
                 coEvery {
-                    listProductsUseCase.execute(ownerId = ownerId, request = request)
+                    listProductsUseCase.execute(
+                        ownerId = ownerId,
+                        request = request,
+                    )
                 } returns page
 
-                val mvcResult = mockMvc.get("/products") {
-                    with(authenticatedAs(ownerId))
-                }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .get("/products") {
+                            with(authenticatedAs(ownerId))
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -326,18 +346,17 @@ class ProductControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should return 400 when page size is not positive`(
-            pageSize: Int,
-        ) = runTest {
-            val mvcResult =
-                mockMvc
-                    .get("/products") {
-                        param("page_size", pageSize.toString())
-                    }.andReturn()
+        fun `should return 400 when page size is not positive`(pageSize: Int) =
+            runTest {
+                val mvcResult =
+                    mockMvc
+                        .get("/products") {
+                            param("page_size", pageSize.toString())
+                        }.andReturn()
 
-            mockMvc
-                .perform(asyncDispatch(mvcResult))
-                .andExpect(status().isBadRequest)
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isBadRequest)
+            }
     }
 }

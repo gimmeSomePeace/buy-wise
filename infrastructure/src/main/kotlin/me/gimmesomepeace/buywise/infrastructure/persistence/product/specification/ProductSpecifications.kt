@@ -7,24 +7,27 @@ import org.springframework.data.jpa.domain.Specification
 import java.util.UUID
 
 object ProductSpecifications {
-    fun byOwner(ownerId: UserId) : Specification<ProductEntity> =
+    fun byOwner(ownerId: UserId): Specification<ProductEntity> =
         Specification { root, _, builder ->
-            builder.equal(root.get<UUID>("ownerId"), ownerId.value)
-        }
-
-    fun nameContains(pattern: String) : Specification<ProductEntity> =
-        Specification { root, _, builder ->
-            builder.like(
-                builder.lower(root.get("name")),
-                "%${pattern.lowercase()}%"
+            builder.equal(
+                root.get<UUID>("ownerId"),
+                ownerId.value,
             )
         }
 
-    fun afterCursor(cursor: Cursor) : Specification<ProductEntity> =
+    fun nameContains(pattern: String): Specification<ProductEntity> =
+        Specification { root, _, builder ->
+            builder.like(
+                builder.lower(root.get("name")),
+                "%${pattern.lowercase()}%",
+            )
+        }
+
+    fun afterCursor(cursor: Cursor): Specification<ProductEntity> =
         Specification { root, _, builder ->
             builder.greaterThan(
                 root.get("id"),
-                UUID.fromString(cursor.value)
+                UUID.fromString(cursor.value),
             )
         }
 }

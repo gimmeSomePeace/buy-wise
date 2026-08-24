@@ -11,15 +11,24 @@ class AuthenticateUserUseCase(
 ) {
     suspend fun execute(
         login: Login,
-        password: String
-    ) : AccessToken {
-        val user = query.findByLogin(login) ?: throw AuthenticationException.InvalidCredentials()
-        if (!passwordHasher.matches(password, user.passwordHash))
-            throw AuthenticationException.InvalidCredentials()
+        password: String,
+    ): AccessToken {
+        val user =
+            query.findByLogin(login)
+                ?: throw AuthenticationException
+                    .InvalidCredentials()
+        if (!passwordHasher.matches(
+                password,
+                user.passwordHash,
+            )
+        ) {
+            throw AuthenticationException
+                .InvalidCredentials()
+        }
 
         return accessTokenGenerator.generate(
             userId = user.id,
-            role = user.role
+            role = user.role,
         )
     }
 }

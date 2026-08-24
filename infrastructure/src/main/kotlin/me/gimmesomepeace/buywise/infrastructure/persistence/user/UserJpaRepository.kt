@@ -10,5 +10,5 @@ interface UserJpaRepository : JpaRepository<UserEntity, UUID> {
     fun findByIdGreaterThanOrderByIdAsc(
         id: UUID,
         pageable: Pageable,
-    ) : List<UserEntity>
+    ): List<UserEntity>
 }

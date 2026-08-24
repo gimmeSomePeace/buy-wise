@@ -18,47 +18,90 @@ class ListOffersUseCaseTest {
     private val useCase = ListOffersUseCase(query)
 
     @Test
-    fun `should return offers for owner`() = runTest {
-        val ownerId = userId()
-        val page = Page(
-            items = listOf(offerListItem(ownerId = ownerId)),
-            cursor = null,
-        )
+    fun `should return offers for owner`() =
+        runTest {
+            val ownerId = userId()
+            val page =
+                Page(
+                    items =
+                        listOf(
+                            offerListItem(
+                                ownerId = ownerId,
+                            ),
+                        ),
+                    cursor = null,
+                )
 
-        coEvery { query.list(any(), any()) } returns page
+            coEvery {
+                query.list(any(), any())
+            } returns page
 
-        val result = useCase.execute(ownerId, PageRequest(pageSize = 20))
+            val result =
+                useCase.execute(
+                    ownerId,
+                    PageRequest(pageSize = 20),
+                )
 
-        assertThat(result.items).hasSize(1)
-        assertThat(result.items.first().ownerId).isEqualTo(ownerId)
-    }
-
-    @Test
-    fun `should return empty page when no offers`() = runTest {
-        val ownerId = userId()
-        val emptyPage = Page<OfferListItem>(items = emptyList(), cursor = null)
-
-        coEvery { query.list(any(), any()) } returns emptyPage
-
-        val result = useCase.execute(ownerId, PageRequest(pageSize = 20))
-
-        assertThat(result.items).isEmpty()
-    }
-
-    @Test
-    fun `should pass ownerId to query filter`() = runTest {
-        val ownerId = userId()
-        val page = Page<OfferListItem>(items = emptyList(), cursor = null)
-
-        coEvery { query.list(any(), any()) } returns page
-
-        useCase.execute(ownerId, PageRequest(pageSize = 20))
-
-        coVerify(exactly = 1) {
-            query.list(
-                any(),
-                match { filter -> filter.ownerId == ownerId },
-            )
+            assertThat(result.items).hasSize(1)
+            assertThat(
+                result.items.first().ownerId,
+            ).isEqualTo(ownerId)
         }
-    }
+
+    @Test
+    fun `should return empty page when no offers`() =
+        runTest {
+            val ownerId = userId()
+            val emptyPage =
+                Page<OfferListItem>(
+                    items = emptyList(),
+                    cursor = null,
+                )
+
+            coEvery {
+                query.list(any(), any())
+            } returns emptyPage
+
+            val result =
+                useCase.execute(
+                    ownerId,
+                    PageRequest(pageSize = 20),
+                )
+
+            assertThat(result.items).isEmpty()
+        }
+
+    @Test
+    fun `should pass ownerId to query filter`() =
+        runTest {
+            val ownerId = userId()
+            val page =
+                Page<OfferListItem>(
+                    items = emptyList(),
+                    cursor = null,
+                )
+
+            coEvery {
+                query.list(
+                    any(),
+                    any(),
+                )
+            } returns
+                page
+
+            useCase.execute(
+                ownerId,
+                PageRequest(pageSize = 20),
+            )
+
+            coVerify(exactly = 1) {
+                query.list(
+                    any(),
+                    match { filter ->
+                        filter.ownerId ==
+                            ownerId
+                    },
+                )
+            }
+        }
 }

@@ -12,6 +12,10 @@ fun authenticatedAs(userId: UserId = userId()) =
         UsernamePasswordAuthenticationToken(
             userId.value,
             null,
-            listOf(SimpleGrantedAuthority("ROLE_${UserRole.USER.name}")),
-        )
+            listOf(
+                SimpleGrantedAuthority(
+                    "ROLE_${UserRole.USER.name}",
+                ),
+            ),
+        ),
     )

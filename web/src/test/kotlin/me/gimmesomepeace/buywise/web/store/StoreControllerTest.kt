@@ -28,9 +28,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
+import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(StoreController::class)
@@ -69,11 +76,11 @@ class StoreControllerTest {
                     getStoreUseCase.execute(userId, expected.id)
                 } returns expected
 
-                val mvcResult = mockMvc
+                val mvcResult =
+                    mockMvc
                         .get("/stores/${expected.id.value}") {
                             with(authenticatedAs(userId))
-                        }
-                        .andReturn()
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -99,8 +106,7 @@ class StoreControllerTest {
                     mockMvc
                         .get("/stores/${storeId.value}") {
                             with(authenticatedAs(userId))
-                        }
-                        .andReturn()
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -149,20 +155,19 @@ class StoreControllerTest {
 
         @ParameterizedTest
         @ValueSource(strings = ["", "   "])
-        fun `should fail when name is invalid`(
-            name: String,
-        ) = runTest {
-            mockMvc
-                .post("/stores") {
-                    contentType = MediaType.APPLICATION_JSON
-                    content =
-                        mapper.writeValueAsString(
-                            createStoreRequest(name),
-                        )
-                }.andExpect {
-                    status { isBadRequest() }
-                }
-        }
+        fun `should fail when name is invalid`(name: String) =
+            runTest {
+                mockMvc
+                    .post("/stores") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                createStoreRequest(name),
+                            )
+                    }.andExpect {
+                        status { isBadRequest() }
+                    }
+            }
     }
 
     @Nested
@@ -208,7 +213,8 @@ class StoreControllerTest {
                     mockMvc
                         .patch("/stores/${storeId.value}") {
                             contentType = MediaType.APPLICATION_JSON
-                            content = mapper.writeValueAsString(renameStoreRequest())
+                            content =
+                                mapper.writeValueAsString(renameStoreRequest())
                             with(authenticatedAs(userId))
                         }.andReturn()
 
@@ -234,8 +240,7 @@ class StoreControllerTest {
                     mockMvc
                         .delete("/stores/${storeId.value}") {
                             with(authenticatedAs(userId))
-                        }
-                        .andReturn()
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -259,8 +264,7 @@ class StoreControllerTest {
                     mockMvc
                         .delete("/stores/${storeId.value}") {
                             with(authenticatedAs(userId))
-                        }
-                        .andReturn()
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -290,9 +294,11 @@ class StoreControllerTest {
                     listStoresUseCase.execute(userId, request)
                 } returns page
 
-                val mvcResult = mockMvc.get("/stores") {
-                    with(authenticatedAs(userId))
-                }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .get("/stores") {
+                            with(authenticatedAs(userId))
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -341,18 +347,17 @@ class StoreControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(
-            pageSize: Int,
-        ) = runTest {
-            val mvcResult =
+        fun `should fail when page size is not positive`(pageSize: Int) =
+            runTest {
+                val mvcResult =
+                    mockMvc
+                        .get("/stores") {
+                            param("page_size", pageSize.toString())
+                            with(authenticatedAs(userId()))
+                        }.andReturn()
                 mockMvc
-                    .get("/stores") {
-                        param("page_size", pageSize.toString())
-                        with(authenticatedAs(userId()))
-                    }.andReturn()
-            mockMvc
-                .perform(asyncDispatch(mvcResult))
-                .andExpect(status().isBadRequest)
-        }
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isBadRequest)
+            }
     }
 }

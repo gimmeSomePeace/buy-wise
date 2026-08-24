@@ -11,5 +11,8 @@ class ListProductsUseCase(
     suspend fun execute(
         ownerId: UserId,
         request: PageRequest,
-    ) = productQuery.list(request, ProductFilters(ownerId = ownerId))
+    ) = productQuery.list(
+        request,
+        ProductFilters(ownerId = ownerId),
+    )
 }

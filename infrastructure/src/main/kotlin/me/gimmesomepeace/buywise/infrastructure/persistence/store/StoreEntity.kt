@@ -11,10 +11,8 @@ import java.util.UUID
 class StoreEntity(
     @Id
     var id: UUID,
-
     @Column(nullable = false)
     var ownerId: UUID,
-
     @Column(nullable = false)
     var name: String,
 )

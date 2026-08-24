@@ -11,26 +11,30 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 
 class JwtAuthenticationFilter(
-    private val jwtGenerator: JwtAccessTokenGenerator
+    private val jwtGenerator: JwtAccessTokenGenerator,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val token = extractToken(request)
 
         if (token != null) {
             try {
                 val parsed = jwtGenerator.parse(token)
-                val authentication = UsernamePasswordAuthenticationToken(
-                    parsed.userId,
-                    null,
-                    listOf(SimpleGrantedAuthority("ROLE_${parsed.role.name}"))
-                )
+                val authentication =
+                    UsernamePasswordAuthenticationToken(
+                        parsed.userId,
+                        null,
+                        listOf(
+                            SimpleGrantedAuthority("ROLE_${parsed.role.name}"),
+                        ),
+                    )
                 authentication.isAuthenticated = true
 
-                SecurityContextHolder.getContext().authentication = authentication
+                SecurityContextHolder.getContext().authentication =
+                    authentication
             } catch (_: Exception) {
                 SecurityContextHolder.clearContext()
             }
@@ -39,8 +43,8 @@ class JwtAuthenticationFilter(
     }
 
     private fun extractToken(request: HttpServletRequest): AccessToken? {
-        val header = request.getHeader(HttpHeaders.AUTHORIZATION) ?: return null
-        if (!header.startsWith("Bearer ")) return null
+        val header = request.getHeader(HttpHeaders.AUTHORIZATION)
+        if (header == null || !header.startsWith("Bearer ")) return null
 
         val raw = header.removePrefix("Bearer ")
         return runCatching { AccessToken(raw) }.getOrNull()

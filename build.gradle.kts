@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.spotless)
 }
@@ -12,11 +11,6 @@ spotless {
         target("**/*.kt")
         ktlint("1.8.0")
             .setEditorConfigPath("${rootProject.projectDir}/.editorconfig")
-//            .editorConfigOverride(
-//                mapOf(
-//                    "max_line_length" to "120",
-//                ),
-//            )
     }
 
     kotlinGradle {

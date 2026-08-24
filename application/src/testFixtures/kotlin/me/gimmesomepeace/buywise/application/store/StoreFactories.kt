@@ -8,11 +8,11 @@ import me.gimmesomepeace.buywise.domain.user.userId
 fun storeDetails(
     id: StoreId = storeId(),
     ownerId: UserId = userId(),
-    name: String = "STORE DETAILS NAME"
+    name: String = "STORE DETAILS NAME",
 ) = StoreDetails(id, ownerId, name)
 
 fun storeListItem(
     id: StoreId = storeId(),
     ownerId: UserId = userId(),
-    name: String = "STORE LIST ITEM NAME"
+    name: String = "STORE LIST ITEM NAME",
 ) = StoreListItem(id, ownerId, name)

@@ -13,9 +13,15 @@ class RenameProductUseCase(
         productId: ProductId,
         newName: String,
     ) {
-        val product = productRepository.get(productId)
-        if (product.ownerId != userId)
-            throw ProductException.NotFound(productId)
+        val product =
+            productRepository.get(
+                productId,
+            )
+        if (product.ownerId != userId) {
+            throw ProductException.NotFound(
+                productId,
+            )
+        }
         product.rename(newName)
         productRepository.update(product)
     }

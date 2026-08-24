@@ -11,6 +11,9 @@ class ListStoresUseCase(
     suspend fun execute(
         ownerId: UserId,
         request: PageRequest,
-        filters: StoreFilters = StoreFilters()
-    ) = storeQuery.list(request, filters.copy(ownerId = ownerId))
+        filters: StoreFilters = StoreFilters(),
+    ) = storeQuery.list(
+        request,
+        filters.copy(ownerId = ownerId),
+    )
 }

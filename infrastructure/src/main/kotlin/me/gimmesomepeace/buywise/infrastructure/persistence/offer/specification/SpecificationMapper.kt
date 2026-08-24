@@ -12,4 +12,5 @@ fun OfferFilters.toSpecification(): Specification<OfferEntity> =
         minPrice?.let { OfferSpecifications.byMinPrice(it) },
         maxPrice?.let { OfferSpecifications.byMaxPrice(it) },
         currencies?.let { OfferSpecifications.byCurrencies(it) },
-    ).reduceOrNull { acc, spec -> acc.and(spec) } ?: Specification.unrestricted()
+    ).reduceOrNull { acc, spec -> acc.and(spec) }
+        ?: Specification.unrestricted()

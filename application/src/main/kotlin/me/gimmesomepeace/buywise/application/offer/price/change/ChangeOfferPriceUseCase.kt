@@ -16,8 +16,13 @@ class ChangeOfferPriceUseCase(
         offerId: OfferId,
         newPrice: Money,
     ) {
-        if (!query.existsByIdAndOwner(offerId, userId))
+        if (!query.existsByIdAndOwner(
+                offerId,
+                userId,
+            )
+        ) {
             throw OfferException.NotFound(offerId)
+        }
 
         val offer = repository.get(offerId)
         offer.changePrice(newPrice)

@@ -1,6 +1,8 @@
 package me.gimmesomepeace.buywise.domain.product
 
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatCode
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 class ProductTest {
@@ -18,20 +20,26 @@ class ProductTest {
     fun `should reject blank name on creation`() {
         assertThatThrownBy {
             product(name = "   ")
-        }.isInstanceOf(IllegalArgumentException::class.java)
+        }.isInstanceOf(
+            IllegalArgumentException::class.java,
+        )
     }
 
     @Test
     fun `should rename product`() {
         val product = product(name = "name")
         product.rename("newName")
-        assertThat(product.name).isEqualTo("newName")
+        assertThat(
+            product.name,
+        ).isEqualTo("newName")
     }
 
     @Test
     fun `should reject blank name on rename`() {
         assertThatThrownBy {
             product(name = "name").rename("   ")
-        }.isInstanceOf(IllegalArgumentException::class.java)
+        }.isInstanceOf(
+            IllegalArgumentException::class.java,
+        )
     }
 }

@@ -14,8 +14,9 @@ class RenameStoreUseCase(
         newName: String,
     ) {
         val store = storeRepository.get(storeId)
-        if (store.ownerId != userId)
+        if (store.ownerId != userId) {
             throw StoreException.NotFound(storeId)
+        }
 
         store.rename(newName)
         storeRepository.update(store)

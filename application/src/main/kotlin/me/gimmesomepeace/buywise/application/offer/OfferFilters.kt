@@ -18,19 +18,20 @@ data class OfferFilters(
 ) {
     init {
         require(minPrice == null || minPrice >= BigDecimal.ZERO)
-            "minPrice must be >= 0, got $minPrice"
+        "minPrice must be >= 0, got $minPrice"
         require(maxPrice == null || maxPrice >= BigDecimal.ZERO)
-            "maxPrice must be >= 0, got $maxPrice"
-        if (minPrice != null && maxPrice != null)
+        "maxPrice must be >= 0, got $maxPrice"
+        if (minPrice != null && maxPrice != null) {
             require(minPrice <= maxPrice)
-                "minPrice must be <= maxPrice, got $minPrice <= $maxPrice"
+        }
+        "minPrice must be <= maxPrice, got $minPrice <= $maxPrice"
 
         require(productIds == null || productIds.size <= MAX_COUNT_IN_LIST)
-            "productsIds size must be <= $MAX_COUNT_IN_LIST, got ${productIds?.size}"
+        "productsIds size must be <= $MAX_COUNT_IN_LIST, got ${productIds?.size}"
         require(storeIds == null || storeIds.size <= MAX_COUNT_IN_LIST)
-            "storeIds size must be <= $MAX_COUNT_IN_LIST, got ${productIds?.size}"
+        "storeIds size must be <= $MAX_COUNT_IN_LIST, got ${productIds?.size}"
         require(currencies == null || currencies.size <= MAX_COUNT_IN_LIST)
-            "currencies size must be <= $MAX_COUNT_IN_LIST, got ${currencies?.size}"
+        "currencies size must be <= $MAX_COUNT_IN_LIST, got ${currencies?.size}"
 
         require(productIds == null || productIds.isNotEmpty()) {
             "productsIds must be null or not empty"

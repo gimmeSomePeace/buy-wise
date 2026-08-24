@@ -17,42 +17,46 @@ class GetStoreUseCaseTest {
     private val useCase = GetStoreUseCase(query)
 
     @Test
-    fun `should return store when it exists and belongs to user`() = runTest {
-        val ownerId = userId()
-        val storeId = storeId()
-        val expected = storeDetails(id = storeId, ownerId = ownerId)
+    fun `should return store when it exists and belongs to user`() =
+        runTest {
+            val ownerId = userId()
+            val storeId = storeId()
+            val expected = storeDetails(id = storeId, ownerId = ownerId)
 
-        coEvery { query.find(storeId) } returns expected
+            coEvery { query.find(storeId) } returns expected
 
-        val actual = useCase.execute(ownerId, storeId)
+            val actual = useCase.execute(ownerId, storeId)
 
-        assertThat(actual)
-            .usingRecursiveComparison()
-            .isEqualTo(expected)
-    }
+            assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected)
+        }
 
     @Test
-    fun `should throw NotFound when store not found`() = runTest {
-        val ownerId = userId()
-        val storeId = storeId()
+    fun `should throw NotFound when store not found`() =
+        runTest {
+            val ownerId = userId()
+            val storeId = storeId()
 
-        coEvery { query.find(storeId) } returns null
+            coEvery { query.find(storeId) } returns null
 
-        assertFailsWith<StoreException.NotFound> {
-            useCase.execute(ownerId, storeId)
+            assertFailsWith<StoreException.NotFound> {
+                useCase.execute(ownerId, storeId)
+            }
         }
-    }
 
     @Test
-    fun `should throw NotFound when store belongs to another user`() = runTest {
-        val ownerId = userId()
-        val anotherOwnerId = userId()
-        val storeId = storeId()
+    fun `should throw NotFound when store belongs to another user`() =
+        runTest {
+            val ownerId = userId()
+            val anotherOwnerId = userId()
+            val storeId = storeId()
 
-        coEvery { query.find(storeId) } returns storeDetails(id = storeId, ownerId = anotherOwnerId)
+            coEvery { query.find(storeId) } returns
+                storeDetails(id = storeId, ownerId = anotherOwnerId)
 
-        assertFailsWith<StoreException.NotFound> {
-            useCase.execute(ownerId, storeId)
+            assertFailsWith<StoreException.NotFound> {
+                useCase.execute(ownerId, storeId)
+            }
         }
-    }
 }

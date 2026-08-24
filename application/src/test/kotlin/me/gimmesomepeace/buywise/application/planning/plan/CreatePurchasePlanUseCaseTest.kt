@@ -20,40 +20,45 @@ import org.junit.jupiter.api.Test
 class CreatePurchasePlanUseCaseTest {
     private val basketRepository = mockk<BasketRepository>()
     private val offerRepository = mockk<OfferRepository>()
-    private val useCase = CreatePurchasePlanUseCase(
-        basketRepository = basketRepository,
-        offerRepository = offerRepository,
-    )
+    private val useCase =
+        CreatePurchasePlanUseCase(
+            basketRepository = basketRepository,
+            offerRepository = offerRepository,
+        )
 
     @Test
-    fun `should create purchase plan`() = runTest {
-        val productId = productId()
-        val storeId = storeId()
+    fun `should create purchase plan`() =
+        runTest {
+            val productId = productId()
+            val storeId = storeId()
 
-        val offer = availableOffer(
-            storeId = storeId,
-            productId = productId,
-            unitPrice = 100.usd(),
-        )
+            val offer =
+                availableOffer(
+                    storeId = storeId,
+                    productId = productId,
+                    unitPrice = 100.usd(),
+                )
 
-        val basket = basket {
-            add(productId, 2.qty())
+            val basket =
+                basket {
+                    add(productId, 2.qty())
+                }
+
+            val offerCatalog = AvailableOfferCatalog(listOf(offer))
+            coEvery { basketRepository.find() } returns basket
+            coEvery { offerRepository.availableOffers() } returns offerCatalog
+
+            val result = useCase.execute()
+
+            val expected =
+                BasketPurchasePlanner.plan(
+                    basket = basket,
+                    offers = offerCatalog,
+                    maxStores = StoreCountLimit.Unlimited,
+                )
+
+            assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expected)
         }
-
-        val offerCatalog = AvailableOfferCatalog(listOf(offer))
-        coEvery { basketRepository.find() } returns basket
-        coEvery { offerRepository.availableOffers() } returns offerCatalog
-
-        val result = useCase.execute()
-
-        val expected = BasketPurchasePlanner.plan(
-            basket = basket,
-            offers = offerCatalog,
-            maxStores = StoreCountLimit.Unlimited,
-        )
-
-        assertThat(result)
-            .usingRecursiveComparison()
-            .isEqualTo(expected)
-    }
 }

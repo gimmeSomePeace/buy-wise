@@ -17,54 +17,66 @@ class AuthenticateUserUseCaseTest {
     private val passwordHasher = mockk<PasswordHasher>()
 
     @Test
-    fun `should authenticate user`() = runTest {
-        val accessToken = accessToken()
-        val useCase = AuthenticateUserUseCase(
-            query = query,
-            passwordHasher = passwordHasher,
-            accessTokenGenerator = { _, _ -> accessToken }
-        )
+    fun `should authenticate user`() =
+        runTest {
+            val accessToken = accessToken()
+            val useCase =
+                AuthenticateUserUseCase(
+                    query = query,
+                    passwordHasher = passwordHasher,
+                    accessTokenGenerator = { _, _ -> accessToken },
+                )
 
-        val password = "password"
-        val userDetails = userDetails()
+            val password = "password"
+            val userDetails = userDetails()
 
-        coEvery { query.findByLogin(userDetails.login) } returns userDetails
-        every { passwordHasher.matches(password, userDetails.passwordHash) } returns true
+            coEvery { query.findByLogin(userDetails.login) } returns userDetails
+            every {
+                passwordHasher.matches(
+                    password,
+                    userDetails.passwordHash,
+                )
+            } returns
+                true
 
-        val result = useCase.execute(userDetails.login, password)
+            val result = useCase.execute(userDetails.login, password)
 
-        assertThat(result).isEqualTo(accessToken)
-    }
+            assertThat(result).isEqualTo(accessToken)
+        }
 
     @Test
-    fun `should fail when user not found`() = runTest {
-        val useCase = AuthenticateUserUseCase(
-            query = query,
-            passwordHasher = passwordHasher,
-            accessTokenGenerator = { _, _ -> accessToken() }
-        )
+    fun `should fail when user not found`() =
+        runTest {
+            val useCase =
+                AuthenticateUserUseCase(
+                    query = query,
+                    passwordHasher = passwordHasher,
+                    accessTokenGenerator = { _, _ -> accessToken() },
+                )
 
-        coEvery { query.findByLogin(any()) } returns null
+            coEvery { query.findByLogin(any()) } returns null
 
-        assertFailsWith<AuthenticationException.InvalidCredentials> {
-            useCase.execute(login(), "password")
+            assertFailsWith<AuthenticationException.InvalidCredentials> {
+                useCase.execute(login(), "password")
+            }
         }
-    }
 
     @Test
-    fun `should fail when password is incorrect`() = runTest {
-        val useCase = AuthenticateUserUseCase(
-            query = query,
-            passwordHasher = passwordHasher,
-            accessTokenGenerator = { _, _ -> accessToken() }
-        )
+    fun `should fail when password is incorrect`() =
+        runTest {
+            val useCase =
+                AuthenticateUserUseCase(
+                    query = query,
+                    passwordHasher = passwordHasher,
+                    accessTokenGenerator = { _, _ -> accessToken() },
+                )
 
-        val userDetails = userDetails()
-        coEvery { query.findByLogin(any()) } returns userDetails
-        coEvery { passwordHasher.matches(any(), any()) } returns false
+            val userDetails = userDetails()
+            coEvery { query.findByLogin(any()) } returns userDetails
+            coEvery { passwordHasher.matches(any(), any()) } returns false
 
-        assertFailsWith<AuthenticationException.InvalidCredentials> {
-            useCase.execute(userDetails.login, "password")
+            assertFailsWith<AuthenticationException.InvalidCredentials> {
+                useCase.execute(userDetails.login, "password")
+            }
         }
-    }
 }

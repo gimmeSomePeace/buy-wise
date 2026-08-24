@@ -8,13 +8,14 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class SpringSecurityUserDetailsService(
-    private val query: UserQuery
+    private val query: UserQuery,
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
         val login = Login(username)
-        val user = runBlocking {
-            query.findByLogin(login)
-        } ?: throw UsernameNotFoundException(username)
+        val user =
+            runBlocking {
+                query.findByLogin(login)
+            } ?: throw UsernameNotFoundException(username)
 
         return SpringUserDetails(user)
     }

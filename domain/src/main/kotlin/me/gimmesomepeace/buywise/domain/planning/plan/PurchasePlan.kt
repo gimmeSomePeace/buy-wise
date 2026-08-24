@@ -23,7 +23,9 @@ data class PurchasePlan(
     init {
         require(
             storePlans.isNotEmpty(),
-        ) { "store plans must have at least one store." }
+        ) {
+            "store plans must have at least one store."
+        }
 
         val currencies =
             storePlans
@@ -34,7 +36,12 @@ data class PurchasePlan(
             "Purchase plan must contain only one currency."
         }
         require(
-            storePlans.size == storePlans.map { it.storeId }.distinct().size,
+            storePlans.size ==
+                storePlans
+                    .map {
+                        it.storeId
+                    }.distinct()
+                    .size,
         ) {
             "Purchase plan must not have duplicate stores."
         }
@@ -43,6 +50,9 @@ data class PurchasePlan(
         totalPrice =
             storePlans
                 .map { it.totalPrice }
-                .fold(Money.zero(currency), Money::plus)
+                .fold(
+                    Money.zero(currency),
+                    Money::plus,
+                )
     }
 }

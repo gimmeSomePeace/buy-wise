@@ -26,21 +26,37 @@ data class StorePurchasePlan(
     init {
         require(
             purchases.isNotEmpty(),
-        ) { "Store purchase items must not be empty." }
+        ) {
+            "Store purchase items must not be empty."
+        }
 
-        val currencies = purchases.map { it.unitPrice.currency }.distinct()
+        val currencies =
+            purchases
+                .map {
+                    it.unitPrice.currency
+                }.distinct()
 
         require(currencies.size == 1) {
             "Store purchase must contain only one currency."
         }
-        require(purchases.size == purchases.distinctBy { it.productId }.size) {
+        require(
+            purchases.size ==
+                purchases
+                    .distinctBy {
+                        it.productId
+                    }.size,
+        ) {
             "Store purchase must not have duplicate products."
         }
 
         val currency = currencies.first()
         totalPrice =
             purchases
-                .map { it.unitPrice * it.quantity }
-                .fold(Money.zero(currency), Money::plus)
+                .map {
+                    it.unitPrice * it.quantity
+                }.fold(
+                    Money.zero(currency),
+                    Money::plus,
+                )
     }
 }

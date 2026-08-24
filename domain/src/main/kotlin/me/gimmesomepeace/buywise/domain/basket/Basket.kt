@@ -13,7 +13,8 @@ import me.gimmesomepeace.buywise.domain.shared.Quantity
  *  - Количество каждого продукта всегда положительно.
  */
 class Basket {
-    private val items = mutableMapOf<ProductId, Quantity>()
+    private val items =
+        mutableMapOf<ProductId, Quantity>()
 
     /**
      * Добавляет указанное количество товара в корзину.
@@ -26,7 +27,9 @@ class Basket {
         productId: ProductId,
         quantity: Quantity,
     ) {
-        items[productId] = (items[productId] ?: Quantity.ZERO) + quantity
+        items[productId] =
+            (items[productId] ?: Quantity.ZERO) +
+            quantity
     }
 
     /**
@@ -35,9 +38,7 @@ class Basket {
      * @param productId Идентификатор товара.
      * @return Количество товара в корзине или [Quantity.ZERO], если продукт отсутствует.
      */
-    fun quantityOf(
-        productId: ProductId,
-    ): Quantity = items[productId] ?: Quantity.ZERO
+    fun quantityOf(productId: ProductId): Quantity = items[productId] ?: Quantity.ZERO
 
     /**
      * Уменьшает количество товара в корзине на указанную величину.
@@ -56,16 +57,22 @@ class Basket {
     ) {
         require(
             quantity.isPositive(),
-        ) { "Quantity to decrease must be positive" }
+        ) {
+            "Quantity to decrease must be positive"
+        }
 
         val currentQuantity =
             items[productId]
-                ?: throw BasketException.ProductNotInBasket(productId)
+                ?: throw BasketException
+                    .ProductNotInBasket(
+                        productId,
+                    )
 
         if (quantity >= currentQuantity) {
             items.remove(productId)
         } else {
-            items[productId] = currentQuantity - quantity
+            items[productId] =
+                currentQuantity - quantity
         }
     }
 
@@ -83,13 +90,14 @@ class Basket {
      * @param productId Идентификатор продукта, который необходимо удалить из корзины.
      * @throws BasketException.ProductNotInBasket если продукт отсутствует в корзине.
      */
-    fun remove(
-        productId: ProductId,
-    ) {
+    fun remove(productId: ProductId) {
         if (productId !in
             items
         ) {
-            throw BasketException.ProductNotInBasket(productId)
+            throw BasketException
+                .ProductNotInBasket(
+                    productId,
+                )
         }
         items.remove(productId)
     }

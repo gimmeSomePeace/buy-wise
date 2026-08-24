@@ -89,9 +89,10 @@ internal class StoreRepositoryImplTest : PostgresSqlContainer() {
         fun `should update store`() =
             runTest {
                 val ownerId = persistence.persist(user()).id
-                val store = persistence.persist(
-                    store(name = "OLD NAME", ownerId = ownerId)
-                )
+                val store =
+                    persistence.persist(
+                        store(name = "OLD NAME", ownerId = ownerId),
+                    )
 
                 store.rename("NEW NAME")
                 repository.update(store)

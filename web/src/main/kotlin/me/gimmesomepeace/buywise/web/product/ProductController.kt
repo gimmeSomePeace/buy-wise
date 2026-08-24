@@ -46,8 +46,14 @@ internal open class ProductController(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable id: ProductId,
     ): ResponseEntity<ProductDetailsResponse> {
-        val product = getProductUseCase.execute(UserId(userId), id)
-        return ResponseEntity.ok(product.toDetailsResponse())
+        val product =
+            getProductUseCase.execute(
+                UserId(userId),
+                id,
+            )
+        return ResponseEntity.ok(
+            product.toDetailsResponse(),
+        )
     }
 
     @GetMapping
@@ -57,11 +63,14 @@ internal open class ProductController(
             value = "page_size",
             defaultValue = "20",
         ) @Positive pageSize: Int,
-        @RequestParam(value = "page_token", required = false) pageToken:
-            String?,
+        @RequestParam(
+            value = "page_token",
+            required = false,
+        ) pageToken: String?,
     ): ResponseEntity<ListProductsResponse> {
         val cursor = pageToken?.let { Cursor(it) }
-        val request = PageRequest(pageSize, cursor)
+        val request =
+            PageRequest(pageSize, cursor)
         val result =
             listProductsUseCase
                 .execute(
@@ -76,10 +85,18 @@ internal open class ProductController(
         @AuthenticationPrincipal userId: UUID,
         @Valid @RequestBody request: CreateProductRequest,
     ): ResponseEntity<ProductDetailsResponse> {
-        val product = createProductUseCase.execute(UserId(userId), request.name)
+        val product =
+            createProductUseCase
+                .execute(
+                    UserId(userId),
+                    request.name,
+                )
         return ResponseEntity
-            .created(URI("/products/${product.id.value}"))
-            .body(product.toDetailsResponse())
+            .created(
+                URI(
+                    "/products/${product.id.value}",
+                ),
+            ).body(product.toDetailsResponse())
     }
 
     @DeleteMapping("/{id}")

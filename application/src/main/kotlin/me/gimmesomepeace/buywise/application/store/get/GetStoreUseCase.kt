@@ -12,9 +12,19 @@ class GetStoreUseCase(
     suspend fun execute(
         userId: UserId,
         storeId: StoreId,
-    ) : StoreDetails {
-        val store = query.find(storeId) ?: throw StoreException.NotFound(storeId)
-        if (store.ownerId != userId) throw StoreException.NotFound(storeId)
+    ): StoreDetails {
+        val store =
+            query.find(storeId)
+                ?: throw StoreException.NotFound(
+                    storeId,
+                )
+        if (store.ownerId !=
+            userId
+        ) {
+            throw StoreException.NotFound(
+                storeId,
+            )
+        }
 
         return store
     }

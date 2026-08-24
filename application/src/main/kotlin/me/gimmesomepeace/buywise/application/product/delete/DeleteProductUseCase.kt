@@ -12,9 +12,15 @@ class DeleteProductUseCase(
         userId: UserId,
         productId: ProductId,
     ) {
-        val product = productRepository.get(productId)
-        if (product.ownerId != userId)
-            throw ProductException.NotFound(productId)
+        val product =
+            productRepository.get(
+                productId,
+            )
+        if (product.ownerId != userId) {
+            throw ProductException.NotFound(
+                productId,
+            )
+        }
         productRepository.delete(productId)
     }
 }

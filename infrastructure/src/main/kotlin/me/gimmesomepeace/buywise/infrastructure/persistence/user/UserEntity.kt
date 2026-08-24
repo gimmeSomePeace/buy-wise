@@ -15,7 +15,11 @@ class UserEntity(
     @Id
     var id: UUID,
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(
+        nullable = false,
+        unique = true,
+        length = 64,
+    )
     var login: String,
 
     @Column(nullable = false, length = 255)

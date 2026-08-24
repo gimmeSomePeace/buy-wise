@@ -20,14 +20,16 @@ internal fun Store.toEntity() =
         name = this.name,
     )
 
-internal fun StoreEntity.toDetails() = StoreDetails(
-    id = StoreId(this.id),
-    ownerId = UserId(this.ownerId),
-    name = this.name,
-)
+internal fun StoreEntity.toDetails() =
+    StoreDetails(
+        id = StoreId(this.id),
+        ownerId = UserId(this.ownerId),
+        name = this.name,
+    )
 
-internal fun StoreEntity.toListItem() = StoreListItem(
-    id = StoreId(this.id),
-    ownerId = UserId(this.ownerId),
-    name = this.name,
-)
+internal fun StoreEntity.toListItem() =
+    StoreListItem(
+        id = StoreId(this.id),
+        ownerId = UserId(this.ownerId),
+        name = this.name,
+    )

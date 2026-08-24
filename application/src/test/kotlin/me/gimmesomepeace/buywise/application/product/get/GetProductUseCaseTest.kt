@@ -17,36 +17,40 @@ class GetProductUseCaseTest {
     private val useCase = GetProductUseCase(query)
 
     @Test
-    fun `should return product by id`() = runTest {
-        val productId = productId()
-        val userId = userId()
-        val expected = productDetails(id = productId, ownerId = userId)
-        coEvery { query.find(productId) } returns expected
+    fun `should return product by id`() =
+        runTest {
+            val productId = productId()
+            val userId = userId()
+            val expected = productDetails(id = productId, ownerId = userId)
+            coEvery { query.find(productId) } returns expected
 
-        val actual = useCase.execute(userId, productId)
-        assertThat(actual)
-            .usingRecursiveComparison()
-            .isEqualTo(expected)
-    }
+            val actual = useCase.execute(userId, productId)
+            assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected)
+        }
 
     @Test
-    fun `should throw NotFound when product belongs to another user`() = runTest {
-        val productId = productId()
-        val ownerId = userId()
-        coEvery { query.find(productId) } returns productDetails(id = productId, ownerId = userId())
+    fun `should throw NotFound when product belongs to another user`() =
+        runTest {
+            val productId = productId()
+            val ownerId = userId()
+            coEvery { query.find(productId) } returns
+                productDetails(id = productId, ownerId = userId())
 
-        assertFailsWith<ProductException.NotFound> {
-            useCase.execute(ownerId, productId)
+            assertFailsWith<ProductException.NotFound> {
+                useCase.execute(ownerId, productId)
+            }
         }
-    }
 
     @Test
-    fun `should throw NotFound when product not found`() = runTest {
-        val productId = productId()
-        coEvery { query.find(productId) } returns null
+    fun `should throw NotFound when product not found`() =
+        runTest {
+            val productId = productId()
+            coEvery { query.find(productId) } returns null
 
-        assertFailsWith<ProductException.NotFound> {
-            useCase.execute(userId(), productId)
+            assertFailsWith<ProductException.NotFound> {
+                useCase.execute(userId(), productId)
+            }
         }
-    }
 }

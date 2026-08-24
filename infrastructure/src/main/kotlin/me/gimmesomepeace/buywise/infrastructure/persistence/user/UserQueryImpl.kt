@@ -8,14 +8,12 @@ import me.gimmesomepeace.buywise.application.user.UserQuery
 import me.gimmesomepeace.buywise.application.user.UserView
 import me.gimmesomepeace.buywise.domain.user.Login
 import org.springframework.data.domain.Pageable
-import java.util.*
+import java.util.UUID
 
 class UserQueryImpl(
     private val repository: UserJpaRepository,
 ) : UserQuery {
-
-    override suspend fun findByLogin(login: Login): UserView? =
-        repository.findByLogin(login.value)?.toView()
+    override suspend fun findByLogin(login: Login): UserView? = repository.findByLogin(login.value)?.toView()
 
     override suspend fun list(request: PageRequest): Page<UserListItem> {
         val requestWithExtra = Pageable.ofSize(request.pageSize + 1)

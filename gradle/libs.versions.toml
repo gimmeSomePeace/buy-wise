@@ -33,7 +33,6 @@ spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-depe
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-secutiry = { module = "org.springframework.boot:spring-boot-starter-security" }
 spring-security-core = { module = "org.springframework.security:spring-security-core" }
-spring-security-crypto = { module = "org.springframework.security:spring-security-crypto" }
 spring-security-config = { module = "org.springframework.security:spring-security-config" }
 spring-security-web = { module = "org.springframework.security:spring-security-web" }
 spring-security-test = { module = "org.springframework.security:spring-security-test" }

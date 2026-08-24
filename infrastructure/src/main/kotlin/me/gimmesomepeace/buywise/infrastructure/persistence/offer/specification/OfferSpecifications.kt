@@ -9,30 +9,30 @@ import me.gimmesomepeace.buywise.infrastructure.persistence.offer.OfferEntity
 import me.gimmesomepeace.buywise.infrastructure.persistence.store.StoreEntity
 import org.springframework.data.jpa.domain.Specification
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 object OfferSpecifications {
-    fun byProductIds(productIds: List<ProductId>) : Specification<OfferEntity> =
+    fun byProductIds(productIds: List<ProductId>): Specification<OfferEntity> =
         Specification { root, _, _ ->
             root.get<UUID>("productId").`in`(productIds.map { it.value })
         }
 
-    fun byStoreIds(storeIds: List<StoreId>) : Specification<OfferEntity> =
+    fun byStoreIds(storeIds: List<StoreId>): Specification<OfferEntity> =
         Specification { root, _, _ ->
             root.get<UUID>("storeId").`in`(storeIds.map { it.value })
         }
 
-    fun byMinPrice(minPrice: BigDecimal) : Specification<OfferEntity> =
+    fun byMinPrice(minPrice: BigDecimal): Specification<OfferEntity> =
         Specification { root, _, builder ->
             builder.ge(root.get<BigDecimal>("price"), minPrice)
         }
 
-    fun byMaxPrice(maxPrice: BigDecimal) : Specification<OfferEntity> =
+    fun byMaxPrice(maxPrice: BigDecimal): Specification<OfferEntity> =
         Specification { root, _, builder ->
             builder.le(root.get<BigDecimal>("price"), maxPrice)
         }
 
-    fun byCurrencies(currencies: List<Currency>) : Specification<OfferEntity> =
+    fun byCurrencies(currencies: List<Currency>): Specification<OfferEntity> =
         Specification { root, _, _ ->
             root.get<Currency>("currency").`in`(currencies)
         }
@@ -41,11 +41,11 @@ object OfferSpecifications {
         Specification { root, _, builder ->
             builder.greaterThan(
                 root.get("id"),
-                UUID.fromString(cursor.value)
+                UUID.fromString(cursor.value),
             )
         }
 
-    fun byOwner(ownerId: UserId) : Specification<OfferEntity> =
+    fun byOwner(ownerId: UserId): Specification<OfferEntity> =
         Specification { root, _, builder ->
             val storeJoin = root.join<OfferEntity, StoreEntity>("store")
             builder.equal(storeJoin.get<UUID>("ownerId"), ownerId.value)

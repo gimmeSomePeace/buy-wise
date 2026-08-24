@@ -21,17 +21,22 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UserController(
     private val registerUserUseCase: RegisterUserUseCase,
-    private val listUsersUseCase: ListUsersUseCase
+    private val listUsersUseCase: ListUsersUseCase,
 ) {
     @PostMapping
     suspend fun register(
         @Valid @RequestBody request: RegisterUserRequest,
-    ) : ResponseEntity<UserDetailsResponse> {
-        val result = registerUserUseCase.execute(
-            login = Login(request.login),
-            password = request.password
-        ).toDetailsResponse()
-        return ResponseEntity.status(201).body(result)
+    ): ResponseEntity<UserDetailsResponse> {
+        val result =
+            registerUserUseCase
+                .execute(
+                    login = Login(request.login),
+                    password = request.password,
+                ).toDetailsResponse()
+        return ResponseEntity
+            .status(
+                201,
+            ).body(result)
     }
 
     @GetMapping
@@ -40,17 +45,35 @@ class UserController(
             value = "page_size",
             defaultValue = "20",
         ) @Positive pageSize: Int,
-        @RequestParam(value = "page_token", required = false) pageToken:
-        String?,
-    ) : ResponseEntity<ListUsersResponse> {
-        val pageRequest = pageToken
-            ?.let { PageRequest(pageSize, Cursor(it)) }
-            ?: PageRequest(pageSize)
-        val users = listUsersUseCase.execute(pageRequest)
-        val result = ListUsersResponse(
-            users = users.items.map { it.toResponse() },
-            nextPageToken = users.cursor?.value
-        )
+        @RequestParam(
+            value = "page_token",
+            required = false,
+        ) pageToken: String?,
+    ): ResponseEntity<ListUsersResponse> {
+        val pageRequest =
+            pageToken
+                ?.let {
+                    PageRequest(
+                        pageSize,
+                        Cursor(it),
+                    )
+                }
+                ?: PageRequest(pageSize)
+        val users =
+            listUsersUseCase.execute(
+                pageRequest,
+            )
+        val result =
+            ListUsersResponse(
+                users =
+                    users.items.map {
+                        it
+                            .toResponse()
+                    },
+                nextPageToken =
+                    users.cursor
+                        ?.value,
+            )
         return ResponseEntity.ok(result)
     }
 }

@@ -8,9 +8,7 @@ interface OfferRepository {
      *
      * @throws OfferException.NotFound если предложение с указанным идентификатором не существует.
      */
-    suspend fun get(
-        offerId: OfferId,
-    ): Offer
+    suspend fun get(offerId: OfferId): Offer
 
     /**
      * Сохраняет переданное предложение, воспринимая его как новое.
@@ -18,27 +16,21 @@ interface OfferRepository {
      * @throws OfferException.AlreadyExists если предложение с таким
      * идентификатором уже существует.
      */
-    suspend fun add(
-        offer: Offer,
-    )
+    suspend fun add(offer: Offer)
 
     /**
      * Сохраняет изменения существующего предложения.
      *
      * @throws OfferException.NotFound если предложение не существует.
      */
-    suspend fun update(
-        offer: Offer,
-    )
+    suspend fun update(offer: Offer)
 
     /**
      * Удаляет предложение по указанному идентификатору.
      *
      * @throws OfferException.NotFound если предложение не существует.
      */
-    suspend fun delete(
-        offerId: OfferId,
-    )
+    suspend fun delete(offerId: OfferId)
 
     /**
      * Возвращает каталог предложений, действующих на текущий момент.

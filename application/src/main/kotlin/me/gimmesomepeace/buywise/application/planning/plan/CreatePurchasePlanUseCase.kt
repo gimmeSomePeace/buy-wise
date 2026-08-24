@@ -11,16 +11,17 @@ class CreatePurchasePlanUseCase(
     private val basketRepository: BasketRepository,
     private val offerRepository: OfferRepository,
 ) {
-    suspend fun execute(
-        storeCountLimit: Int? = null,
-    ): PurchasePlanningResult {
+    suspend fun execute(storeCountLimit: Int? = null): PurchasePlanningResult {
         val storeCountLimit =
             storeCountLimit
                 ?.let(StoreCountLimit::Limited)
                 ?: StoreCountLimit.Unlimited
 
-        val basket = basketRepository.find() ?: Basket()
-        val availableOffers = offerRepository.availableOffers()
+        val basket =
+            basketRepository.find() ?: Basket()
+        val availableOffers =
+            offerRepository
+                .availableOffers()
 
         return BasketPurchasePlanner.plan(
             basket = basket,

@@ -15,31 +15,65 @@ import org.springframework.data.repository.findByIdOrNull
 class StoreQueryImpl(
     private val repository: StoreJpaRepository,
 ) : StoreQuery {
-    override suspend fun find(
-        id: StoreId,
-    ) = repository.findByIdOrNull(id.value)?.toDetails()
+    override suspend fun find(id: StoreId) =
+        repository
+            .findByIdOrNull(
+                id.value,
+            )?.toDetails()
 
     override suspend fun list(
         request: PageRequest,
         filters: StoreFilters,
     ): Page<StoreListItem> {
+        val spec =
+            listOfNotNull(
+                filters.toSpecification(),
+                request.cursor?.let { cursor ->
+                    StoreSpecifications
+                        .afterCursor(
+                            cursor,
+                        )
+                },
+            ).reduce { acc, s -> acc.and(s) }
 
-        val spec = listOfNotNull(
-            filters.toSpecification(),
-            request.cursor?.let { cursor -> StoreSpecifications.afterCursor(cursor) }
-        ).reduce { acc, s -> acc.and(s) }
+        val requestWithExtra =
+            Pageable.ofSize(request.pageSize + 1)
+        val entities =
+            repository
+                .findAll(
+                    spec,
+                    requestWithExtra,
+                ).content
 
-        val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
-        val entities = repository.findAll(spec, requestWithExtra).content
-
-        val hasExtra = entities.size > request.pageSize
-        val pageItems = if (hasExtra) entities.dropLast(1) else entities
+        val hasExtra =
+            entities.size > request.pageSize
+        val pageItems =
+            if (hasExtra) {
+                entities
+                    .dropLast(
+                        1,
+                    )
+            } else {
+                entities
+            }
 
         return Page(
-            items = pageItems.map { it.toListItem() },
+            items =
+                pageItems.map {
+                    it
+                        .toListItem()
+                },
             cursor =
-                if (hasExtra) Cursor(pageItems.last().id.toString())
-                else null
+                if (hasExtra) {
+                    Cursor(
+                        pageItems
+                            .last()
+                            .id
+                            .toString(),
+                    )
+                } else {
+                    null
+                },
         )
     }
 }

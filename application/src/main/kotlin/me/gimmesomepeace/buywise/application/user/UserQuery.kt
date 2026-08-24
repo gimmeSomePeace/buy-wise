@@ -6,5 +6,6 @@ import me.gimmesomepeace.buywise.domain.user.Login
 
 interface UserQuery {
     suspend fun findByLogin(login: Login): UserView?
+
     suspend fun list(request: PageRequest): Page<UserListItem>
 }

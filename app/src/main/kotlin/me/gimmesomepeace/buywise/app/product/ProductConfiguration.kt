@@ -19,34 +19,30 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ProductConfiguration {
     @Bean
-    fun productRepository(
-        productJpaRepository: ProductJpaRepository,
-    ): ProductRepository = ProductRepositoryImpl(productJpaRepository)
+    fun productRepository(productJpaRepository: ProductJpaRepository): ProductRepository =
+        ProductRepositoryImpl(
+            productJpaRepository,
+        )
 
     @Bean
-    fun productQuery(
-        productJpaRepository: ProductJpaRepository,
-    ): ProductQuery = ProductQueryImpl(productJpaRepository)
+    fun productQuery(productJpaRepository: ProductJpaRepository): ProductQuery = ProductQueryImpl(productJpaRepository)
 
     @Bean
     fun createProductUseCase(
         @Qualifier(BeanNames.PRODUCT_ID_GENERATOR)
         idGenerator: IdGenerator<ProductId>,
         productRepository: ProductRepository,
-    ) = CreateProductUseCase(idGenerator, productRepository)
+    ) = CreateProductUseCase(
+        idGenerator,
+        productRepository,
+    )
 
     @Bean
-    fun deleteProductUseCase(
-        repository: ProductRepository,
-    ) = DeleteProductUseCase(repository)
+    fun deleteProductUseCase(repository: ProductRepository) = DeleteProductUseCase(repository)
 
     @Bean
-    fun listProductsUseCase(
-        query: ProductQuery,
-    ) = ListProductsUseCase(query)
+    fun listProductsUseCase(query: ProductQuery) = ListProductsUseCase(query)
 
     @Bean
-    fun renameProductUseCase(
-        repository: ProductRepository,
-    ) = RenameProductUseCase(repository)
+    fun renameProductUseCase(repository: ProductRepository) = RenameProductUseCase(repository)
 }

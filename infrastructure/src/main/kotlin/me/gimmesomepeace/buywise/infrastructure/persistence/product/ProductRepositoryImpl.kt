@@ -11,30 +11,53 @@ import org.springframework.stereotype.Repository
 class ProductRepositoryImpl(
     private val repository: ProductJpaRepository,
 ) : ProductRepository {
-
     override suspend fun get(productId: ProductId): Product {
-        val entity = repository.findByIdOrNull(productId.value)
-            ?: throw ProductException.NotFound(productId)
+        val entity =
+            repository.findByIdOrNull(
+                productId.value,
+            )
+                ?: throw ProductException
+                    .NotFound(
+                        productId,
+                    )
         return entity.toDomain()
     }
 
     override suspend fun add(product: Product) {
-        if (repository.existsById(product.id.value))
-            throw ProductException.AlreadyExists(product.id)
+        if (repository.existsById(
+                product.id.value,
+            )
+        ) {
+            throw ProductException.AlreadyExists(
+                product.id,
+            )
+        }
 
         repository.save(product.toEntity())
     }
 
     override suspend fun update(product: Product) {
-        if (!repository.existsById(product.id.value))
-            throw ProductException.NotFound(product.id)
+        if (!repository.existsById(
+                product.id.value,
+            )
+        ) {
+            throw ProductException.NotFound(
+                product.id,
+            )
+        }
 
         repository.save(product.toEntity())
     }
 
     override suspend fun delete(productId: ProductId) {
-        if (!repository.existsById(productId.value))
-            throw ProductException.NotFound(productId)
+        if (!repository.existsById(
+                productId.value,
+            )
+        ) {
+            throw ProductException.NotFound(
+                productId,
+            )
+        }
 
         repository.deleteById(productId.value)
     }

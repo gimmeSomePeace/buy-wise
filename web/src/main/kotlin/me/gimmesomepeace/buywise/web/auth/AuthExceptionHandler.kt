@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice(assignableTypes = [AuthController::class])
 internal class AuthExceptionHandler {
     @ExceptionHandler(AuthenticationException.InvalidCredentials::class)
-    fun handleInvalidCredentials(
-        e: AuthenticationException.InvalidCredentials
-    ) : ResponseEntity<ProblemDetail> {
-        val problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED).apply {
-            title = "Invalid credentials"
-            detail = "login or password is incorrect"
-        }
+    fun handleInvalidCredentials(e: AuthenticationException.InvalidCredentials): ResponseEntity<ProblemDetail> {
+        val problem =
+            ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED).apply {
+                title = "Invalid credentials"
+                detail = "login or password is incorrect"
+            }
 
         return ResponseEntity
             .status(problem.status)

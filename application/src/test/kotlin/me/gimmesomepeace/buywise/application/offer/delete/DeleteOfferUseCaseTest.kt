@@ -1,6 +1,10 @@
 package me.gimmesomepeace.buywise.application.offer.delete
 
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.application.offer.OfferQuery
 import me.gimmesomepeace.buywise.domain.offer.OfferException
@@ -15,54 +19,66 @@ import kotlin.test.assertFailsWith
 class DeleteOfferUseCaseTest {
     private val offerRepository = mockk<OfferRepository>()
     private val offerQuery = mockk<OfferQuery>()
-    private val useCase = DeleteOfferUseCase(
-        repository = offerRepository,
-        query = offerQuery
-    )
+    private val useCase =
+        DeleteOfferUseCase(
+            repository = offerRepository,
+            query = offerQuery,
+        )
 
     @Test
-    fun `should delete offer when it exists and belongs to user`() = runTest {
-        val ownerId = userId()
-        val offerId = offerId()
-        val storeId = storeId()
-        val offer = offer(id = offerId, storeId = storeId)
+    fun `should delete user's offer`() =
+        runTest {
+            val ownerId = userId()
+            val offerId = offerId()
+            val storeId = storeId()
+            val offer = offer(id = offerId, storeId = storeId)
 
-        coEvery { offerRepository.get(offerId) } returns offer
-        coEvery { offerQuery.existsByIdAndOwner(offerId, ownerId) } returns true
-        coEvery { offerRepository.delete(offerId) } just runs
+            coEvery { offerRepository.get(offerId) } returns offer
+            coEvery { offerRepository.delete(offerId) } just runs
+            coEvery {
+                offerQuery.existsByIdAndOwner(offerId, ownerId)
+            } returns true
 
-        useCase.execute(ownerId, offerId)
-
-        coVerify(exactly = 1) { offerRepository.delete(offerId) }
-    }
-
-    @Test
-    fun `should throw NotFound when offer belongs to another user`() = runTest {
-        val ownerId = userId()
-        val offerId = offerId()
-        val storeId = storeId()
-        val offer = offer(id = offerId, storeId = storeId)
-
-        coEvery { offerRepository.get(offerId) } returns offer
-        coEvery { offerQuery.existsByIdAndOwner(offerId, ownerId) } returns false
-
-        assertFailsWith<OfferException.NotFound> {
             useCase.execute(ownerId, offerId)
-        }
 
-        coVerify(exactly = 0) { offerRepository.delete(any()) }
-    }
+            coVerify(exactly = 1) { offerRepository.delete(offerId) }
+        }
 
     @Test
-    fun `should throw NotFound when offer not found`() = runTest {
-        val offerId = offerId()
-        coEvery { offerRepository.get(offerId) } throws OfferException.NotFound(offerId)
-        coEvery { offerQuery.existsByIdAndOwner(offerId, any()) } returns false
+    fun `should throw NotFound for another user's offer`() =
+        runTest {
+            val ownerId = userId()
+            val offerId = offerId()
+            val storeId = storeId()
+            val offer = offer(id = offerId, storeId = storeId)
 
-        assertFailsWith<OfferException.NotFound> {
-            useCase.execute(userId(), offerId)
+            coEvery { offerRepository.get(offerId) } returns offer
+            coEvery {
+                offerQuery.existsByIdAndOwner(offerId, ownerId)
+            } returns false
+
+            assertFailsWith<OfferException.NotFound> {
+                useCase.execute(ownerId, offerId)
+            }
+
+            coVerify(exactly = 0) { offerRepository.delete(any()) }
         }
 
-        coVerify(exactly = 0) { offerRepository.delete(any()) }
-    }
+    @Test
+    fun `should throw NotFound when offer not found`() =
+        runTest {
+            val offerId = offerId()
+            coEvery {
+                offerRepository.get(offerId)
+            } throws OfferException.NotFound(offerId)
+            coEvery {
+                offerQuery.existsByIdAndOwner(offerId, any())
+            } returns false
+
+            assertFailsWith<OfferException.NotFound> {
+                useCase.execute(userId(), offerId)
+            }
+
+            coVerify(exactly = 0) { offerRepository.delete(any()) }
+        }
 }

@@ -14,7 +14,7 @@ import me.gimmesomepeace.buywise.domain.store.StoreId
 class CreateOfferUseCase(
     private val idGenerator: IdGenerator<OfferId>,
     private val offerRepository: OfferRepository,
-    private val offerQuery: OfferQuery
+    private val offerQuery: OfferQuery,
 ) {
     suspend fun execute(
         productId: ProductId,
@@ -31,7 +31,7 @@ class CreateOfferUseCase(
             )
 
         offerRepository.add(offer)
-        // TODO: переделать. Нужно убрать лишний запрос. Потом подумаю как именно
-        return offerQuery.find(id) ?: throw OfferException.NotFound(id)
+        return offerQuery.find(id)
+            ?: throw OfferException.NotFound(id)
     }
 }

@@ -7,7 +7,10 @@ data class ProductFilters(
     val nameContains: String? = null,
 ) {
     init {
-        require(nameContains == null || nameContains.isNotBlank()) {
+        require(
+            nameContains == null ||
+                nameContains.isNotBlank(),
+        ) {
             "Name contains must be null or not blank"
         }
     }

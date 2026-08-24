@@ -9,14 +9,17 @@ import java.util.UUID
 object StoreSpecifications {
     fun byOwner(ownerId: UserId): Specification<StoreEntity> =
         Specification { root, _, builder ->
-            builder.equal(root.get<UUID>("ownerId"), ownerId.value)
+            builder.equal(
+                root.get<UUID>("ownerId"),
+                ownerId.value,
+            )
         }
 
     fun nameContains(pattern: String): Specification<StoreEntity> =
         Specification { root, _, builder ->
             builder.like(
                 builder.lower(root.get("name")),
-                "%${pattern.lowercase()}%"
+                "%${pattern.lowercase()}%",
             )
         }
 
@@ -24,7 +27,7 @@ object StoreSpecifications {
         Specification { root, _, builder ->
             builder.greaterThan(
                 root.get("id"),
-                UUID.fromString(cursor.value)
+                UUID.fromString(cursor.value),
             )
         }
 }

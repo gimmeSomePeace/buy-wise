@@ -14,8 +14,13 @@ class DeleteOfferUseCase(
         userId: UserId,
         offerId: OfferId,
     ) {
-        if (!query.existsByIdAndOwner(offerId, userId))
+        if (!query.existsByIdAndOwner(
+                offerId,
+                userId,
+            )
+        ) {
             throw OfferException.NotFound(offerId)
+        }
 
         repository.delete(offerId)
     }

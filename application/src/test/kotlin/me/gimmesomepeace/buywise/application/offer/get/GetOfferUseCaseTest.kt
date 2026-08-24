@@ -17,42 +17,46 @@ class GetOfferUseCaseTest {
     private val useCase = GetOfferUseCase(query)
 
     @Test
-    fun `should return offer when it exists and belongs to user`() = runTest {
-        val ownerId = userId()
-        val offerId = offerId()
-        val expected = offerDetails(id = offerId, ownerId = ownerId)
+    fun `should return offer when it exists and belongs to user`() =
+        runTest {
+            val ownerId = userId()
+            val offerId = offerId()
+            val expected = offerDetails(id = offerId, ownerId = ownerId)
 
-        coEvery { query.find(offerId) } returns expected
+            coEvery { query.find(offerId) } returns expected
 
-        val actual = useCase.execute(ownerId, offerId)
+            val actual = useCase.execute(ownerId, offerId)
 
-        assertThat(actual)
-            .usingRecursiveComparison()
-            .isEqualTo(expected)
-    }
+            assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected)
+        }
 
     @Test
-    fun `should throw NotFound when offer not found`() = runTest {
-        val ownerId = userId()
-        val offerId = offerId()
+    fun `should throw NotFound when offer not found`() =
+        runTest {
+            val ownerId = userId()
+            val offerId = offerId()
 
-        coEvery { query.find(offerId) } returns null
+            coEvery { query.find(offerId) } returns null
 
-        assertFailsWith<OfferException.NotFound> {
-            useCase.execute(ownerId, offerId)
+            assertFailsWith<OfferException.NotFound> {
+                useCase.execute(ownerId, offerId)
+            }
         }
-    }
 
     @Test
-    fun `should throw NotFound when offer belongs to another user`() = runTest {
-        val ownerId = userId()
-        val anotherOwnerId = userId()
-        val offerId = offerId()
+    fun `should throw NotFound when offer belongs to another user`() =
+        runTest {
+            val ownerId = userId()
+            val anotherOwnerId = userId()
+            val offerId = offerId()
 
-        coEvery { query.find(offerId) } returns offerDetails(id = offerId, ownerId = anotherOwnerId)
+            coEvery { query.find(offerId) } returns
+                offerDetails(id = offerId, ownerId = anotherOwnerId)
 
-        assertFailsWith<OfferException.NotFound> {
-            useCase.execute(ownerId, offerId)
+            assertFailsWith<OfferException.NotFound> {
+                useCase.execute(ownerId, offerId)
+            }
         }
-    }
 }

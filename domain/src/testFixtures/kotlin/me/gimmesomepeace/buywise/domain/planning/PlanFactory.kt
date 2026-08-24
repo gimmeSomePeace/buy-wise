@@ -12,9 +12,7 @@ import me.gimmesomepeace.buywise.domain.shared.usd
 import me.gimmesomepeace.buywise.domain.store.StoreId
 import me.gimmesomepeace.buywise.domain.store.storeId
 
-fun plan(
-    vararg items: StorePurchasePlan,
-) = PurchasePlan(items.toList())
+fun plan(vararg items: StorePurchasePlan) = PurchasePlan(items.toList())
 
 fun storePlan(
     storeId: StoreId = storeId(),

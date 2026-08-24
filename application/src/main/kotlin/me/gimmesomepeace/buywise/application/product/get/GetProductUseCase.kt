@@ -12,10 +12,18 @@ class GetProductUseCase(
     suspend fun execute(
         userId: UserId,
         productId: ProductId,
-    ) : ProductDetails {
-        val product  = query.find(productId) ?: throw ProductException.NotFound(productId)
-        if (product.ownerId != userId)
-            throw ProductException.NotFound(productId)
+    ): ProductDetails {
+        val product =
+            query.find(productId)
+                ?: throw ProductException
+                    .NotFound(
+                        productId,
+                    )
+        if (product.ownerId != userId) {
+            throw ProductException.NotFound(
+                productId,
+            )
+        }
         return product
     }
 }

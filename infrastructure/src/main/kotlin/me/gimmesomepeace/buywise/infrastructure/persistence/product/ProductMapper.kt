@@ -20,14 +20,16 @@ internal fun Product.toEntity() =
         name = this.name,
     )
 
-internal fun ProductEntity.toDetails() = ProductDetails(
-    id = ProductId(this.id),
-    ownerId = UserId(this.ownerId),
-    name = this.name
-)
+internal fun ProductEntity.toDetails() =
+    ProductDetails(
+        id = ProductId(this.id),
+        ownerId = UserId(this.ownerId),
+        name = this.name,
+    )
 
-internal fun ProductEntity.toListItem() = ProductListItem(
-    id = ProductId(this.id),
-    ownerId = UserId(this.ownerId),
-    name = this.name,
-)
+internal fun ProductEntity.toListItem() =
+    ProductListItem(
+        id = ProductId(this.id),
+        ownerId = UserId(this.ownerId),
+        name = this.name,
+    )

@@ -18,9 +18,18 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
-import java.util.*
+import java.util.UUID
 
 @RestController
 @Validated
@@ -37,8 +46,14 @@ internal open class StoreController(
         @AuthenticationPrincipal userId: UUID,
         @PathVariable id: StoreId,
     ): ResponseEntity<StoreDetailsResponse> {
-        val store = getStoreUseCase.execute(UserId(userId), id)
-        return ResponseEntity.ok(store.toDetailsResponse())
+        val store =
+            getStoreUseCase.execute(
+                UserId(userId),
+                id,
+            )
+        return ResponseEntity.ok(
+            store.toDetailsResponse(),
+        )
     }
 
     @GetMapping
@@ -49,15 +64,20 @@ internal open class StoreController(
             defaultValue = "20",
         )
         @Positive pageSize: Int,
-        @RequestParam(value = "page_token", required = false) pageToken:
-            String?,
+        @RequestParam(
+            value = "page_token",
+            required = false,
+        ) pageToken: String?,
     ): ResponseEntity<ListStoresResponse> {
         val cursor = pageToken?.let { Cursor(it) }
-        val request = PageRequest(pageSize, cursor)
-        val result = listStoresUseCase.execute(
-            UserId(userId),
-            request
-        ).toListStoresResponse()
+        val request =
+            PageRequest(pageSize, cursor)
+        val result =
+            listStoresUseCase
+                .execute(
+                    UserId(userId),
+                    request,
+                ).toListStoresResponse()
         return ResponseEntity.ok(result)
     }
 

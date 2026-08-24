@@ -9,17 +9,13 @@ import me.gimmesomepeace.buywise.domain.planning.offer.AvailableOfferCatalog
 class OfferRepositoryImpl(
     private val repository: OfferJpaRepository,
 ) : OfferRepository {
-    override suspend fun get(
-        offerId: OfferId,
-    ): Offer =
+    override suspend fun get(offerId: OfferId): Offer =
         repository
             .findById(offerId.value)
             .orElseThrow { OfferException.NotFound(offerId) }
             .toDomain()
 
-    override suspend fun add(
-        offer: Offer,
-    ) {
+    override suspend fun add(offer: Offer) {
         if (repository.existsById(
                 offer.id.value,
             )
@@ -29,9 +25,7 @@ class OfferRepositoryImpl(
         repository.save(offer.toEntity())
     }
 
-    override suspend fun update(
-        offer: Offer,
-    ) {
+    override suspend fun update(offer: Offer) {
         if (!repository.existsById(
                 offer.id.value,
             )
@@ -41,9 +35,7 @@ class OfferRepositoryImpl(
         repository.save(offer.toEntity())
     }
 
-    override suspend fun delete(
-        offerId: OfferId,
-    ) {
+    override suspend fun delete(offerId: OfferId) {
         if (!repository.existsById(
                 offerId.value,
             )

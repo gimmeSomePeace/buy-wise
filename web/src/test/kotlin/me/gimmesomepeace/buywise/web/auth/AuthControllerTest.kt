@@ -6,8 +6,8 @@ import io.mockk.coVerify
 import me.gimmesomepeace.buywise.application.auth.AccessToken
 import me.gimmesomepeace.buywise.application.auth.AuthenticateUserUseCase
 import me.gimmesomepeace.buywise.application.auth.AuthenticationException
-import me.gimmesomepeace.buywise.domain.user.login
 import me.gimmesomepeace.buywise.domain.user.Login
+import me.gimmesomepeace.buywise.domain.user.login
 import me.gimmesomepeace.buywise.web.TestSecurityConfig
 import me.gimmesomepeace.buywise.web.auth.login.LoginRequest
 import org.junit.jupiter.api.Nested
@@ -23,13 +23,16 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 import java.util.stream.Stream
 
 @WebMvcTest(AuthController::class)
 @Import(TestSecurityConfig::class)
-class AuthControllerTest  {
+class AuthControllerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -52,12 +55,15 @@ class AuthControllerTest  {
 
             val request = LoginRequest(login = login.value, password = password)
 
-            val mvcResult = mockMvc.post("/auth/login") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .post("/auth/login") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content = objectMapper.writeValueAsString(request)
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isOk)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.accessToken").value("access-token"))
@@ -70,14 +76,22 @@ class AuthControllerTest  {
             } throws AuthenticationException.InvalidCredentials()
 
             val request = LoginRequest(login = "login", password = "password")
-            val mvcResult = mockMvc.post("/auth/login") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andReturn()
+            val mvcResult =
+                mockMvc
+                    .post("/auth/login") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content = objectMapper.writeValueAsString(request)
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mvcResult))
+            mockMvc
+                .perform(asyncDispatch(mvcResult))
                 .andExpect(status().isUnauthorized)
-                .andExpect(header().string("WWW-Authenticate", "Bearer realm=\"buywise\""))
+                .andExpect(
+                    header().string(
+                        "WWW-Authenticate",
+                        "Bearer realm=\"buywise\"",
+                    ),
+                )
 
             coVerify(exactly = 1) {
                 authenticateUserUseCase.execute(Login("login"), "password")
@@ -87,12 +101,13 @@ class AuthControllerTest  {
         @ParameterizedTest
         @MethodSource("invalidLoginRequests")
         fun `should return 400 when bad request`(requestBody: Map<String, Any?>) {
-            mockMvc.post("/auth/login") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(requestBody)
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .post("/auth/login") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(requestBody)
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         fun invalidLoginRequests(): Stream<Arguments> =
@@ -101,14 +116,14 @@ class AuthControllerTest  {
                     mapOf("password" to "valid-password"),
                 ),
                 Arguments.of(
-                    mapOf("login" to "valid-login")
+                    mapOf("login" to "valid-login"),
                 ),
                 Arguments.of(
                     mapOf("login" to "valid-login", "password" to "   "),
                 ),
                 Arguments.of(
                     mapOf("login" to "  ", "password" to "valid-password"),
-                )
+                ),
             )
     }
 }

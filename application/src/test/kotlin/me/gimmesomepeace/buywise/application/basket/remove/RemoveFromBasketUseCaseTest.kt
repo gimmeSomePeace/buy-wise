@@ -1,6 +1,10 @@
 package me.gimmesomepeace.buywise.application.basket.remove
 
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.domain.basket.BasketException
 import me.gimmesomepeace.buywise.domain.basket.BasketRepository
@@ -16,35 +20,38 @@ class RemoveFromBasketUseCaseTest {
     private val useCase = RemoveFromBasketUseCase(basketRepository)
 
     @Test
-    fun `should remove existing product from basket`() = runTest {
-        val productId = productId()
-        val basket = basket {
-            add(productId, Quantity.ONE)
+    fun `should remove existing product from basket`() =
+        runTest {
+            val productId = productId()
+            val basket =
+                basket {
+                    add(productId, Quantity.ONE)
+                }
+
+            coEvery { basketRepository.getOrEmpty() } returns basket
+            coEvery { basketRepository.save(any()) } just runs
+
+            useCase.execute(productId)
+
+            coVerify(exactly = 1) {
+                basketRepository.save(
+                    match { it.quantityOf(productId) == Quantity.ZERO },
+                )
+            }
         }
-
-        coEvery { basketRepository.getOrEmpty() } returns basket
-        coEvery { basketRepository.save(any()) } just runs
-
-        useCase.execute(productId)
-
-        coVerify(exactly = 1) {
-            basketRepository.save(
-                match { it.quantityOf(productId) == Quantity.ZERO }
-            )
-        }
-    }
 
     @Test
-    fun `should throw when product not in basket`() = runTest {
-        val productId = productId()
-        val emptyBasket = basket()
+    fun `should throw when product not in basket`() =
+        runTest {
+            val productId = productId()
+            val emptyBasket = basket()
 
-        coEvery { basketRepository.getOrEmpty() } returns emptyBasket
+            coEvery { basketRepository.getOrEmpty() } returns emptyBasket
 
-        assertFailsWith<BasketException.ProductNotInBasket> {
-            useCase.execute(productId)
+            assertFailsWith<BasketException.ProductNotInBasket> {
+                useCase.execute(productId)
+            }
+
+            coVerify(exactly = 0) { basketRepository.save(any()) }
         }
-
-        coVerify(exactly = 0) { basketRepository.save(any()) }
-    }
 }

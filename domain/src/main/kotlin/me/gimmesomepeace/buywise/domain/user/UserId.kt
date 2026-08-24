@@ -6,4 +6,6 @@ import java.util.UUID
  * Уникальный идентификатор пользователя.
  */
 @JvmInline
-value class UserId(val value: UUID)
+value class UserId(
+    val value: UUID,
+)

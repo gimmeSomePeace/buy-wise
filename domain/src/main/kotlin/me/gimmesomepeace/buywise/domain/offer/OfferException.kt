@@ -7,9 +7,13 @@ sealed class OfferException(
 ) : DomainException(message) {
     class NotFound(
         val offerId: OfferId,
-    ) : OfferException("Offer with id $offerId not found")
+    ) : OfferException(
+            "Offer with id $offerId not found",
+        )
 
     class AlreadyExists(
         val offerId: OfferId,
-    ) : OfferException("Offer with id $offerId already exists")
+    ) : OfferException(
+            "Offer with id $offerId already exists",
+        )
 }

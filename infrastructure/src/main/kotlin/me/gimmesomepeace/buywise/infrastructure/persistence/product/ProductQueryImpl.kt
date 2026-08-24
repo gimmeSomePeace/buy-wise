@@ -17,30 +17,71 @@ import org.springframework.data.repository.findByIdOrNull
 class ProductQueryImpl(
     private val repository: ProductJpaRepository,
 ) : ProductQuery {
-    override suspend fun find(
-        id: ProductId,
-    ): ProductDetails? = repository.findByIdOrNull(id.value)?.toDetails()
+    override suspend fun find(id: ProductId): ProductDetails? =
+        repository
+            .findByIdOrNull(
+                id.value,
+            )?.toDetails()
 
     override suspend fun list(
         request: PageRequest,
         filters: ProductFilters,
     ): Page<ProductListItem> {
-        val spec = listOfNotNull(
-            filters.toSpecification(),
-            request.cursor?.let { ProductSpecifications.afterCursor(it) },
-        ).reduceOrNull { acc, spec -> acc.and(spec) } ?: Specification.unrestricted()
+        val spec =
+            listOfNotNull(
+                filters.toSpecification(),
+                request.cursor?.let {
+                    ProductSpecifications
+                        .afterCursor(
+                            it,
+                        )
+                },
+            ).reduceOrNull {
+                acc,
+                spec,
+                ->
+                acc.and(spec)
+            }
+                ?: Specification.unrestricted()
 
-        val requestWithExtra = Pageable.ofSize(request.pageSize + 1)
-        val entities = repository.findAll(spec, requestWithExtra).content
+        val requestWithExtra =
+            Pageable.ofSize(request.pageSize + 1)
+        val entities =
+            repository
+                .findAll(
+                    spec,
+                    requestWithExtra,
+                ).content
 
-        val hasExtra = entities.size > request.pageSize
-        val pageItems = if (hasExtra) entities.dropLast(1) else entities
+        val hasExtra =
+            entities.size > request.pageSize
+        val pageItems =
+            if (hasExtra) {
+                entities
+                    .dropLast(
+                        1,
+                    )
+            } else {
+                entities
+            }
 
         return Page(
-            items = pageItems.map { it.toListItem() },
+            items =
+                pageItems.map {
+                    it
+                        .toListItem()
+                },
             cursor =
-                if (hasExtra) Cursor(pageItems.last().id.toString())
-                else null
+                if (hasExtra) {
+                    Cursor(
+                        pageItems
+                            .last()
+                            .id
+                            .toString(),
+                    )
+                } else {
+                    null
+                },
         )
     }
 }

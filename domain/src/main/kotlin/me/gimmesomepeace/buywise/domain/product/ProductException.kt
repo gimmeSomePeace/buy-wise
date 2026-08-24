@@ -7,9 +7,13 @@ sealed class ProductException(
 ) : DomainException(message) {
     class NotFound(
         val productId: ProductId,
-    ) : ProductException("Product with id $productId not found")
+    ) : ProductException(
+            "Product with id $productId not found",
+        )
 
     class AlreadyExists(
         val productId: ProductId,
-    ) : ProductException("Product with id $productId already exists")
+    ) : ProductException(
+            "Product with id $productId already exists",
+        )
 }

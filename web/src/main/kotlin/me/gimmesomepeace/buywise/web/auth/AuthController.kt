@@ -14,17 +14,19 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth")
 @RestController
 class AuthController(
-    private val authenticateUserUseCase: AuthenticateUserUseCase
+    private val authenticateUserUseCase: AuthenticateUserUseCase,
 ) {
     @PostMapping("/login")
     suspend fun login(
-        @Valid @RequestBody request: LoginRequest
-    ) : ResponseEntity<LoginResponse> {
-        val accessToken = authenticateUserUseCase.execute(
-            login = Login(request.login),
-            password = request.password
-        )
-        val response = LoginResponse(accessToken.value)
+        @Valid @RequestBody request: LoginRequest,
+    ): ResponseEntity<LoginResponse> {
+        val accessToken =
+            authenticateUserUseCase.execute(
+                login = Login(request.login),
+                password = request.password,
+            )
+        val response =
+            LoginResponse(accessToken.value)
 
         return ResponseEntity.ok(response)
     }

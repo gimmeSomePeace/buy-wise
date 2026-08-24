@@ -20,7 +20,9 @@ class Store(
      */
     var name: String = name
         private set(value) {
-            require(value.isNotBlank()) { "Name of store must not be blank" }
+            require(value.isNotBlank()) {
+                "Name of store must not be blank"
+            }
             field = value
         }
 
@@ -30,9 +32,7 @@ class Store(
         this.name = name
     }
 
-    fun rename(
-        newName: String,
-    ) {
+    fun rename(newName: String) {
         name = newName
     }
 }

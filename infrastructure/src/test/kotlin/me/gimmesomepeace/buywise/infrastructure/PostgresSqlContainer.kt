@@ -11,6 +11,7 @@ abstract class PostgresSqlContainer {
         @Container
         @JvmStatic
         @ServiceConnection
-        val postgres = PostgreSQLContainer("postgres:17")
+        val postgres =
+            PostgreSQLContainer("postgres:17")
     }
 }

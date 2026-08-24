@@ -23,7 +23,9 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 import java.util.stream.Stream
 
@@ -50,24 +52,29 @@ class UserControllerTest {
             val login = "login"
             val password = "password"
 
-            val request = RegisterUserRequest(
-                login = login,
-                password = password,
-            )
+            val request =
+                RegisterUserRequest(
+                    login = login,
+                    password = password,
+                )
 
             coEvery {
                 registerUserUseCase.execute(Login(login), password)
-            } returns user(
-                login = Login(login),
-                passwordHash = PasswordHash("password-hash")
-            )
+            } returns
+                user(
+                    login = Login(login),
+                    passwordHash = PasswordHash("password-hash"),
+                )
 
-            val mockResult = mockMvc.post("/users") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andReturn()
+            val mockResult =
+                mockMvc
+                    .post("/users") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content = objectMapper.writeValueAsString(request)
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mockResult))
+            mockMvc
+                .perform(asyncDispatch(mockResult))
                 .andExpect(status().isCreated)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.login").value(login))
@@ -76,32 +83,37 @@ class UserControllerTest {
         @Test
         fun `should return 409 when login is busy`() {
             val login = "login"
-            val request = RegisterUserRequest(
-                login = login,
-                password = "password"
-            )
+            val request =
+                RegisterUserRequest(
+                    login = login,
+                    password = "password",
+                )
             coEvery {
                 registerUserUseCase.execute(login = Login(login), any())
             } throws UserException.LoginBusy(Login(login))
 
-            val mockResult = mockMvc.post("/users") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(request)
-            }.andReturn()
+            val mockResult =
+                mockMvc
+                    .post("/users") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content = objectMapper.writeValueAsString(request)
+                    }.andReturn()
 
-            mockMvc.perform(asyncDispatch(mockResult))
+            mockMvc
+                .perform(asyncDispatch(mockResult))
                 .andExpect(status().isConflict)
         }
 
         @ParameterizedTest
         @MethodSource("invalidRegisterRequests")
         fun `should return 400 when request is invalid`(requestBody: Map<String, Any?>) {
-            mockMvc.post("/users") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(requestBody)
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .post("/users") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = objectMapper.writeValueAsString(requestBody)
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         fun invalidRegisterRequests(): Stream<Arguments> =
@@ -110,14 +122,14 @@ class UserControllerTest {
                     mapOf("password" to "valid-password"),
                 ),
                 Arguments.of(
-                    mapOf("login" to "valid-login")
+                    mapOf("login" to "valid-login"),
                 ),
                 Arguments.of(
                     mapOf("login" to "valid-login", "password" to "   "),
                 ),
                 Arguments.of(
                     mapOf("login" to "  ", "password" to "valid-password"),
-                )
+                ),
             )
     }
 }

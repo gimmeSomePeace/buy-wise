@@ -5,6 +5,11 @@ import org.springframework.data.jpa.domain.Specification
 
 fun ProductFilters.toSpecification() =
     listOfNotNull(
-        ownerId?.let { ProductSpecifications.byOwner(it) },
-        nameContains?.let { ProductSpecifications.nameContains(it) }
-    ).reduceOrNull { acc, spec -> acc.and(spec) } ?: Specification.unrestricted()
+        ownerId?.let {
+            ProductSpecifications.byOwner(it)
+        },
+        nameContains?.let {
+            ProductSpecifications.nameContains(it)
+        },
+    ).reduceOrNull { acc, spec -> acc.and(spec) }
+        ?: Specification.unrestricted()

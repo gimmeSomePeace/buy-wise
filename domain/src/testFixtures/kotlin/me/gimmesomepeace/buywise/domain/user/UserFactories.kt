@@ -8,13 +8,11 @@ private val loginCounter = AtomicLong(0)
 
 fun userId() = UserId(UuidCreator.getTimeOrderedEpoch())
 
-fun login(
-    value: String = "LOGIN-${loginCounter.incrementAndGet()}",
-) = Login(value)
+fun login(value: String = "LOGIN-${loginCounter.incrementAndGet()}") = Login(value)
 
 fun user(
     id: UserId = userId(),
     login: Login = login(),
     passwordHash: PasswordHash = PasswordHash("password-hash"),
-    role: UserRole = UserRole.USER
+    role: UserRole = UserRole.USER,
 ) = User(id, login, passwordHash, role)

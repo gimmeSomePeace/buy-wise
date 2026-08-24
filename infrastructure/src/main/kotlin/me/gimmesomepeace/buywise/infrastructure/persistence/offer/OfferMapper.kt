@@ -16,7 +16,11 @@ internal fun OfferEntity.toDomain() =
         id = OfferId(this.id),
         productId = ProductId(this.productId),
         storeId = StoreId(this.storeId),
-        unitPrice = Money(this.price, this.currency),
+        unitPrice =
+            Money(
+                this.price,
+                this.currency,
+            ),
     )
 
 internal fun Offer.toEntity() =
@@ -28,25 +32,39 @@ internal fun Offer.toEntity() =
         currency = this.unitPrice.currency,
     )
 
-internal fun OfferEntity.toDetails() = OfferDetails(
-    id = OfferId(this.id),
-    ownerId = UserId(UUID.randomUUID()),
-    storeId = StoreId(this.storeId),
-    productId = ProductId(this.productId),
-    unitPrice = Money(this.price, this.currency),
-)
+internal fun OfferEntity.toDetails() =
+    OfferDetails(
+        id = OfferId(this.id),
+        ownerId = UserId(UUID.randomUUID()),
+        storeId = StoreId(this.storeId),
+        productId = ProductId(this.productId),
+        unitPrice =
+            Money(
+                this.price,
+                this.currency,
+            ),
+    )
 
-internal fun OfferEntity.toListItem() = OfferListItem(
-    id = OfferId(this.id),
-    ownerId = UserId(UUID.randomUUID()),
-    storeId = StoreId(this.storeId),
-    productId = ProductId(this.productId),
-    unitPrice = Money(this.price, this.currency),
-)
+internal fun OfferEntity.toListItem() =
+    OfferListItem(
+        id = OfferId(this.id),
+        ownerId = UserId(UUID.randomUUID()),
+        storeId = StoreId(this.storeId),
+        productId = ProductId(this.productId),
+        unitPrice =
+            Money(
+                this.price,
+                this.currency,
+            ),
+    )
 
 internal fun OfferEntity.toAvailableOffer() =
     AvailableOffer(
         storeId = StoreId(this.storeId),
         productId = ProductId(this.productId),
-        unitPrice = Money(this.price, this.currency),
+        unitPrice =
+            Money(
+                this.price,
+                this.currency,
+            ),
     )

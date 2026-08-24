@@ -5,9 +5,11 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-class SpringUserDetails(private val user: UserView) : UserDetails {
-
+class SpringUserDetails(
+    private val user: UserView,
+) : UserDetails {
     override fun getUsername(): String = user.login.value
+
     override fun getPassword(): String = user.passwordHash.value
 
     override fun getAuthorities(): Collection<GrantedAuthority> =

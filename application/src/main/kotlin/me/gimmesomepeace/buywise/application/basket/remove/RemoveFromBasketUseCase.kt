@@ -7,10 +7,9 @@ import me.gimmesomepeace.buywise.domain.product.ProductId
 class RemoveFromBasketUseCase(
     private val basketRepository: BasketRepository,
 ) {
-    suspend fun execute(
-        productId: ProductId,
-    ) {
-        val basket = basketRepository.find() ?: Basket()
+    suspend fun execute(productId: ProductId) {
+        val basket =
+            basketRepository.find() ?: Basket()
 
         basket.remove(
             productId = productId,

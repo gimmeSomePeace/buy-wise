@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtGenerator: JwtAccessTokenGenerator,
-    private val userQuery: UserQuery
+    private val userQuery: UserQuery,
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -27,9 +27,12 @@ class SecurityConfig(
 
         http
             .csrf { it.disable() }
-            .cors {  }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { auth ->
+            .cors { }
+            .sessionManagement {
+                it.sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS,
+                )
+            }.authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers(
                         "/auth/login",
@@ -37,20 +40,20 @@ class SecurityConfig(
                         "/v3/api-docs/**",
                         "/swagger-ui.html",
                     ).permitAll()
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
-            }
-            .addFilterBefore(
+                    .requestMatchers("/admin/**")
+                    .hasRole("ADMIN")
+                    .anyRequest()
+                    .authenticated()
+            }.addFilterBefore(
                 jwtFilter,
-                UsernamePasswordAuthenticationFilter::class.java
+                UsernamePasswordAuthenticationFilter::class.java,
             )
         return http.build()
     }
 
     @Bean
-    fun passwordHasher() : PasswordHasher = BCryptPasswordHasher()
+    fun passwordHasher(): PasswordHasher = BCryptPasswordHasher()
 
     @Bean
-    fun userDetailsService(): UserDetailsService =
-        SpringSecurityUserDetailsService(userQuery)
+    fun userDetailsService(): UserDetailsService = SpringSecurityUserDetailsService(userQuery)
 }

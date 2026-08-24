@@ -34,9 +34,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.*
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.delete
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
+import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import tools.jackson.databind.ObjectMapper
 
 @WebMvcTest(OfferController::class)
@@ -69,7 +76,8 @@ class OfferControllerTest {
         fun `should return offer`() {
             val offerId = offerId()
             val userId = userId()
-            coEvery { getOfferUseCase.execute(userId, offerId) } returns offerDetails(id = offerId)
+            coEvery { getOfferUseCase.execute(userId, offerId) } returns
+                offerDetails(id = offerId)
 
             val mvcResult =
                 mockMvc
@@ -88,18 +96,20 @@ class OfferControllerTest {
         @Test
         fun `should return 400 when offer id is not valid UUID`() {
             val userId = userId()
-            mockMvc.get("/offers/not-valid-uuid") {
-                with(authenticatedAs(userId))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .get("/offers/not-valid-uuid") {
+                    with(authenticatedAs(userId))
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         @Test
         fun `should return 404 when not found`() {
             val userId = userId()
             val offerId = offerId()
-            coEvery { getOfferUseCase.execute(userId, offerId) } throws OfferException.NotFound(offerId)
+            coEvery { getOfferUseCase.execute(userId, offerId) } throws
+                OfferException.NotFound(offerId)
 
             val mvcResult =
                 mockMvc
@@ -125,7 +135,11 @@ class OfferControllerTest {
                 createOfferUseCase.execute(any(), any(), any())
             } returns offerDetails(id = offerId)
 
-            val request = createOfferRequest(unitPrice = 5.toBigDecimal(), currency = Currency.USD)
+            val request =
+                createOfferRequest(
+                    unitPrice = 5.toBigDecimal(),
+                    currency = Currency.USD,
+                )
 
             val mvcResult =
                 mockMvc
@@ -149,10 +163,10 @@ class OfferControllerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("me.gimmesomepeace.buywise.web.offer.OfferTestData#invalidCreateOfferRequests")
-        fun `should fail when request is not valid`(
-            requestBody: Map<String, Any?>
-        ) {
+        @MethodSource(
+            "me.gimmesomepeace.buywise.web.offer.OfferTestData#invalidCreateOfferRequests",
+        )
+        fun `should fail when request is not valid`(requestBody: Map<String, Any?>) {
             mockMvc
                 .post("/offers") {
                     contentType = MediaType.APPLICATION_JSON
@@ -170,7 +184,9 @@ class OfferControllerTest {
         fun `should change price`() {
             val userId = userId()
             val offerId = offerId()
-            coEvery { changeOfferPriceUseCase.execute(userId, offerId, 1.usd()) } just Runs
+            coEvery {
+                changeOfferPriceUseCase.execute(userId, offerId, 1.usd())
+            } just Runs
 
             val request =
                 ChangePriceRequest(
@@ -196,9 +212,7 @@ class OfferControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when unit price is not positive`(
-            unitPrice: Int,
-        ) {
+        fun `should fail when unit price is not positive`(unitPrice: Int) {
             val userId = userId()
             val request =
                 ChangePriceRequest(
@@ -245,13 +259,14 @@ class OfferControllerTest {
         @Test
         fun `should return 400 when offerId is not valid UUID`() {
             val userId = userId()
-            mockMvc.patch("/offers/not-valid-uuid") {
-                contentType = MediaType.APPLICATION_JSON
-                content = mapper.writeValueAsString(changePriceRequest())
-                with(authenticatedAs(userId))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .patch("/offers/not-valid-uuid") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = mapper.writeValueAsString(changePriceRequest())
+                    with(authenticatedAs(userId))
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
     }
 
@@ -279,11 +294,12 @@ class OfferControllerTest {
 
         @Test
         fun `should return 400 when offerId is not valid UUID`() {
-            mockMvc.delete("/offers/not-valid-uuid") {
-                with(authenticatedAs(userId()))
-            }.andExpect {
-                status { isBadRequest() }
-            }
+            mockMvc
+                .delete("/offers/not-valid-uuid") {
+                    with(authenticatedAs(userId()))
+                }.andExpect {
+                    status { isBadRequest() }
+                }
         }
 
         @Test
@@ -326,9 +342,11 @@ class OfferControllerTest {
                     listOffersUseCase.execute(userId = userId, request)
                 } returns page
 
-                val mvcResult = mockMvc.get("/offers") {
-                    with(authenticatedAs(userId))
-                }.andReturn()
+                val mvcResult =
+                    mockMvc
+                        .get("/offers") {
+                            with(authenticatedAs(userId))
+                        }.andReturn()
 
                 mockMvc
                     .perform(asyncDispatch(mvcResult))
@@ -377,20 +395,19 @@ class OfferControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when page size is not positive`(
-            pageSize: Int,
-        ) = runTest {
-            val userId = userId()
-            val mvcResult =
-                mockMvc
-                    .get("/offers") {
-                        param("page_size", pageSize.toString())
-                        with(authenticatedAs(userId))
-                    }.andReturn()
+        fun `should fail when page size is not positive`(pageSize: Int) =
+            runTest {
+                val userId = userId()
+                val mvcResult =
+                    mockMvc
+                        .get("/offers") {
+                            param("page_size", pageSize.toString())
+                            with(authenticatedAs(userId))
+                        }.andReturn()
 
-            mockMvc
-                .perform(asyncDispatch(mvcResult))
-                .andExpect(status().isBadRequest)
-        }
+                mockMvc
+                    .perform(asyncDispatch(mvcResult))
+                    .andExpect(status().isBadRequest)
+            }
     }
 }

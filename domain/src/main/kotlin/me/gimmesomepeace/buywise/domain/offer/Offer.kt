@@ -23,9 +23,7 @@ class Offer(
     var unitPrice: Money = unitPrice
         private set
 
-    fun changePrice(
-        newPrice: Money,
-    ) {
+    fun changePrice(newPrice: Money) {
         unitPrice = newPrice
     }
 }

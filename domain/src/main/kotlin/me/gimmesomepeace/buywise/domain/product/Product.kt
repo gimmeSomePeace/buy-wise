@@ -32,9 +32,7 @@ class Product(
         this.name = name
     }
 
-    fun rename(
-        newName: String,
-    ) {
+    fun rename(newName: String) {
         name = newName
     }
 }

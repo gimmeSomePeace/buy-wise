@@ -13,5 +13,9 @@ class ListOffersUseCase(
     suspend fun execute(
         userId: UserId,
         request: PageRequest,
-    ): Page<OfferListItem> = offerQuery.list(request, OfferFilters(ownerId = userId))
+    ): Page<OfferListItem> =
+        offerQuery.list(
+            request,
+            OfferFilters(ownerId = userId),
+        )
 }

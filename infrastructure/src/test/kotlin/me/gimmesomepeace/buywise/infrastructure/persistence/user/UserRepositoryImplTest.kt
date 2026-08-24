@@ -32,104 +32,119 @@ internal class UserRepositoryImplTest : PostgresSqlContainer() {
     @Nested
     inner class Get {
         @Test
-        fun `should return user when exists`() = runTest {
-            val expected = persistence.persist(user())
+        fun `should return user when exists`() =
+            runTest {
+                val expected = persistence.persist(user())
 
-            val actual = repository.get(expected.id)
+                val actual = repository.get(expected.id)
 
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected)
-        }
-
-        @Test
-        fun `should throw NotFound when user not exists`() = runTest {
-            val userId = userId()
-
-            val ex = assertFailsWith<UserException.NotFound> {
-                repository.get(userId)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expected)
             }
 
-            assertThat(ex.userId).isEqualTo(userId)
-        }
+        @Test
+        fun `should throw NotFound when user not exists`() =
+            runTest {
+                val userId = userId()
+
+                val ex =
+                    assertFailsWith<UserException.NotFound> {
+                        repository.get(userId)
+                    }
+
+                assertThat(ex.userId).isEqualTo(userId)
+            }
     }
 
     @Nested
     inner class Add {
         @Test
-        fun `should save new user`() = runTest {
-            val user = user()
+        fun `should save new user`() =
+            runTest {
+                val user = user()
 
-            repository.add(user)
-
-            val actual = repository.get(user.id)
-            assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(user)
-        }
-
-        @Test
-        fun `should throw AlreadyExists when id is busy`() = runTest {
-            val user = persistence.persist(user())
-
-            val ex = assertFailsWith<UserException.AlreadyExists> {
                 repository.add(user)
+
+                val actual = repository.get(user.id)
+                assertThat(actual)
+                    .usingRecursiveComparison()
+                    .isEqualTo(user)
             }
 
-            assertThat(ex.userId).isEqualTo(user.id)
-        }
+        @Test
+        fun `should throw AlreadyExists when id is busy`() =
+            runTest {
+                val user = persistence.persist(user())
+
+                val ex =
+                    assertFailsWith<UserException.AlreadyExists> {
+                        repository.add(user)
+                    }
+
+                assertThat(ex.userId).isEqualTo(user.id)
+            }
     }
 
     @Nested
     inner class Update {
         @Test
-        fun `should update user`() = runTest {
-            val user = persistence.persist(
-                user(login = Login("old-login"))
-            ).apply { changeLogin(Login( "new-login")) }
+        fun `should update user`() =
+            runTest {
+                val user =
+                    persistence
+                        .persist(
+                            user(login = Login("old-login")),
+                        ).apply { changeLogin(Login("new-login")) }
 
-            repository.update(user)
-
-            val actual = repository.get(user.id)
-            assertThat(actual.login.value).isEqualTo("new-login")
-            assertThat(actual.id).isEqualTo(user.id)
-        }
-
-        @Test
-        fun `should throw NotFound when user not exists`() = runTest {
-            val user = user()
-
-            val ex = assertFailsWith<UserException.NotFound> {
                 repository.update(user)
+
+                val actual = repository.get(user.id)
+                assertThat(actual.login.value).isEqualTo("new-login")
+                assertThat(actual.id).isEqualTo(user.id)
             }
 
-            assertThat(ex.userId).isEqualTo(user.id)
-        }
+        @Test
+        fun `should throw NotFound when user not exists`() =
+            runTest {
+                val user = user()
+
+                val ex =
+                    assertFailsWith<UserException.NotFound> {
+                        repository.update(user)
+                    }
+
+                assertThat(ex.userId).isEqualTo(user.id)
+            }
     }
 
     @Nested
     inner class Delete {
         @Test
-        fun `should delete user`() = runTest {
-            val user = persistence.persist(user())
+        fun `should delete user`() =
+            runTest {
+                val user = persistence.persist(user())
 
-            repository.delete(user.id)
+                repository.delete(user.id)
 
-            val ex = assertFailsWith<UserException.NotFound> {
-                repository.get(user.id)
+                val ex =
+                    assertFailsWith<UserException.NotFound> {
+                        repository.get(user.id)
+                    }
+                assertThat(ex.userId).isEqualTo(user.id)
             }
-            assertThat(ex.userId).isEqualTo(user.id)
-        }
 
         @Test
-        fun `should throw NotFound when user not exists`() = runTest {
-            val userId = userId()
+        fun `should throw NotFound when user not exists`() =
+            runTest {
+                val userId = userId()
 
-            val ex = assertFailsWith<UserException.NotFound> {
-                repository.delete(userId)
+                val ex =
+                    assertFailsWith<UserException.NotFound> {
+                        repository.delete(userId)
+                    }
+
+                assertThat(ex.userId).isEqualTo(userId)
             }
-
-            assertThat(ex.userId).isEqualTo(userId)
-        }
     }
 }

@@ -19,7 +19,6 @@ import java.util.UUID
 class OfferEntity(
     @Id
     var id: UUID,
-
     @Column(nullable = false)
     var productId: UUID,
     @Column(nullable = false)
@@ -29,8 +28,11 @@ class OfferEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var currency: Currency,
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storeId", insertable = false, updatable = false)
+    @JoinColumn(
+        name = "storeId",
+        insertable = false,
+        updatable = false,
+    )
     val store: StoreEntity? = null,
 )

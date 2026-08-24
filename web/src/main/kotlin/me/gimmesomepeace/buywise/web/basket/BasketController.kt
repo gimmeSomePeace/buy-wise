@@ -27,8 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/basket")
 internal class BasketController(
     private val basketQuery: BasketQuery,
-    private val changeBasketItemQuantityUseCase:
-        ChangeBasketItemQuantityUseCase,
+    private val changeBasketItemQuantityUseCase: ChangeBasketItemQuantityUseCase,
     private val addProductToBasketUseCase: AddProductToBasketUseCase,
     private val clearBasketUseCase: ClearBasketUseCase,
     private val removeFromBasketUseCase: RemoveFromBasketUseCase,
@@ -66,7 +65,7 @@ internal class BasketController(
 
     @DeleteMapping("/items/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    suspend fun remove(
+    suspend fun delete(
         @PathVariable id: ProductId,
     ) {
         removeFromBasketUseCase.execute(

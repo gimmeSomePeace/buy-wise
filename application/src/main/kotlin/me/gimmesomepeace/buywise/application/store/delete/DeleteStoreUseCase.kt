@@ -13,8 +13,9 @@ class DeleteStoreUseCase(
         storeId: StoreId,
     ) {
         val store = storeRepository.get(storeId)
-        if (store.ownerId != userId)
+        if (store.ownerId != userId) {
             throw StoreException.NotFound(storeId)
+        }
         storeRepository.delete(storeId)
     }
 }
