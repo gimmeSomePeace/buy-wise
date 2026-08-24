@@ -16,9 +16,7 @@ internal fun <T> combinations(
     sequence {
         val current = ArrayList<T>(maxSize)
 
-        suspend fun SequenceScope<List<T>>.dfs(
-            start: Int,
-        ) {
+        suspend fun SequenceScope<List<T>>.dfs(start: Int) {
             if (current.size == maxSize) {
                 yield(current.toList())
                 return

@@ -22,9 +22,7 @@ class BasketRepositoryImpl(
         }
     }
 
-    override suspend fun save(
-        basket: Basket,
-    ) {
+    override suspend fun save(basket: Basket) {
         repository.deleteAll()
         repository.saveAll(
             basket.items().map {

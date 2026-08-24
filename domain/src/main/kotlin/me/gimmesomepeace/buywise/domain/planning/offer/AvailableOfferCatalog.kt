@@ -18,7 +18,13 @@ class AvailableOfferCatalog(
         offers
             .groupBy { it.productId }
             .mapValues { (_, offers) ->
-                require(offers.size == offers.distinctBy { it.storeId }.size) {
+                require(
+                    offers.size ==
+                        offers
+                            .distinctBy {
+                                it.storeId
+                            }.size,
+                ) {
                     "Duplicate offers are not allowed."
                 }
 
@@ -28,16 +34,20 @@ class AvailableOfferCatalog(
     /**
      * Возвращает идентификаторы магазинов, имеющих хотя бы одно предложение.
      */
-    fun stores(): Set<StoreId> = offers.values.flatMap { it.keys }.toSet()
+    fun stores(): Set<StoreId> =
+        offers.values
+            .flatMap {
+                it.keys
+            }.toSet()
 
     /**
      * Возвращает все предложения от магазинов для определенного товара.
      *
      * @param productId Идентификатор продукта, предложения на который будут возвращены.
      */
-    fun forProduct(
-        productId: ProductId,
-    ): List<AvailableOffer> = offers[productId]?.values?.toList() ?: emptyList()
+    fun forProduct(productId: ProductId): List<AvailableOffer> =
+        offers[productId]?.values?.toList()
+            ?: emptyList()
 
     /**
      * Возвращает предложение указанного магазина на указанный товар.

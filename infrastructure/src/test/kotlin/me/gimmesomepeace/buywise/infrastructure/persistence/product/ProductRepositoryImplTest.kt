@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.domain.product.ProductException
 import me.gimmesomepeace.buywise.domain.product.product
 import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.user.user
 import me.gimmesomepeace.buywise.infrastructure.PostgresSqlContainer
 import me.gimmesomepeace.buywise.infrastructure.persistence.TestPersistence
 import org.assertj.core.api.Assertions.assertThat
@@ -71,7 +72,8 @@ internal class ProductRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should fail when id is busy`() =
             runTest {
-                val product = persistence.persist(product())
+                val ownerId = persistence.persist(user()).id
+                val product = persistence.persist(product(ownerId = ownerId))
 
                 val ex =
                     assertFailsWith<ProductException.AlreadyExists> {
@@ -86,9 +88,11 @@ internal class ProductRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should update product`() =
             runTest {
+                val ownerId = persistence.persist(user()).id
                 val product =
                     persistence.persist(
                         product(
+                            ownerId = ownerId,
                             name = "OLD NAME",
                         ),
                     )
@@ -119,7 +123,8 @@ internal class ProductRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should delete product`() =
             runTest {
-                val product = persistence.persist(product())
+                val ownerId = persistence.persist(user()).id
+                val product = persistence.persist(product(ownerId = ownerId))
 
                 repository.delete(product.id)
                 val ex =

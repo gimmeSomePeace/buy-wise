@@ -22,7 +22,9 @@ sealed interface StoreCountLimit {
         val value: Int,
     ) : StoreCountLimit {
         init {
-            require(value > 0) { "Limit value must be greater than zero." }
+            require(value > 0) {
+                "Limit value must be greater than zero."
+            }
         }
     }
 }

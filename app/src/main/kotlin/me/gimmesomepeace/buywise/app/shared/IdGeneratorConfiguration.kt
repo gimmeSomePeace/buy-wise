@@ -5,6 +5,7 @@ import me.gimmesomepeace.buywise.application.shared.IdGenerator
 import me.gimmesomepeace.buywise.domain.offer.OfferId
 import me.gimmesomepeace.buywise.domain.product.ProductId
 import me.gimmesomepeace.buywise.domain.store.StoreId
+import me.gimmesomepeace.buywise.domain.user.UserId
 import me.gimmesomepeace.buywise.infrastructure.persistence.shared.UuidV7Generator
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,17 +17,26 @@ class IdGeneratorConfiguration {
     fun uuidV7Generator(): IdGenerator<UUID> = UuidV7Generator()
 
     @Bean(BeanNames.PRODUCT_ID_GENERATOR)
-    fun productIdGenerator(
-        idGenerator: IdGenerator<UUID>,
-    ) = IdGenerator { ProductId(idGenerator.generate()) }
+    fun productIdGenerator(idGenerator: IdGenerator<UUID>) =
+        IdGenerator {
+            ProductId(idGenerator.generate())
+        }
 
     @Bean(BeanNames.STORE_ID_GENERATOR)
-    fun storeIdGenerator(
-        idGenerator: IdGenerator<UUID>,
-    ) = IdGenerator { StoreId(idGenerator.generate()) }
+    fun storeIdGenerator(idGenerator: IdGenerator<UUID>) =
+        IdGenerator {
+            StoreId(idGenerator.generate())
+        }
 
     @Bean(BeanNames.OFFER_ID_GENERATOR)
-    fun offerIdGenerator(
-        idGenerator: IdGenerator<UUID>,
-    ) = IdGenerator { OfferId(idGenerator.generate()) }
+    fun offerIdGenerator(idGenerator: IdGenerator<UUID>) =
+        IdGenerator {
+            OfferId(idGenerator.generate())
+        }
+
+    @Bean(BeanNames.USER_ID_GENERATOR)
+    fun userIdGenerator(idGenerator: IdGenerator<UUID>) =
+        IdGenerator {
+            UserId(idGenerator.generate())
+        }
 }

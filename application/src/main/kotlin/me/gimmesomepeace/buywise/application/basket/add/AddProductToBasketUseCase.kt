@@ -12,7 +12,8 @@ class AddProductToBasketUseCase(
         productId: ProductId,
         quantity: Quantity,
     ) {
-        val basket = basketRepository.find() ?: Basket()
+        val basket =
+            basketRepository.find() ?: Basket()
 
         basket.add(productId, quantity)
 

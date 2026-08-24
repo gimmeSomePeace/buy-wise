@@ -12,13 +12,23 @@ class ChangeBasketItemQuantityUseCase(
         productId: ProductId,
         quantity: Quantity,
     ) {
-        val basket = basketRepository.find() ?: Basket()
-        val oldQuantity = basket.quantityOf(productId)
+        val basket =
+            basketRepository.find() ?: Basket()
+        val oldQuantity =
+            basket.quantityOf(
+                productId,
+            )
 
         if (oldQuantity > quantity) {
-            basket.decrease(productId, oldQuantity - quantity)
+            basket.decrease(
+                productId,
+                oldQuantity - quantity,
+            )
         } else if (quantity > oldQuantity) {
-            basket.add(productId, quantity - oldQuantity)
+            basket.add(
+                productId,
+                quantity - oldQuantity,
+            )
         }
 
         basketRepository.save(basket)

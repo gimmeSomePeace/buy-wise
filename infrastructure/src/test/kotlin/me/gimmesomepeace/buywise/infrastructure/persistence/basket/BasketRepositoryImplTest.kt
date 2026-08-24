@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import me.gimmesomepeace.buywise.domain.basket.basket
 import me.gimmesomepeace.buywise.domain.product.product
 import me.gimmesomepeace.buywise.domain.shared.qty
+import me.gimmesomepeace.buywise.domain.user.user
 import me.gimmesomepeace.buywise.infrastructure.PostgresSqlContainer
 import me.gimmesomepeace.buywise.infrastructure.persistence.TestPersistence
 import org.assertj.core.api.Assertions.assertThat
@@ -40,8 +41,9 @@ internal class BasketRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return basket with all items`() =
             runTest {
-                val product1 = persistence.persist(product())
-                val product2 = persistence.persist(product())
+                val owner = persistence.persist(user())
+                val product1 = persistence.persist(product(ownerId = owner.id))
+                val product2 = persistence.persist(product(ownerId = owner.id))
 
                 jpaRepository.save(
                     BasketEntity(
@@ -74,8 +76,9 @@ internal class BasketRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should persist basket items`() =
             runTest {
-                val product1 = persistence.persist(product())
-                val product2 = persistence.persist(product())
+                val owner = persistence.persist(user())
+                val product1 = persistence.persist(product(ownerId = owner.id))
+                val product2 = persistence.persist(product(ownerId = owner.id))
 
                 val basket =
                     basket {
@@ -95,9 +98,10 @@ internal class BasketRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should replace existing basket`() =
             runTest {
-                val product1 = persistence.persist(product())
-                val product2 = persistence.persist(product())
-                val product3 = persistence.persist(product())
+                val owner = persistence.persist(user())
+                val product1 = persistence.persist(product(ownerId = owner.id))
+                val product2 = persistence.persist(product(ownerId = owner.id))
+                val product3 = persistence.persist(product(ownerId = owner.id))
 
                 repository.save(
                     basket {

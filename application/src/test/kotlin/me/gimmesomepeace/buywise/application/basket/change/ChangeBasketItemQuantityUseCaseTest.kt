@@ -1,44 +1,80 @@
 package me.gimmesomepeace.buywise.application.basket.change
 
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.test.runTest
-import me.gimmesomepeace.buywise.application.basket.basketRepository
+import me.gimmesomepeace.buywise.domain.basket.BasketRepository
 import me.gimmesomepeace.buywise.domain.basket.basket
 import me.gimmesomepeace.buywise.domain.basket.getOrEmpty
 import me.gimmesomepeace.buywise.domain.product.productId
 import me.gimmesomepeace.buywise.domain.shared.qty
-import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
 class ChangeBasketItemQuantityUseCaseTest {
+    private val basketRepository =
+        mockk<BasketRepository>()
+    private val useCase =
+        ChangeBasketItemQuantityUseCase(
+            basketRepository,
+        )
+
     @Test
-    fun `should change basket item quantity`() =
+    fun `should change quantity of existing item`() =
         runTest {
             val productId = productId()
-            val repository =
-                basketRepository(
-                    basket {
-                        add(productId, 3.qty())
-                    },
-                )
+            val existingBasket =
+                basket {
+                    add(productId, 3.qty())
+                }
 
-            val useCase = ChangeBasketItemQuantityUseCase(repository)
+            coEvery {
+                basketRepository.getOrEmpty()
+            } returns existingBasket
+            coEvery {
+                basketRepository.save(any())
+            } just runs
 
             useCase.execute(productId, 5.qty())
-            assertThat(
-                repository.getOrEmpty().quantityOf(productId),
-            ).isEqualTo(5.qty())
+
+            coVerify(exactly = 1) {
+                basketRepository.save(
+                    match {
+                        it.quantityOf(
+                            productId,
+                        ) ==
+                            5.qty()
+                    },
+                )
+            }
         }
 
     @Test
-    fun `should not fail when changing not existing items's quantity`() =
+    fun `should add item when not in basket`() =
         runTest {
             val productId = productId()
-            val repository = basketRepository()
-            val useCase = ChangeBasketItemQuantityUseCase(repository)
+            val emptyBasket = basket()
+
+            coEvery {
+                basketRepository.getOrEmpty()
+            } returns emptyBasket
+            coEvery {
+                basketRepository.save(any())
+            } just runs
 
             useCase.execute(productId, 5.qty())
-            assertThat(
-                repository.getOrEmpty().quantityOf(productId),
-            ).isEqualTo(5.qty())
+
+            coVerify(exactly = 1) {
+                basketRepository.save(
+                    match {
+                        it.quantityOf(
+                            productId,
+                        ) ==
+                            5.qty()
+                    },
+                )
+            }
         }
 }

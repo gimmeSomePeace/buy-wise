@@ -1,34 +1,48 @@
 package me.gimmesomepeace.buywise.application.product.delete
 
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.test.runTest
-import me.gimmesomepeace.buywise.application.product.productRepository
 import me.gimmesomepeace.buywise.domain.product.ProductException
+import me.gimmesomepeace.buywise.domain.product.ProductRepository
 import me.gimmesomepeace.buywise.domain.product.product
-import org.assertj.core.api.Assertions.assertThat
+import me.gimmesomepeace.buywise.domain.product.productId
+import me.gimmesomepeace.buywise.domain.user.userId
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFailsWith
 
 class DeleteProductUseCaseTest {
+    private val repository = mockk<ProductRepository>()
+    private val useCase = DeleteProductUseCase(repository)
+
     @Test
     fun `should delete existing product`() =
         runTest {
-            val product = product()
-            val repository = productRepository(product)
+            val ownerId = userId()
+            val productId = productId()
+            val product = product(id = productId, ownerId = ownerId)
 
-            val useCase =
-                DeleteProductUseCase(
-                    productRepository = repository,
-                )
+            coEvery { repository.get(productId) } returns product
+            coEvery { repository.delete(productId) } just runs
 
-            useCase.execute(
-                productId = product.id,
-            )
+            useCase.execute(ownerId, productId)
 
-            val result =
-                runCatching {
-                    repository.delete(product.id)
-                }
+            coVerify(exactly = 1) { repository.delete(productId) }
+        }
 
-            assertThat(result.exceptionOrNull())
-                .isInstanceOf(ProductException.NotFound::class.java)
+    @Test
+    fun `should throw NotFound when product belongs to another user`() =
+        runTest {
+            val productId = productId()
+            val ownerId = userId()
+            coEvery { repository.get(productId) } returns
+                product(id = productId, ownerId = userId())
+
+            assertFailsWith<ProductException.NotFound> {
+                useCase.execute(ownerId, productId)
+            }
         }
 }

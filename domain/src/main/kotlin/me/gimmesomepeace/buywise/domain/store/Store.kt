@@ -1,5 +1,7 @@
 package me.gimmesomepeace.buywise.domain.store
 
+import me.gimmesomepeace.buywise.domain.user.UserId
+
 /**
  * Магазин, в котором покупатель может приобрести то, что он предлагает.
  *
@@ -10,6 +12,7 @@ package me.gimmesomepeace.buywise.domain.store
  */
 class Store(
     val id: StoreId,
+    val ownerId: UserId,
     name: String,
 ) {
     /**
@@ -17,7 +20,9 @@ class Store(
      */
     var name: String = name
         private set(value) {
-            require(value.isNotBlank()) { "Name of store must not be blank" }
+            require(value.isNotBlank()) {
+                "Name of store must not be blank"
+            }
             field = value
         }
 
@@ -27,9 +32,7 @@ class Store(
         this.name = name
     }
 
-    fun rename(
-        newName: String,
-    ) {
+    fun rename(newName: String) {
         name = newName
     }
 }

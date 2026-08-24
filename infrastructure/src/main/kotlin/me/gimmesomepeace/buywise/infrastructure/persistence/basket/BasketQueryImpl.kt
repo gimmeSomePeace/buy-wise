@@ -11,7 +11,11 @@ class BasketQueryImpl(
         if (items.isEmpty()) return null
 
         return BasketDetails(
-            items = items.map { it.toBasketItemDetails() },
+            items =
+                items.map {
+                    it
+                        .toBasketItemDetails()
+                },
         )
     }
 }

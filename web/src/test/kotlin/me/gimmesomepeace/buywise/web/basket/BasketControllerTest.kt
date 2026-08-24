@@ -134,23 +134,22 @@ class BasketControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [-1, 0])
-        fun `should fail when quantity is not positive`(
-            quantity: Int,
-        ) = runTest {
-            mockMvc
-                .post("/basket/items") {
-                    contentType = MediaType.APPLICATION_JSON
-                    content =
-                        objectMapper.writeValueAsString(
-                            AddProductToBasketRequest(
-                                productId().value,
-                                quantity,
-                            ),
-                        )
-                }.andExpect {
-                    status { isBadRequest() }
-                }
-        }
+        fun `should fail when quantity is not positive`(quantity: Int) =
+            runTest {
+                mockMvc
+                    .post("/basket/items") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            objectMapper.writeValueAsString(
+                                AddProductToBasketRequest(
+                                    productId().value,
+                                    quantity,
+                                ),
+                            )
+                    }.andExpect {
+                        status { isBadRequest() }
+                    }
+            }
     }
 
     @Nested

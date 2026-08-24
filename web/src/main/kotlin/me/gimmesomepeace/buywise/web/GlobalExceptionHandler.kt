@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-    @ExceptionHandler(ConstraintViolationException::class)
-    fun handle(
-        ex: ConstraintViolationException,
-    ): ProblemDetail =
-        ProblemDetail.forStatus(HttpStatus.BAD_REQUEST).apply {
-            title = "Validation failed"
-            detail = ex.message
-        }
+    @ExceptionHandler(
+        ConstraintViolationException::class,
+    )
+    fun handle(ex: ConstraintViolationException): ProblemDetail =
+        ProblemDetail
+            .forStatus(
+                HttpStatus.BAD_REQUEST,
+            ).apply {
+                title = "Validation failed"
+                detail = ex.message
+            }
 }

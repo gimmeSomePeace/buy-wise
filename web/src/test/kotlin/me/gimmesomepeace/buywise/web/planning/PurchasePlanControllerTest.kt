@@ -72,25 +72,24 @@ class PurchasePlanControllerTest {
 
         @ParameterizedTest
         @ValueSource(ints = [0, -1])
-        fun `should fail when store count limit is invalid`(
-            limit: Int,
-        ) = runTest {
-            mockMvc
-                .post("/purchase-plan") {
-                    contentType = MediaType.APPLICATION_JSON
-                    content =
-                        mapper.writeValueAsString(
-                            CreatePurchasePlanRequest(
-                                storeCountLimit = limit,
-                            ),
-                        )
-                }.andExpect {
-                    status { isBadRequest() }
-                }
+        fun `should fail when store count limit is invalid`(limit: Int) =
+            runTest {
+                mockMvc
+                    .post("/purchase-plan") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content =
+                            mapper.writeValueAsString(
+                                CreatePurchasePlanRequest(
+                                    storeCountLimit = limit,
+                                ),
+                            )
+                    }.andExpect {
+                        status { isBadRequest() }
+                    }
 
-            coVerify(exactly = 0) {
-                createPurchasePlanUseCase.execute(any())
+                coVerify(exactly = 0) {
+                    createPurchasePlanUseCase.execute(any())
+                }
             }
-        }
     }
 }

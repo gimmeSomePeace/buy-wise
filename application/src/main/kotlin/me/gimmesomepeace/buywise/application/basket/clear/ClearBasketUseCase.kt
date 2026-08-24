@@ -7,7 +7,8 @@ class ClearBasketUseCase(
     private val basketRepository: BasketRepository,
 ) {
     suspend fun execute() {
-        val basket = basketRepository.find() ?: Basket()
+        val basket =
+            basketRepository.find() ?: Basket()
         basket.clear()
         basketRepository.save(basket)
     }

@@ -9,16 +9,14 @@ console-reports:
 
 style:
   active: true
-  BracesOnIfStatements:
-    active: true
-    singleLine: 'never'
   BracesOnWhenStatements:
     active: true
   UtilityClassWithPublicConstructor:
     ignoreAnnotated:
       - 'Testcontainers'
-  CascadingCallWrapping:
+  NamedArguments:
     active: true
+    allowedArguments: 2
   ClassOrdering:
     active: true
   CollapsibleIfStatements:

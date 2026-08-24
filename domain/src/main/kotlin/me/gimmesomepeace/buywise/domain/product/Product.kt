@@ -1,5 +1,7 @@
 package me.gimmesomepeace.buywise.domain.product
 
+import me.gimmesomepeace.buywise.domain.user.UserId
+
 /**
  * Продукт.
  *
@@ -10,6 +12,7 @@ package me.gimmesomepeace.buywise.domain.product
  */
 class Product(
     val id: ProductId,
+    val ownerId: UserId,
     name: String,
 ) {
     /**
@@ -29,9 +32,7 @@ class Product(
         this.name = name
     }
 
-    fun rename(
-        newName: String,
-    ) {
+    fun rename(newName: String) {
         name = newName
     }
 }

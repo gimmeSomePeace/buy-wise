@@ -7,6 +7,7 @@ import me.gimmesomepeace.buywise.domain.offer.offerId
 import me.gimmesomepeace.buywise.domain.product.product
 import me.gimmesomepeace.buywise.domain.shared.usd
 import me.gimmesomepeace.buywise.domain.store.store
+import me.gimmesomepeace.buywise.domain.user.user
 import me.gimmesomepeace.buywise.infrastructure.PostgresSqlContainer
 import me.gimmesomepeace.buywise.infrastructure.persistence.TestPersistence
 import org.assertj.core.api.Assertions.assertThat
@@ -83,8 +84,9 @@ internal class OfferRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should fail when id is busy`() =
             runTest {
-                val store = persistence.persist(store())
-                val product = persistence.persist(product())
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(store(ownerId = ownerId))
+                val product = persistence.persist(product(ownerId = ownerId))
 
                 val offer = offer(storeId = store.id, productId = product.id)
                 repository.add(offer)
@@ -102,8 +104,9 @@ internal class OfferRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should update offer`() =
             runTest {
-                val store = persistence.persist(store())
-                val product = persistence.persist(product())
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(store(ownerId = ownerId))
+                val product = persistence.persist(product(ownerId = ownerId))
 
                 val expected =
                     offer(
@@ -139,8 +142,9 @@ internal class OfferRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should delete offer`() =
             runTest {
-                val store = persistence.persist(store())
-                val product = persistence.persist(product())
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(store(ownerId = ownerId))
+                val product = persistence.persist(product(ownerId = ownerId))
                 val offer =
                     persistence.persist(
                         offer(storeId = store.id, productId = product.id),
@@ -171,10 +175,11 @@ internal class OfferRepositoryImplTest : PostgresSqlContainer() {
         @Test
         fun `should return all available offers`() =
             runTest {
-                val store = persistence.persist(store())
-                val product1 = persistence.persist(product())
-                val product2 = persistence.persist(product())
-                val product3 = persistence.persist(product())
+                val ownerId = persistence.persist(user()).id
+                val store = persistence.persist(store(ownerId = ownerId))
+                val product1 = persistence.persist(product(ownerId = ownerId))
+                val product2 = persistence.persist(product(ownerId = ownerId))
+                val product3 = persistence.persist(product(ownerId = ownerId))
 
                 with(repository) {
                     add(offer(storeId = store.id, productId = product1.id))

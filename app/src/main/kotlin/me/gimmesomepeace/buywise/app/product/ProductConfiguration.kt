@@ -4,6 +4,7 @@ import me.gimmesomepeace.buywise.app.BeanNames
 import me.gimmesomepeace.buywise.application.product.ProductQuery
 import me.gimmesomepeace.buywise.application.product.create.CreateProductUseCase
 import me.gimmesomepeace.buywise.application.product.delete.DeleteProductUseCase
+import me.gimmesomepeace.buywise.application.product.get.GetProductUseCase
 import me.gimmesomepeace.buywise.application.product.list.ListProductsUseCase
 import me.gimmesomepeace.buywise.application.product.rename.RenameProductUseCase
 import me.gimmesomepeace.buywise.application.shared.IdGenerator
@@ -19,34 +20,31 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class ProductConfiguration {
     @Bean
-    fun productRepository(
-        productJpaRepository: ProductJpaRepository,
-    ): ProductRepository = ProductRepositoryImpl(productJpaRepository)
+    fun productRepository(productJpaRepository: ProductJpaRepository): ProductRepository =
+        ProductRepositoryImpl(productJpaRepository)
 
     @Bean
-    fun productQuery(
-        productJpaRepository: ProductJpaRepository,
-    ): ProductQuery = ProductQueryImpl(productJpaRepository)
+    fun productQuery(productJpaRepository: ProductJpaRepository): ProductQuery = ProductQueryImpl(productJpaRepository)
+
+    @Bean
+    fun getProductUseCase(productQuery: ProductQuery): GetProductUseCase = GetProductUseCase(productQuery)
 
     @Bean
     fun createProductUseCase(
         @Qualifier(BeanNames.PRODUCT_ID_GENERATOR)
         idGenerator: IdGenerator<ProductId>,
         productRepository: ProductRepository,
-    ) = CreateProductUseCase(idGenerator, productRepository)
+    ) = CreateProductUseCase(
+        idGenerator,
+        productRepository,
+    )
 
     @Bean
-    fun deleteProductUseCase(
-        repository: ProductRepository,
-    ) = DeleteProductUseCase(repository)
+    fun deleteProductUseCase(repository: ProductRepository) = DeleteProductUseCase(repository)
 
     @Bean
-    fun listProductsUseCase(
-        query: ProductQuery,
-    ) = ListProductsUseCase(query)
+    fun listProductsUseCase(query: ProductQuery) = ListProductsUseCase(query)
 
     @Bean
-    fun renameProductUseCase(
-        repository: ProductRepository,
-    ) = RenameProductUseCase(repository)
+    fun renameProductUseCase(repository: ProductRepository) = RenameProductUseCase(repository)
 }

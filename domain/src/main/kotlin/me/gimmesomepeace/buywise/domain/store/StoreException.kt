@@ -7,9 +7,13 @@ sealed class StoreException(
 ) : DomainException(message) {
     class NotFound(
         val storeId: StoreId,
-    ) : StoreException("Store with id $storeId not found")
+    ) : StoreException(
+            "Store with id $storeId not found",
+        )
 
     class AlreadyExists(
         val storeId: StoreId,
-    ) : StoreException("Store with id $storeId already exists")
+    ) : StoreException(
+            "Store with id $storeId already exists",
+        )
 }
