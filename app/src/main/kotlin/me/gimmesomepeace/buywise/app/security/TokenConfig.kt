@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class TokenConfig {
     @Bean
-    fun tokenGenerator(@Value($$"${jwt.secret}") secretKey: String):
-        JwtAccessTokenGenerator = JwtAccessTokenGenerator(secretKey)
+    fun tokenGenerator(
+        @Value($$"${jwt.secret}") secretKey: String,
+    ): JwtAccessTokenGenerator = JwtAccessTokenGenerator(secretKey)
 }

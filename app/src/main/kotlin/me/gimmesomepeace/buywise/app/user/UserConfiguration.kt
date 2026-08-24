@@ -18,14 +18,10 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class UserConfiguration {
     @Bean
-    fun userRepository(
-        userJpaRepository: UserJpaRepository,
-    ): UserRepository = UserRepositoryImpl(userJpaRepository)
+    fun userRepository(userJpaRepository: UserJpaRepository): UserRepository = UserRepositoryImpl(userJpaRepository)
 
     @Bean
-    fun userQuery(
-        userRepository: UserJpaRepository,
-    ): UserQuery = UserQueryImpl(userRepository)
+    fun userQuery(userRepository: UserJpaRepository): UserQuery = UserQueryImpl(userRepository)
 
     @Bean
     fun registerUserUseCase(
@@ -36,7 +32,5 @@ class UserConfiguration {
     ): RegisterUserUseCase = RegisterUserUseCase(idGenerator, repository, passwordHasher)
 
     @Bean
-    fun listUsersUseCase(
-        query: UserQuery,
-    ) : ListUsersUseCase = ListUsersUseCase(query)
+    fun listUsersUseCase(query: UserQuery): ListUsersUseCase = ListUsersUseCase(query)
 }
