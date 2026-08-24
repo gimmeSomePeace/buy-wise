@@ -56,4 +56,5 @@ class SecurityConfig(
 
     @Bean
     fun userDetailsService(): UserDetailsService = SpringSecurityUserDetailsService(userQuery)
+
 }

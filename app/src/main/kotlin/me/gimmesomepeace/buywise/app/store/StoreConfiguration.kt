@@ -5,6 +5,7 @@ import me.gimmesomepeace.buywise.application.shared.IdGenerator
 import me.gimmesomepeace.buywise.application.store.StoreQuery
 import me.gimmesomepeace.buywise.application.store.create.CreateStoreUseCase
 import me.gimmesomepeace.buywise.application.store.delete.DeleteStoreUseCase
+import me.gimmesomepeace.buywise.application.store.get.GetStoreUseCase
 import me.gimmesomepeace.buywise.application.store.list.ListStoresUseCase
 import me.gimmesomepeace.buywise.application.store.rename.RenameStoreUseCase
 import me.gimmesomepeace.buywise.domain.store.StoreId
@@ -24,6 +25,9 @@ class StoreConfiguration {
 
     @Bean
     fun storeQuery(storeJpaRepository: StoreJpaRepository): StoreQuery = StoreQueryImpl(storeJpaRepository)
+
+    @Bean
+    fun getStoreUseCase(storeQuery: StoreQuery): GetStoreUseCase = GetStoreUseCase(storeQuery)
 
     @Bean
     fun createStoreUseCase(

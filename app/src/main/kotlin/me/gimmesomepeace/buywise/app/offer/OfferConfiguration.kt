@@ -4,6 +4,7 @@ import me.gimmesomepeace.buywise.app.BeanNames
 import me.gimmesomepeace.buywise.application.offer.OfferQuery
 import me.gimmesomepeace.buywise.application.offer.create.CreateOfferUseCase
 import me.gimmesomepeace.buywise.application.offer.delete.DeleteOfferUseCase
+import me.gimmesomepeace.buywise.application.offer.get.GetOfferUseCase
 import me.gimmesomepeace.buywise.application.offer.list.ListOffersUseCase
 import me.gimmesomepeace.buywise.application.offer.price.change.ChangeOfferPriceUseCase
 import me.gimmesomepeace.buywise.application.shared.IdGenerator
@@ -24,6 +25,9 @@ class OfferConfiguration {
 
     @Bean
     fun offerQuery(offerJpaRepository: OfferJpaRepository): OfferQuery = OfferQueryImpl(offerJpaRepository)
+
+    @Bean
+    fun getOfferUseCase(query: OfferQuery): GetOfferUseCase = GetOfferUseCase(query)
 
     @Bean
     fun createOfferUseCase(

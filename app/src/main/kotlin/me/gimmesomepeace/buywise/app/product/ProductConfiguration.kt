@@ -4,6 +4,7 @@ import me.gimmesomepeace.buywise.app.BeanNames
 import me.gimmesomepeace.buywise.application.product.ProductQuery
 import me.gimmesomepeace.buywise.application.product.create.CreateProductUseCase
 import me.gimmesomepeace.buywise.application.product.delete.DeleteProductUseCase
+import me.gimmesomepeace.buywise.application.product.get.GetProductUseCase
 import me.gimmesomepeace.buywise.application.product.list.ListProductsUseCase
 import me.gimmesomepeace.buywise.application.product.rename.RenameProductUseCase
 import me.gimmesomepeace.buywise.application.shared.IdGenerator
@@ -20,12 +21,13 @@ import org.springframework.context.annotation.Configuration
 class ProductConfiguration {
     @Bean
     fun productRepository(productJpaRepository: ProductJpaRepository): ProductRepository =
-        ProductRepositoryImpl(
-            productJpaRepository,
-        )
+        ProductRepositoryImpl(productJpaRepository)
 
     @Bean
     fun productQuery(productJpaRepository: ProductJpaRepository): ProductQuery = ProductQueryImpl(productJpaRepository)
+
+    @Bean
+    fun getProductUseCase(productQuery: ProductQuery): GetProductUseCase = GetProductUseCase(productQuery)
 
     @Bean
     fun createProductUseCase(
